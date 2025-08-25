@@ -1,0 +1,497 @@
+import {
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  DocumentIcon,
+  LinkIcon,
+  PlusIcon,
+  TrashIcon,
+  UserIcon,
+  XCircleIcon
+} from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { candidateService } from '../../services/candidateService';
+
+const CandidatePortal = () => {
+  const { applicationId } = useParams();
+  const [candidate, setCandidate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [links, setLinks] = useState([{ url: '', type: 'other' }]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  useEffect(() => {
+    fetchCandidate();
+  }, [applicationId]);
+
+  const fetchCandidate = async () => {
+    try {
+      setLoading(true);
+      const response = await candidateService.getCandidateByApplicationId(applicationId);
+      setCandidate(response.data);
+    } catch (error) {
+      console.error('Error fetching candidate:', error);
+      toast.error('Application not found');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTaskSubmission = async (data) => {
+    try {
+      setSubmitting(true);
+
+      // Filter out empty links
+      const validLinks = links.filter(link => link.url.trim() !== '');
+
+      if (validLinks.length === 0) {
+        toast.error('At least one link is required');
+        return;
+      }
+
+      await candidateService.submitTask(candidate._id, { links: validLinks });
+      toast.success('Task submitted successfully!');
+      setShowTaskForm(false);
+      setLinks([{ url: '', type: 'other' }]);
+      fetchCandidate();
+    } catch (error) {
+      console.error('Error submitting task:', error);
+      toast.error('Failed to submit task');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const addLink = () => {
+    if (links.length < 10) {
+      setLinks([...links, { url: '', type: 'other' }]);
+    } else {
+      toast.error('Maximum 10 links allowed');
+    }
+  };
+
+  const removeLink = (index) => {
+    if (links.length > 1) {
+      const newLinks = links.filter((_, i) => i !== index);
+      setLinks(newLinks);
+    }
+  };
+
+  const updateLink = (index, field, value) => {
+    const newLinks = [...links];
+    newLinks[index] = { ...newLinks[index], [field]: value };
+    setLinks(newLinks);
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      'Applied': { color: 'bg-blue-100 text-blue-800', icon: ClockIcon },
+      'Task Pending': { color: 'bg-yellow-100 text-yellow-800', icon: ClipboardDocumentCheckIcon },
+      'Task Submitted': { color: 'bg-purple-100 text-purple-800', icon: DocumentIcon },
+      'Under Review': { color: 'bg-orange-100 text-orange-800', icon: ClockIcon },
+      'Interview Eligible': { color: 'bg-green-100 text-green-800', icon: CheckCircleIcon },
+      'Interview Scheduled': { color: 'bg-indigo-100 text-indigo-800', icon: ClockIcon },
+      'Interview Completed': { color: 'bg-gray-100 text-gray-800', icon: CheckCircleIcon },
+      'Shortlisted': { color: 'bg-pink-100 text-pink-800', icon: CheckCircleIcon },
+      'Selected': { color: 'bg-green-100 text-green-800', icon: CheckCircleIcon },
+      'Rejected': { color: 'bg-red-100 text-red-800', icon: XCircleIcon }
+    };
+
+    const config = statusConfig[status] || statusConfig['Applied'];
+    const Icon = config.icon;
+
+    return (
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
+        <Icon className="h-4 w-4 mr-2" />
+        {status}
+      </span>
+    );
+  };
+
+  const getStatusDescription = (status) => {
+    const descriptions = {
+      'Applied': 'Your application has been received and is being reviewed.',
+      'Task Pending': 'Your application has been approved! Please complete the assigned task.',
+      'Task Submitted': 'Your task has been submitted and is under review.',
+      'Under Review': 'Your task submission is being evaluated by our team.',
+      'Interview Eligible': 'Congratulations! You\'ve passed the task evaluation and are eligible for an interview.',
+      'Interview Scheduled': 'An interview has been scheduled. Check your email for details.',
+      'Interview Completed': 'Your interview has been completed. We\'ll contact you soon.',
+      'Shortlisted': 'You\'ve been shortlisted! Final decision pending.',
+      'Selected': 'Congratulations! You have been selected for the position.',
+      'Rejected': 'Thank you for your interest. Unfortunately, we cannot proceed with your application at this time.'
+    };
+
+    return descriptions[status] || 'Your application is being processed.';
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (!candidate) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Application Not Found</h1>
+          <p className="text-gray-600">The application you're looking for could not be found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center mb-4">
+            <UserIcon className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Candidate Portal</h1>
+          <p className="text-lg text-gray-600">Track your application progress</p>
+        </div>
+
+        {/* Application Status */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{candidate.name}</h2>
+              <p className="text-gray-600">{candidate.job?.title}</p>
+            </div>
+            {getStatusBadge(candidate.status)}
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-blue-800">{getStatusDescription(candidate.status)}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Application Details</h3>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Application ID:</span>
+                  <p className="text-gray-900">{candidate.application_id}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Email:</span>
+                  <p className="text-gray-900">{candidate.email}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Phone:</span>
+                  <p className="text-gray-900">{candidate.phone}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Applied Date:</span>
+                  <p className="text-gray-900">{new Date(candidate.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Details</h3>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Position:</span>
+                  <p className="text-gray-900">{candidate.job?.title}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Designation:</span>
+                  <p className="text-gray-900">{candidate.job?.designation}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Experience Required:</span>
+                  <p className="text-gray-900">{candidate.job?.experience_in_year} years</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Salary Range:</span>
+                  <p className="text-gray-900">{candidate.job?.salary_range}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Task Section */}
+        {candidate.status === 'Task Pending' && candidate.job?.task_link && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="flex items-center mb-4">
+              <ClipboardDocumentCheckIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Task Assignment</h3>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <h4 className="text-sm font-medium text-yellow-900 mb-2">Task Instructions</h4>
+              <p className="text-yellow-800 mb-3">
+                Please complete the assigned task and submit your work. You can find the task details below.
+              </p>
+              <a
+                href={candidate.job.task_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+              >
+                <LinkIcon className="h-4 w-4 mr-1" />
+                View Task Details
+              </a>
+            </div>
+
+            <button
+              onClick={() => setShowTaskForm(true)}
+              className="btn btn-primary"
+            >
+              Submit Task
+            </button>
+          </div>
+        )}
+
+        {/* Task Submission Status */}
+        {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="flex items-center mb-4">
+              <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Task Submission</h3>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <span className="text-sm font-medium text-gray-500">Submitted Links:</span>
+                <div className="mt-2 space-y-2">
+                  {candidate.task_submission.links.map((link, index) => (
+                    <div key={index} className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
+                                link.type === 'live' ? 'bg-green-100 text-green-800' :
+                                  'bg-blue-100 text-blue-800'
+                              }`}>
+                              {link.type}
+                            </span>
+                          </div>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 hover:text-primary-700 break-all"
+                          >
+                            {link.url}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {candidate.task_submission.submitted_at && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Submitted Date:</span>
+                  <p className="text-gray-900">
+                    {new Date(candidate.task_submission.submitted_at).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Evaluation Results */}
+        {candidate.evaluation && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="flex items-center mb-4">
+              <CheckCircleIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Evaluation Results</h3>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-sm font-medium text-gray-500">Score:</span>
+                <p className="text-gray-900">{candidate.evaluation.score}%</p>
+              </div>
+              {candidate.evaluation.comments && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Feedback:</span>
+                  <p className="text-gray-900">{candidate.evaluation.comments}</p>
+                </div>
+              )}
+              {candidate.evaluation.evaluated_at && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Evaluated Date:</span>
+                  <p className="text-gray-900">
+                    {new Date(candidate.evaluation.evaluated_at).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Interview Information */}
+        {candidate.interview && candidate.interview.scheduled_date && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="flex items-center mb-4">
+              <ClockIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Interview Details</h3>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-sm font-medium text-gray-500">Scheduled Date:</span>
+                <p className="text-gray-900">
+                  {new Date(candidate.interview.scheduled_date).toLocaleDateString()} at{' '}
+                  {new Date(candidate.interview.scheduled_date).toLocaleTimeString()}
+                </p>
+              </div>
+              {candidate.interview.interviewer && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Interviewer:</span>
+                  <p className="text-gray-900">{candidate.interview.interviewer}</p>
+                </div>
+              )}
+              {candidate.interview.result && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Result:</span>
+                  <p className="text-gray-900">{candidate.interview.result}</p>
+                </div>
+              )}
+              {candidate.interview.feedback && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Feedback:</span>
+                  <p className="text-gray-900">{candidate.interview.feedback}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Task Submission Modal */}
+        {showTaskForm && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <form onSubmit={handleSubmit(handleTaskSubmission)}>
+                  <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                          Submit Task Links
+                        </h3>
+
+                        <div className="space-y-4">
+                          {links.map((link, index) => (
+                            <div key={index} className="border border-gray-200 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-medium text-gray-700">Link {index + 1}</h4>
+                                {links.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => removeLink(index)}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <TrashIcon className="h-4 w-4" />
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Link Type
+                                  </label>
+                                  <select
+                                    value={link.type}
+                                    onChange={(e) => updateLink(index, 'type', e.target.value)}
+                                    className="mt-1 input"
+                                  >
+                                    <option value="github">GitHub Repository</option>
+                                    <option value="live">Live Demo</option>
+                                    <option value="other">Other</option>
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    URL *
+                                  </label>
+                                  <input
+                                    type="url"
+                                    value={link.url}
+                                    onChange={(e) => updateLink(index, 'url', e.target.value)}
+                                    className="mt-1 input"
+                                    placeholder={
+                                      link.type === 'github' ? 'https://github.com/username/repository' :
+                                        link.type === 'live' ? 'https://your-demo-url.com' :
+                                          'https://your-link.com'
+                                    }
+                                    required
+                                  />
+                                </div>
+
+                                
+                              </div>
+                            </div>
+                          ))}
+
+                          <button
+                            type="button"
+                            onClick={addLink}
+                            disabled={links.length >= 10}
+                            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            Add More Link
+                          </button>
+
+                          <p className="text-xs text-gray-500 text-center">
+                            You can add up to 10 links. At least one link is required.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="btn btn-primary sm:ml-3 sm:w-auto disabled:opacity-50"
+                    >
+                      {submitting ? 'Submitting...' : 'Submit Task'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTaskForm(false);
+                        setLinks([{ url: '', type: 'other' }]);
+                      }}
+                      className="btn btn-secondary sm:mt-0 sm:w-auto"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CandidatePortal;

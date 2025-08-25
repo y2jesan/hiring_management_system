@@ -1,0 +1,70 @@
+Engineer Hiring Management System
+The system will automate and streamline the engineer recruitment workflow. Candidates will apply through a web application, receive tasks automatically, submit their work, and be managed via an admin panel. The platform ensures transparency, efficiency, and centralization of the entire hiring process.
+🔹 Core Modules & Features
+1. Candidate Portal (Frontend)
+Job Application Form
+Personal details (name, email, phone, etc.)
+CV/Resume upload (PDF/DOC)
+Auto-generated Application ID upon submission
+Task Management
+Auto-email sent to candidate with task instructions and unique Application ID
+Candidate portal to view assigned task
+Task submission (GitHub link / file upload)
+
+
+
+
+
+Application Tracking
+Candidate can log in with email + Application ID to check status (e.g., “Task Pending”, “Under Review”, “Interview Scheduled”, “Selected”, “Rejected”)
+2. Admin Panel (For HR & Management)
+Dashboard
+Overview of total applications, tasks submitted, pending evaluations, shortlisted candidates, final selections
+Candidate Management
+Candidate list with details (profile, CV link, task link, scores, interview status)
+Search, filter, and sort by status, score, or applied date
+Task Management
+Pre-uploaded task bank (HR/Admin can assign tasks dynamically or same task auto-sent to all)
+Candidate task submissions visible in one place
+Evaluation System
+HR/Engineer can review submitted tasks
+Give marks/score (percentage)
+Auto-move candidates with >60% to “Interview Eligible” status
+Interview Scheduling
+Schedule interviews (date, time, interviewer)
+Send email invites to candidates
+Track interview results and shortlist
+Final Selection
+MD/Final Interview panel marks candidates
+Mark as “Selected” or “Rejected”
+HR finalizes with offer letter / rules & regulations upload
+Email Automation
+Auto-reply for application confirmation + task link
+Auto-notifications for interview calls, rejection, or final selection
+3. System Management (Super Admin)
+Role-based access (HR, Evaluator, MD, Super Admin)
+Custom email templates (for auto-replies)
+Analytics & reports (e.g., how many applied, pass rate, interview success)
+Export candidate data (Excel/PDF)
+🔹 Technology Stack (Suggestion)
+Frontend: React (candidate portal + admin panel UI)
+Backend: (API + business logic + admin panel backend)
+Database: MongoDB
+Email Service: SMTP
+Authentication: Email for candidates, Role-based login for admin/HR/MD
+File Storage: Local server / AWS S3 for CVs & uploads
+
+
+🔹 Workflow in System
+1. HR Creates Job Post with title, salary range, designation, image (optional), experience_in_year, task link (optional), job_id (alphanumeric - 8 character - unique), 
+2. There will be a dynamic route with job_id (e.g. /job-application/:job_id)
+3. Candidate applies via /job-application/:job_id page with - Name, Email, Phone Number, CV (PDF/Docx)
+4. System saves data + CV → Auto email with Unique Application ID + task link + submission link (e.g. /application/:application_id)
+5. Candidate submits task → Stored with Candidate ID → HR/Admin sees in panel
+6. HR/Engineer evaluates → Score updated in system
+7. If score ≥ 60% → Auto mark as “Interview Eligible”
+8. HR schedules interview → Candidate gets email notification
+9. Interview panel updates status → Shortlist created
+10. MD final interview → Select/Reject candidates
+11. HR finalizes offer letter & compliance → Candidate status updated
+

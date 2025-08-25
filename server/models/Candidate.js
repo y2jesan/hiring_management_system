@@ -1,0 +1,132 @@
+const mongoose = require('mongoose');
+
+const candidateSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      trim: true,
+      lowercase: true,
+      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
+    },
+    phone: {
+      type: String,
+      required: [true, 'Phone number is required'],
+      trim: true,
+    },
+    cv_file_path: {
+      type: String,
+      required: [true, 'CV file path is required'],
+    },
+    application_id: {
+      type: String,
+      required: [true, 'Application ID is required'],
+      unique: true,
+    },
+    job_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job',
+      required: true,
+    },
+    task_submission: {
+      links: [
+        {
+          url: {
+            type: String,
+            required: true,
+          },
+          type: {
+            type: String,
+            enum: ['github', 'live', 'other'],
+            default: 'other',
+          },
+        },
+      ],
+      submitted_at: {
+        type: Date,
+        default: null,
+      },
+    },
+    status: {
+      type: String,
+      enum: ['Applied', 'Task Pending', 'Task Submitted', 'Under Review', 'Interview Eligible', 'Interview Scheduled', 'Interview Completed', 'Shortlisted', 'Selected', 'Rejected'],
+      default: 'Applied',
+    },
+    evaluation: {
+      score: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: null,
+      },
+      evaluated_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+      },
+      evaluated_at: {
+        type: Date,
+        default: null,
+      },
+      comments: {
+        type: String,
+        default: null,
+      },
+    },
+    interview: {
+      scheduled_date: {
+        type: Date,
+        default: null,
+      },
+      interviewer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+      },
+      result: {
+        type: String,
+        enum: ['Pending', 'Passed', 'Failed', 'No Show'],
+        default: 'Pending',
+      },
+      feedback: {
+        type: String,
+        default: null,
+      },
+    },
+    final_selection: {
+      selected: {
+        type: Boolean,
+        default: false,
+      },
+      offer_letter_path: {
+        type: String,
+        default: null,
+      },
+      selected_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+      },
+      selected_at: {
+        type: Date,
+        default: null,
+      },
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Indexes for faster queries
+candidateSchema.index({ application_id: 1 });
+candidateSchema.index({ email: 1 });
+candidateSchema.index({ status: 1 });
+candidateSchema.index({ job_id: 1 });
+
+module.exports = mongoose.model('Candidate', candidateSchema);

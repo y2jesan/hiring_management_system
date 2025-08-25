@@ -7,6 +7,7 @@ import {
     XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { dashboardService } from '../../services/dashboardService';
 
 const Dashboard = () => {
@@ -23,10 +24,18 @@ const Dashboard = () => {
                     dashboardService.getRecentActivities()
                 ]);
 
-                setStats(statsData.data);
-                setRecentActivities(activitiesData.data || []);
+                // Extract stats from the nested structure
+                const statsFromResponse = statsData.data?.stats || statsData.data || {};
+                setStats(statsFromResponse);
+
+                // Extract activities from the nested structure
+                const activitiesFromResponse = activitiesData.data?.activities || activitiesData.data || {};
+                setRecentActivities(activitiesFromResponse);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
+                // Set default values on error
+                setStats({});
+                setRecentActivities({});
             } finally {
                 setLoading(false);
             }
@@ -38,7 +47,7 @@ const Dashboard = () => {
     const statCards = [
         {
             name: 'Total Applications',
-            value: stats?.totalApplications || 0,
+            value: stats?.overview?.totalCandidates || 0,
             icon: UsersIcon,
             color: 'bg-blue-500',
             change: '+12%',
@@ -46,43 +55,43 @@ const Dashboard = () => {
         },
         {
             name: 'Active Jobs',
-            value: stats?.activeJobs || 0,
+            value: stats?.overview?.activeJobs || 0,
             icon: BriefcaseIcon,
             color: 'bg-green-500',
             change: '+5%',
             changeType: 'positive'
         },
         {
-            name: 'Pending Evaluations',
-            value: stats?.pendingEvaluations || 0,
-            icon: ClockIcon,
-            color: 'bg-yellow-500',
-            change: '+8%',
-            changeType: 'negative'
+            name: 'Total Jobs',
+            value: stats?.overview?.totalJobs || 0,
+            icon: BriefcaseIcon,
+            color: 'bg-indigo-500',
+            change: '+3%',
+            changeType: 'positive'
         },
         {
-            name: 'Interviews Scheduled',
-            value: stats?.interviewsScheduled || 0,
+            name: 'Total Interviews',
+            value: stats?.overview?.totalInterviews || 0,
             icon: CalendarIcon,
             color: 'bg-purple-500',
             change: '+15%',
             changeType: 'positive'
         },
         {
-            name: 'Selected Candidates',
-            value: stats?.selectedCandidates || 0,
-            icon: CheckCircleIcon,
-            color: 'bg-green-600',
-            change: '+3%',
+            name: 'Recent Applications (7 days)',
+            value: stats?.overview?.recentApplications || 0,
+            icon: ClockIcon,
+            color: 'bg-yellow-500',
+            change: '+8%',
             changeType: 'positive'
         },
         {
-            name: 'Rejected Candidates',
-            value: stats?.rejectedCandidates || 0,
-            icon: XCircleIcon,
-            color: 'bg-red-500',
-            change: '+2%',
-            changeType: 'negative'
+            name: 'Upcoming Interviews',
+            value: stats?.overview?.upcomingInterviews || 0,
+            icon: CalendarIcon,
+            color: 'bg-orange-500',
+            change: '+10%',
+            changeType: 'positive'
         }
     ];
 
@@ -170,11 +179,11 @@ const Dashboard = () => {
                     </h3>
                     <div className="flow-root">
                         <ul className="-mb-8">
-                            {recentActivities.length > 0 ? (
-                                recentActivities.map((activity, activityIdx) => (
-                                    <li key={activity.id}>
+                            {recentActivities.recentCandidates && recentActivities.recentCandidates.length > 0 ? (
+                                recentActivities.recentCandidates.map((candidate, idx) => (
+                                    <li key={candidate._id}>
                                         <div className="relative pb-8">
-                                            {activityIdx !== recentActivities.length - 1 ? (
+                                            {idx !== recentActivities.recentCandidates.length - 1 ? (
                                                 <span
                                                     className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
                                                     aria-hidden="true"
@@ -182,23 +191,23 @@ const Dashboard = () => {
                                             ) : null}
                                             <div className="relative flex space-x-3">
                                                 <div>
-                                                    <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${activity.type === 'application' ? 'bg-blue-500' :
-                                                            activity.type === 'evaluation' ? 'bg-green-500' :
-                                                                activity.type === 'interview' ? 'bg-purple-500' :
-                                                                    'bg-gray-500'
-                                                        }`}>
+                                                    <span className="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-blue-500">
                                                         <UsersIcon className="h-5 w-5 text-white" />
                                                     </span>
                                                 </div>
                                                 <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                                                     <div>
                                                         <p className="text-sm text-gray-500">
-                                                            {activity.description}
+                                                            <Link to={`/admin/candidates/${candidate._id}`} className="font-medium text-gray-900 hover:underline">{candidate.name}</Link> applied for{' '}
+                                                            <Link to={`/admin/jobs/${candidate.job_id?.job_id}`} className="font-medium text-gray-900 hover:underline">{candidate.job_id?.title || 'Unknown Job'}</Link>
+                                                        </p>
+                                                        <p className="text-xs text-gray-400">
+                                                            Status: {candidate.status}
                                                         </p>
                                                     </div>
                                                     <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                                                        <time dateTime={activity.created_at}>
-                                                            {new Date(activity.created_at).toLocaleDateString()}
+                                                        <time dateTime={candidate.createdAt}>
+                                                            {new Date(candidate.createdAt).toLocaleDateString()}
                                                         </time>
                                                     </div>
                                                 </div>
@@ -208,13 +217,73 @@ const Dashboard = () => {
                                 ))
                             ) : (
                                 <li className="text-center py-8 text-gray-500">
-                                    No recent activities
+                                    No recent applications
                                 </li>
                             )}
                         </ul>
                     </div>
                 </div>
             </div>
+
+            {/* Candidate Status Distribution */}
+            {stats?.candidateStatus && Object.keys(stats.candidateStatus).length > 0 && (
+                <div className="bg-white shadow rounded-lg">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            Candidate Status Distribution
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {Object.entries(stats.candidateStatus).map(([status, count]) => (
+                                <div key={status} className="bg-gray-50 rounded-lg p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900">{status}</p>
+                                            <p className="text-2xl font-bold text-gray-900">{count}</p>
+                                        </div>
+                                        <div className={`w-3 h-3 rounded-full ${getStatusColor(status).replace('bg-', 'bg-').replace('text-', '')}`}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Interview Results */}
+            {stats?.interviewResults && Object.keys(stats.interviewResults).length > 0 && (
+                <div className="bg-white shadow rounded-lg">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            Interview Results
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {Object.entries(stats.interviewResults).map(([result, count]) => (
+                                <div key={result} className="bg-gray-50 rounded-lg p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900">{result}</p>
+                                            <p className="text-2xl font-bold text-gray-900">{count}</p>
+                                        </div>
+                                        <div className={`w-3 h-3 rounded-full ${
+                                            result === 'Passed' ? 'bg-green-500' :
+                                            result === 'Failed' ? 'bg-red-500' :
+                                            result === 'No Show' ? 'bg-yellow-500' :
+                                            'bg-gray-500'
+                                        }`}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {stats.passRate !== undefined && (
+                            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                                <p className="text-sm font-medium text-blue-900">
+                                    Interview Pass Rate: <span className="text-2xl font-bold">{stats.passRate}%</span>
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Quick Actions */}
             <div className="bg-white shadow rounded-lg">

@@ -214,7 +214,7 @@ const Candidates = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {candidate.name}
+                            <Link to={`/admin/candidates/${candidate._id}`} className="hover:underline">{candidate.name}</Link>
                           </div>
                           <div className="text-sm text-gray-500">
                             {candidate.email}
@@ -230,7 +230,11 @@ const Candidates = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
-                        <div className="font-medium">{candidate.job?.title || 'N/A'}</div>
+                        <div className="font-medium">
+                          {candidate.job?.title ? (
+                            <Link to={`/admin/jobs/${candidate.job?.job_id}`} className="hover:underline">{candidate.job.title}</Link>
+                          ) : 'N/A'}
+                        </div>
                         <div className="text-xs text-gray-500">
                           {candidate.job?.experience_in_year || 'N/A'} experience
                         </div>

@@ -14,6 +14,8 @@ import Candidates from './pages/admin/Candidates';
 import Interviews from './pages/admin/Interviews';
 import Evaluation from './pages/admin/Evaluation';
 import FinalSelection from './pages/admin/FinalSelection';
+import CandidateDetails from './pages/admin/CandidateDetails';
+import JobDetails from './pages/admin/JobDetails';
 
 // Candidate Pages
 import JobApplication from './pages/candidate/JobApplication';
@@ -67,7 +69,9 @@ function App() {
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="jobs" element={<Jobs />} />
+              <Route path="jobs/:jobId" element={<JobDetails />} />
               <Route path="candidates" element={<Candidates />} />
+              <Route path="candidates/:id" element={<CandidateDetails />} />
               <Route path="interviews" element={<Interviews />} />
               <Route path="evaluation" element={<Evaluation />} />
               <Route path="final-selection" element={<FinalSelection />} />

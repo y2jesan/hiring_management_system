@@ -1,32 +1,48 @@
 import {
-    ClipboardDocumentCheckIcon,
-    StarIcon
+  ClipboardDocumentCheckIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+  StarIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import { candidateService } from '../../services/candidateService';
+import { jobService } from '../../services/jobService';
 
 const Evaluation = () => {
   const [candidates, setCandidates] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [score, setScore] = useState('');
   const [comments, setComments] = useState('');
 
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [jobFilter, setJobFilter] = useState('');
+  const [submitDateFilter, setSubmitDateFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
   useEffect(() => {
-    fetchCandidates();
+    fetchData();
   }, []);
 
-  const fetchCandidates = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await candidateService.getAllCandidates({
-        status: ['Task Submitted', 'Under Review']
-      });
-      setCandidates(response.data || []);
+      const [candidatesResponse, jobsResponse] = await Promise.all([
+        candidateService.getAllCandidates({
+          status: ['Task Submitted', 'Under Review']
+        }),
+        jobService.getAllJobs({ is_active: true })
+      ]);
+      setCandidates(candidatesResponse.data?.candidates || candidatesResponse.data || []);
+      setJobs(jobsResponse.data?.jobs || jobsResponse.data || []);
     } catch (error) {
-      console.error('Error fetching candidates:', error);
-      toast.error('Failed to fetch candidates');
+      console.error('Error fetching data:', error);
+      toast.error('Failed to fetch data');
     } finally {
       setLoading(false);
     }
@@ -50,7 +66,7 @@ const Evaluation = () => {
       setSelectedCandidate(null);
       setScore('');
       setComments('');
-      fetchCandidates();
+      fetchData(); // Refresh the data after evaluation
     } catch (error) {
       console.error('Error evaluating candidate:', error);
       toast.error('Failed to submit evaluation');
@@ -70,6 +86,23 @@ const Evaluation = () => {
     );
   };
 
+  // Filter candidates based on search and filter criteria
+  const filteredCandidates = candidates.filter(candidate => {
+    const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = !statusFilter || candidate.status === statusFilter;
+
+    const matchesJob = !jobFilter || candidate.job_id?.job_id === jobFilter;
+
+    const matchesSubmitDate = !submitDateFilter ||
+      (candidate.task_submission?.submitted_at &&
+        new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
+
+    return matchesSearch && matchesStatus && matchesJob && matchesSubmitDate;
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -88,18 +121,98 @@ const Evaluation = () => {
         </p>
       </div>
 
+      {/* Filters */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or application ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 input"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="btn btn-secondary flex items-center"
+              >
+                <FunnelIcon className="h-5 w-5 mr-2" />
+                Filters
+              </button>
+            </div>
+          </div>
+
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="input"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="Task Submitted">Task Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job (Active only)
+                  </label>
+                  <select
+                    value={jobFilter}
+                    onChange={(e) => setJobFilter(e.target.value)}
+                    className="input"
+                  >
+                    <option value="">All Jobs</option>
+                    {jobs.map((job) => (
+                      <option key={job._id} value={job.job_id}>
+                        {job.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Submit Date
+                  </label>
+                  <input
+                    type="date"
+                    value={submitDateFilter}
+                    onChange={(e) => setSubmitDateFilter(e.target.value)}
+                    className="input"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Candidates Content */}
-      {candidates.length > 0 ? (
+      {filteredCandidates.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {candidates.map((candidate) => (
+          {filteredCandidates.map((candidate) => (
             <div key={candidate._id} className="card">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <ClipboardDocumentCheckIcon className="h-8 w-8 text-primary-600 mr-3" />
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
-                      <p className="text-sm text-gray-500">{candidate.job?.title}</p>
+                      <Link to={`/admin/candidates/${candidate._id}`} className="text-lg font-semibold text-gray-900">{candidate.name}</Link>
+                      <p className="text-sm text-gray-500">{candidate.job_id?.title || 'N/A'}</p>
                     </div>
                   </div>
                   {getStatusBadge(candidate.status)}
@@ -166,10 +279,75 @@ const Evaluation = () => {
           <ClipboardDocumentCheckIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">No candidates to evaluate</h3>
           <p className="mt-1 text-sm text-gray-500">
-            All candidates have been evaluated or no tasks have been submitted yet.
+            {searchTerm || statusFilter || jobFilter || submitDateFilter
+              ? 'No candidates match your current filters.'
+              : 'All candidates have been evaluated or no tasks have been submitted yet.'}
           </p>
         </div>
       )}
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">T</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Task Submitted</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => c.status === 'Task Submitted').length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-orange-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">R</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Under Review</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => c.status === 'Under Review').length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">T</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Total Pending</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => ['Task Submitted', 'Under Review'].includes(c.status)).length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Evaluation Modal */}
       {selectedCandidate && (
@@ -191,7 +369,7 @@ const Evaluation = () => {
                             Score (0-100)
                           </label>
                           <div className="mt-1 flex items-center">
-                            {[20, 40, 60, 80, 100].map((value) => (
+                            {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
                               <button
                                 key={value}
                                 type="button"

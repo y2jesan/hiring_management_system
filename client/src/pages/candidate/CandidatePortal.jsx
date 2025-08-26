@@ -1,5 +1,7 @@
 import {
   CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   DocumentIcon,
@@ -22,6 +24,7 @@ const CandidatePortal = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [links, setLinks] = useState([{ url: '', type: 'other' }]);
+  const [showJobDetails, setShowJobDetails] = useState(false);
 
   const {
     handleSubmit,
@@ -106,7 +109,7 @@ const CandidatePortal = () => {
   const addLink = () => {
     const existingLinksCount = candidate.task_submission && candidate.task_submission.links ? candidate.task_submission.links.length : 0;
     const maxNewLinks = 10 - existingLinksCount;
-    
+
     if (links.length < maxNewLinks) {
       setLinks([...links, { url: '', type: 'other' }]);
     } else {
@@ -120,7 +123,7 @@ const CandidatePortal = () => {
       toast.error('Cannot remove links when adding to existing submission');
       return;
     }
-    
+
     if (links.length > 1) {
       const newLinks = links.filter((_, i) => i !== index);
       setLinks(newLinks);
@@ -267,6 +270,35 @@ const CandidatePortal = () => {
           </div>
         </div>
 
+        {/* Job Details Section - Collapsible */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          <button
+            onClick={() => setShowJobDetails(!showJobDetails)}
+            className="flex items-center justify-between w-full text-left"
+          >
+            <div className="flex items-center">
+              <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Job Description</h3>
+            </div>
+            {showJobDetails ? (
+              <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+            ) : (
+              <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
+
+          {showJobDetails && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="prose max-w-none">
+                <h4 className="text-md font-medium text-gray-900 mb-3">Job Description</h4>
+                <div className="text-gray-700 whitespace-pre-wrap">
+                  {candidate.job_id?.job_description || 'No job description available.'}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Task Section */}
         {(['Applied', 'Task Pending'].includes(candidate.status)) && candidate.job_id?.task_link && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
@@ -280,15 +312,23 @@ const CandidatePortal = () => {
               <p className="text-yellow-800 mb-3">
                 Please complete the assigned task and submit your work. You can find the task details below.
               </p>
-              <a
-                href={candidate.job_id.task_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
-              >
-                <LinkIcon className="h-4 w-4 mr-1" />
-                View Task Details
-              </a>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <a
+                  href={candidate.job_id.task_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  <LinkIcon className="h-4 w-4 mr-1" />
+                  View Task Details
+                </a>
+                <button
+                  onClick={() => window.open(candidate.job_id.task_link, '_blank')}
+                  className="btn btn-primary text-sm"
+                >
+                  Open Task in New Tab
+                </button>
+              </div>
             </div>
 
             <button
@@ -328,8 +368,8 @@ const CandidatePortal = () => {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
-                                link.type === 'live' ? 'bg-green-100 text-green-800' :
-                                  'bg-blue-100 text-blue-800'
+                              link.type === 'live' ? 'bg-green-100 text-green-800' :
+                                'bg-blue-100 text-blue-800'
                               }`}>
                               {link.type}
                             </span>
@@ -369,7 +409,7 @@ const CandidatePortal = () => {
         )}
 
         {/* Evaluation Results */}
-        {candidate.evaluation && (
+        {candidate.evaluation.score && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <div className="flex items-center mb-4">
               <CheckCircleIcon className="h-6 w-6 text-primary-600 mr-2" />
@@ -501,7 +541,7 @@ const CandidatePortal = () => {
                                   />
                                 </div>
 
-                                
+
                               </div>
                             </div>
                           ))}
@@ -517,7 +557,7 @@ const CandidatePortal = () => {
                           </button>
 
                           <p className="text-xs text-gray-500 text-center">
-                            {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 
+                            {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0
                               ? `You can add up to ${10 - candidate.task_submission.links.length} more links. Existing links cannot be removed.`
                               : 'You can add up to 10 links. At least one link is required.'
                             }

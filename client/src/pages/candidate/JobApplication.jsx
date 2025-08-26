@@ -60,12 +60,6 @@ const JobApplication = () => {
             formData.append('email', data.email);
             formData.append('phone', data.phone);
 
-            // Debug: Log FormData contents
-            console.log('FormData contents:');
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-
             const resp = await candidateService.createCandidate(job.job_id, formData);
             const created = resp.data?.candidate || resp.candidate || resp.data;
 

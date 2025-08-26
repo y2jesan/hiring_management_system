@@ -120,7 +120,7 @@ const getCandidates = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [candidates, total] = await Promise.all([Candidate.find(query).populate('job_id', 'title designation job_id').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit), Candidate.countDocuments(query)]);
+    const [candidates, total] = await Promise.all([Candidate.find(query).populate('job_id', 'title designation job_id experience_in_year').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit), Candidate.countDocuments(query)]);
 
     // Add full file URLs
     const candidatesWithUrls = candidates.map((candidate) => ({
@@ -195,7 +195,7 @@ const submitTask = async (req, res) => {
       return res.status(404).json(createErrorResponse('Application not found'));
     }
 
-    if (candidate.status !== 'Applied' && candidate.status !== 'Task Pending') {
+    if (!['Applied', 'Task Pending', 'Task Submitted', 'Under Review'].includes(candidate.status)) {
       return res.status(400).json(createErrorResponse('Task submission is not allowed at this stage'));
     }
 
@@ -222,23 +222,32 @@ const submitTask = async (req, res) => {
       }
     }
 
+    // Determine if this is initial submission or adding more links
+    const isInitialSubmission = !candidate.task_submission || !candidate.task_submission.links || candidate.task_submission.links.length === 0;
+
     const updateData = {
-      status: 'Task Submitted',
       'task_submission.links': links,
       'task_submission.submitted_at': new Date(),
     };
 
+    // Only update status to 'Task Submitted' if this is initial submission
+    if (isInitialSubmission) {
+      updateData.status = 'Task Submitted';
+    }
+
     const updatedCandidate = await Candidate.findByIdAndUpdate(candidate._id, updateData, { new: true }).populate('job_id', 'title designation');
 
-    // Send task submitted notification
-    await sendTaskSubmittedNotification(candidate.email, candidate.name, candidate.application_id);
+    // Send task submitted notification only for initial submission
+    if (isInitialSubmission) {
+      await sendTaskSubmittedNotification(candidate.email, candidate.name, candidate.application_id);
+    }
 
     res.json(
       createSuccessResponse(
         {
           candidate: updatedCandidate,
         },
-        'Task submitted successfully'
+        isInitialSubmission ? 'Task submitted successfully' : 'Additional links added successfully'
       )
     );
   } catch (error) {

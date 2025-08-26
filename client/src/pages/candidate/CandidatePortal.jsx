@@ -1,13 +1,13 @@
 import {
-    CheckCircleIcon,
-    ClipboardDocumentCheckIcon,
-    ClockIcon,
-    DocumentIcon,
-    LinkIcon,
-    PlusIcon,
-    TrashIcon,
-    UserIcon,
-    XCircleIcon
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  DocumentIcon,
+  LinkIcon,
+  PlusIcon,
+  TrashIcon,
+  UserIcon,
+  XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -24,9 +24,7 @@ const CandidatePortal = () => {
   const [links, setLinks] = useState([{ url: '', type: 'other' }]);
 
   const {
-    register,
     handleSubmit,
-    formState: { errors },
   } = useForm();
 
   useEffect(() => {
@@ -46,7 +44,7 @@ const CandidatePortal = () => {
     }
   };
 
-  const handleTaskSubmission = async (data) => {
+  const handleTaskSubmission = async () => {
     try {
       setSubmitting(true);
 
@@ -58,7 +56,7 @@ const CandidatePortal = () => {
         return;
       }
 
-      await candidateService.submitTask(candidate._id, { links: validLinks });
+      await candidateService.submitTask(applicationId, { links: validLinks });
       toast.success('Task submitted successfully!');
       setShowTaskForm(false);
       setLinks([{ url: '', type: 'other' }]);
@@ -71,15 +69,58 @@ const CandidatePortal = () => {
     }
   };
 
+  const handleAddMoreLinks = async () => {
+    try {
+      setSubmitting(true);
+
+      // Filter out empty links
+      const validLinks = links.filter(link => link.url.trim() !== '');
+
+      if (validLinks.length === 0) {
+        toast.error('At least one link is required');
+        return;
+      }
+
+      // Combine existing links with new links
+      const existingLinks = candidate.task_submission.links || [];
+      const allLinks = [...existingLinks, ...validLinks];
+
+      if (allLinks.length > 10) {
+        toast.error('Maximum 10 links allowed in total');
+        return;
+      }
+
+      await candidateService.submitTask(applicationId, { links: allLinks });
+      toast.success('Additional links added successfully!');
+      setShowTaskForm(false);
+      setLinks([{ url: '', type: 'other' }]);
+      fetchCandidate();
+    } catch (error) {
+      console.error('Error adding more links:', error);
+      toast.error('Failed to add more links');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const addLink = () => {
-    if (links.length < 10) {
+    const existingLinksCount = candidate.task_submission && candidate.task_submission.links ? candidate.task_submission.links.length : 0;
+    const maxNewLinks = 10 - existingLinksCount;
+    
+    if (links.length < maxNewLinks) {
       setLinks([...links, { url: '', type: 'other' }]);
     } else {
-      toast.error('Maximum 10 links allowed');
+      toast.error(`Maximum ${maxNewLinks} additional links allowed`);
     }
   };
 
   const removeLink = (index) => {
+    // Don't allow removal if this is adding to existing submission
+    if (candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0) {
+      toast.error('Cannot remove links when adding to existing submission');
+      return;
+    }
+    
     if (links.length > 1) {
       const newLinks = links.filter((_, i) => i !== index);
       setLinks(newLinks);
@@ -262,9 +303,19 @@ const CandidatePortal = () => {
         {/* Task Submission Status */}
         {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-            <div className="flex items-center mb-4">
-              <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-900">Task Submission</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Task Submission</h3>
+              </div>
+              {(['Task Submitted', 'Under Review'].includes(candidate.status)) && (
+                <button
+                  onClick={() => setShowTaskForm(true)}
+                  className="btn btn-secondary text-sm"
+                >
+                  Add More Links
+                </button>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -282,6 +333,7 @@ const CandidatePortal = () => {
                               }`}>
                               {link.type}
                             </span>
+                            <span className="text-xs text-gray-500">(Original)</span>
                           </div>
                           <a
                             href={link.url}
@@ -302,6 +354,13 @@ const CandidatePortal = () => {
                   <span className="text-sm font-medium text-gray-500">Submitted Date:</span>
                   <p className="text-gray-900">
                     {new Date(candidate.task_submission.submitted_at).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              {(['Task Submitted', 'Under Review'].includes(candidate.status)) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-blue-800 text-sm">
+                    You can add more links to your submission. Existing links cannot be removed.
                   </p>
                 </div>
               )}
@@ -384,12 +443,12 @@ const CandidatePortal = () => {
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
               <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <form onSubmit={handleSubmit(handleTaskSubmission)}>
+                <form onSubmit={handleSubmit(candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 ? handleAddMoreLinks : handleTaskSubmission)}>
                   <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                         <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                          Submit Task Links
+                          {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 ? 'Add More Task Links' : 'Submit Task Links'}
                         </h3>
 
                         <div className="space-y-4">
@@ -397,7 +456,7 @@ const CandidatePortal = () => {
                             <div key={index} className="border border-gray-200 rounded-lg p-4">
                               <div className="flex items-center justify-between mb-3">
                                 <h4 className="text-sm font-medium text-gray-700">Link {index + 1}</h4>
-                                {links.length > 1 && (
+                                {links.length > 1 && !(candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0) && (
                                   <button
                                     type="button"
                                     onClick={() => removeLink(index)}
@@ -450,7 +509,7 @@ const CandidatePortal = () => {
                           <button
                             type="button"
                             onClick={addLink}
-                            disabled={links.length >= 10}
+                            disabled={links.length >= (candidate.task_submission && candidate.task_submission.links ? 10 - candidate.task_submission.links.length : 10)}
                             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <PlusIcon className="h-4 w-4 mr-2" />
@@ -458,7 +517,10 @@ const CandidatePortal = () => {
                           </button>
 
                           <p className="text-xs text-gray-500 text-center">
-                            You can add up to 10 links. At least one link is required.
+                            {candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 
+                              ? `You can add up to ${10 - candidate.task_submission.links.length} more links. Existing links cannot be removed.`
+                              : 'You can add up to 10 links. At least one link is required.'
+                            }
                           </p>
                         </div>
                       </div>
@@ -471,7 +533,7 @@ const CandidatePortal = () => {
                       disabled={submitting}
                       className="btn btn-primary sm:ml-3 sm:w-auto disabled:opacity-50"
                     >
-                      {submitting ? 'Submitting...' : 'Submit Task'}
+                      {submitting ? 'Submitting...' : (candidate.task_submission && candidate.task_submission.links && candidate.task_submission.links.length > 0 ? 'Add Links' : 'Submit Task')}
                     </button>
                     <button
                       type="button"

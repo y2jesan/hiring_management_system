@@ -225,8 +225,16 @@ const submitTask = async (req, res) => {
     // Determine if this is initial submission or adding more links
     const isInitialSubmission = !candidate.task_submission || !candidate.task_submission.links || candidate.task_submission.links.length === 0;
 
+    // Combine existing links with new links if adding more
+    const finalLinks = isInitialSubmission ? links : [...(candidate.task_submission.links || []), ...links];
+
+    // Validate total links count
+    if (finalLinks.length > 10) {
+      return res.status(400).json(createErrorResponse('Maximum 10 links allowed in total'));
+    }
+
     const updateData = {
-      'task_submission.links': links,
+      'task_submission.links': finalLinks,
       'task_submission.submitted_at': new Date(),
     };
 

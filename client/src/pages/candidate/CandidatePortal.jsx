@@ -1,13 +1,13 @@
 import {
-  CheckCircleIcon,
-  ClipboardDocumentCheckIcon,
-  ClockIcon,
-  DocumentIcon,
-  LinkIcon,
-  PlusIcon,
-  TrashIcon,
-  UserIcon,
-  XCircleIcon
+    CheckCircleIcon,
+    ClipboardDocumentCheckIcon,
+    ClockIcon,
+    DocumentIcon,
+    LinkIcon,
+    PlusIcon,
+    TrashIcon,
+    UserIcon,
+    XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,7 +37,7 @@ const CandidatePortal = () => {
     try {
       setLoading(true);
       const response = await candidateService.getCandidateByApplicationId(applicationId);
-      setCandidate(response.data);
+      setCandidate(response.data?.candidate || response.data);
     } catch (error) {
       console.error('Error fetching candidate:', error);
       toast.error('Application not found');
@@ -170,7 +170,7 @@ const CandidatePortal = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{candidate.name}</h2>
-              <p className="text-gray-600">{candidate.job?.title}</p>
+              <p className="text-gray-600">{candidate.job_id?.title}</p>
             </div>
             {getStatusBadge(candidate.status)}
           </div>
@@ -207,19 +207,19 @@ const CandidatePortal = () => {
               <div className="space-y-3">
                 <div>
                   <span className="text-sm font-medium text-gray-500">Position:</span>
-                  <p className="text-gray-900">{candidate.job?.title}</p>
+                  <p className="text-gray-900">{candidate.job_id?.title}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Designation:</span>
-                  <p className="text-gray-900">{candidate.job?.designation}</p>
+                  <p className="text-gray-900">{candidate.job_id?.designation}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Experience Required:</span>
-                  <p className="text-gray-900">{candidate.job?.experience_in_year} years</p>
+                  <p className="text-gray-900">{candidate.job_id?.experience_in_year} years</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Salary Range:</span>
-                  <p className="text-gray-900">{candidate.job?.salary_range}</p>
+                  <p className="text-gray-900">{candidate.job_id?.salary_range}</p>
                 </div>
               </div>
             </div>
@@ -227,7 +227,7 @@ const CandidatePortal = () => {
         </div>
 
         {/* Task Section */}
-        {candidate.status === 'Task Pending' && candidate.job?.task_link && (
+        {(['Applied', 'Task Pending'].includes(candidate.status)) && candidate.job_id?.task_link && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <div className="flex items-center mb-4">
               <ClipboardDocumentCheckIcon className="h-6 w-6 text-primary-600 mr-2" />
@@ -240,7 +240,7 @@ const CandidatePortal = () => {
                 Please complete the assigned task and submit your work. You can find the task details below.
               </p>
               <a
-                href={candidate.job.task_link}
+                href={candidate.job_id.task_link}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"

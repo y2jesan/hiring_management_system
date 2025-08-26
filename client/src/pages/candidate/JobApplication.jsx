@@ -8,12 +8,13 @@ import {
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { candidateService } from '../../services/candidateService';
 import { jobService } from '../../services/jobService';
 
 const JobApplication = () => {
     const { jobId } = useParams();
+    const navigate = useNavigate();
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -65,11 +66,19 @@ const JobApplication = () => {
                 console.log(key, value);
             }
 
-            await candidateService.createCandidate(job.job_id, formData);
+            const resp = await candidateService.createCandidate(job.job_id, formData);
+            const created = resp.data?.candidate || resp.candidate || resp.data;
 
             toast.success('Application submitted successfully! Check your email for further instructions.');
 
-            // Reset form
+            // Redirect to portal with application id
+            const applicationId = created?.application_id || created?.applicationId;
+            if (applicationId) {
+                navigate(`/application/${applicationId}`);
+                return;
+            }
+
+            // Fallback: Reset form
             setSelectedCV(null);
             document.getElementById('application-form').reset();
 

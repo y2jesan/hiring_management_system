@@ -1,19 +1,24 @@
 import {
+    ArrowRightIcon,
     BriefcaseIcon,
+    DocumentTextIcon,
     PencilIcon,
     PlusIcon,
-    TrashIcon
+    UsersIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import { jobService } from '../../services/jobService';
 
 const Jobs = () => {
+    const navigate = useNavigate();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingJob, setEditingJob] = useState(null);
+    const [statusFilter, setStatusFilter] = useState('active');
 
     const {
         register,
@@ -69,18 +74,28 @@ const Jobs = () => {
         setShowModal(true);
     };
 
-    const handleDelete = async (jobId) => {
-        if (window.confirm('Are you sure you want to delete this job?')) {
+    const handleToggleStatus = async (jobId, currentStatus) => {
+        const newStatus = !currentStatus;
+        const action = newStatus ? 'activate' : 'deactivate';
+        
+        if (window.confirm(`Are you sure you want to ${action} this job? ${!newStatus ? 'Applications will no longer be accepted for this job.' : ''}`)) {
             try {
-                await jobService.deleteJob(jobId);
-                toast.success('Job deleted successfully');
+                await jobService.toggleJobStatus(jobId);
+                toast.success(`Job ${action}d successfully`);
                 fetchJobs();
             } catch (error) {
-                console.error('Error deleting job:', error);
-                toast.error('Failed to delete job');
+                console.error(`Error ${action}ing job:`, error);
+                toast.error(`Failed to ${action} job`);
             }
         }
     };
+
+    const filteredJobs = jobs.filter(job => {
+        if (statusFilter === 'all') return true;
+        if (statusFilter === 'active') return job.is_active;
+        if (statusFilter === 'inactive') return !job.is_active;
+        return true;
+    });
 
     const getStatusBadge = (isActive) => {
         return isActive ? (
@@ -112,22 +127,33 @@ const Jobs = () => {
                         Manage job postings and applications
                     </p>
                 </div>
-                <button
-                    onClick={() => {
-                        setEditingJob(null);
-                        reset();
-                        setShowModal(true);
-                    }}
-                    className="btn btn-primary flex items-center"
-                >
-                    <PlusIcon className="h-5 w-5 mr-2" />
-                    Create Job
-                </button>
+                <div className="flex items-center gap-4">
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="input h-10"
+                    >
+                        <option value="all">All Jobs</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <button
+                        onClick={() => {
+                            setEditingJob(null);
+                            reset();
+                            setShowModal(true);
+                        }}
+                        className="btn btn-primary flex items-center h-10 flex-shrink-0"
+                    >
+                        <PlusIcon className="h-5 w-5 mr-2" />
+                        Create Job
+                    </button>
+                </div>
             </div>
 
             {/* Jobs Grid */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {jobs.map((job) => (
+                {filteredJobs.map((job) => (
                     <div key={job._id} className="card">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-4">
@@ -154,26 +180,41 @@ const Jobs = () => {
                             </div>
 
                             <div className="flex justify-between items-center">
-                                <a
-                                    href={`/job-application/${job.job_id}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                                >
-                                    View Application Form
-                                </a>
+                                <div className="flex space-x-2">
+                                    <a
+                                        href={`/job-application/${job.job_id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn btn-secondary flex items-center text-sm h-8 px-3"
+                                    >
+                                        <DocumentTextIcon className="h-4 w-4 mr-1" />
+                                        Application
+                                    </a>
+                                    <button
+                                        onClick={() => navigate(`/admin/candidates?job_id=${job.job_id}`)}
+                                        className="btn btn-primary flex items-center text-sm h-8 px-3"
+                                    >
+                                        <UsersIcon className="h-4 w-4 mr-1" />
+                                        Candidates
+                                        <ArrowRightIcon className="h-4 w-4 ml-1" />
+                                    </button>
+                                </div>
                                 <div className="flex space-x-2">
                                     <button
                                         onClick={() => handleEdit(job)}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-gray-400 hover:text-gray-600 p-1"
+                                        title="Edit Job"
                                     >
                                         <PencilIcon className="h-5 w-5" />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(job._id)}
-                                        className="text-gray-400 hover:text-red-600"
+                                        onClick={() => handleToggleStatus(job._id, job.is_active)}
+                                        className={`p-1 ${job.is_active ? 'text-green-600 hover:text-red-600' : 'text-red-600 hover:text-green-600'}`}
+                                        title={job.is_active ? 'Deactivate Job' : 'Activate Job'}
                                     >
-                                        <TrashIcon className="h-5 w-5" />
+                                        <div className={`w-5 h-5 rounded-full border-2 ${job.is_active ? 'bg-green-500 border-green-500' : 'bg-red-500 border-red-500'}`}>
+                                            <div className={`w-1 h-1 rounded-full bg-white mx-auto mt-1 ${job.is_active ? 'ml-1' : 'mr-1'}`}></div>
+                                        </div>
                                     </button>
                                 </div>
                             </div>
@@ -182,12 +223,14 @@ const Jobs = () => {
                 ))}
             </div>
 
-            {jobs.length === 0 && (
+            {filteredJobs.length === 0 && (
                 <div className="text-center py-12">
                     <BriefcaseIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No jobs</h3>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">
+                        {jobs.length === 0 ? 'No jobs' : 'No jobs match the selected filter'}
+                    </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                        Get started by creating a new job posting.
+                        {jobs.length === 0 ? 'Get started by creating a new job posting.' : 'Try adjusting your filter criteria.'}
                     </p>
                 </div>
             )}

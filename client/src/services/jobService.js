@@ -31,6 +31,12 @@ export const jobService = {
     return response.data;
   },
 
+  // Toggle job status (activate/deactivate)
+  toggleJobStatus: async (id) => {
+    const response = await api.patch(`/jobs/${id}/toggle-status`);
+    return response.data;
+  },
+
   // Delete job
   deleteJob: async (id) => {
     const response = await api.delete(`/jobs/${id}`);

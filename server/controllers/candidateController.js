@@ -99,7 +99,19 @@ const getCandidates = async (req, res) => {
 
     // Job filter
     if (jobId) {
-      query.job_id = jobId;
+      // Find job by job_id field first, then use its ObjectId
+      const job = await Job.findOne({ job_id: jobId });
+      if (job) {
+        query.job_id = job._id;
+      } else {
+        // If job not found, return empty results
+        return res.json(
+          createSuccessResponse({
+            candidates: [],
+            pagination: generatePagination(page, limit, 0),
+          })
+        );
+      }
     }
 
     const skip = (page - 1) * limit;

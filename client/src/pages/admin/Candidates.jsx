@@ -2,37 +2,52 @@ import {
   DocumentArrowDownIcon,
   EyeIcon,
   FunnelIcon,
+  LinkIcon,
   MagnifyingGlassIcon,
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { candidateService } from '../../services/candidateService';
+import { jobService } from '../../services/jobService';
 
 const Candidates = () => {
+  const [searchParams] = useSearchParams();
   const [candidates, setCandidates] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [jobFilter, setJobFilter] = useState('');
+  const [applyDateFilter, setApplyDateFilter] = useState('');
+  const [submitDateFilter, setSubmitDateFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    fetchCandidates();
-  }, []);
+    const jobIdFromUrl = searchParams.get('job_id');
+    if (jobIdFromUrl) {
+      setJobFilter(jobIdFromUrl);
+    }
+    fetchData();
+  }, [searchParams]);
 
-  const fetchCandidates = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await candidateService.getAllCandidates();
-      setCandidates(response.data?.candidates || response.data || []);
+      const [candidatesResponse, jobsResponse] = await Promise.all([
+        candidateService.getAllCandidates(),
+        jobService.getAllJobs({ is_active: true })
+      ]);
+      setCandidates(candidatesResponse.data?.candidates || candidatesResponse.data || []);
+      setJobs(jobsResponse.data?.jobs || jobsResponse.data || []);
     } catch (error) {
-      console.error('Error fetching candidates:', error);
+      console.error('Error fetching data:', error);
       if (error.response?.status === 401) {
         toast.error('Please log in to view candidates');
       } else {
-        toast.error('Failed to fetch candidates');
+        toast.error('Failed to fetch data');
       }
     } finally {
       setLoading(false);
@@ -41,7 +56,13 @@ const Candidates = () => {
 
   const handleExport = async () => {
     try {
-      const blob = await candidateService.exportCandidates();
+      const params = {};
+      if (jobFilter) params.job_id = jobFilter;
+      if (statusFilter) params.status = statusFilter;
+      if (applyDateFilter) params.apply_date = applyDateFilter;
+      if (submitDateFilter) params.submit_date = submitDateFilter;
+      
+      const blob = await candidateService.exportCandidates(params);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -82,8 +103,19 @@ const Candidates = () => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase());
+    
     const matchesStatus = !statusFilter || candidate.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    
+    const matchesJob = !jobFilter || candidate.job_id?.job_id === jobFilter;
+    
+    const matchesApplyDate = !applyDateFilter || 
+      new Date(candidate.createdAt).toDateString() === new Date(applyDateFilter).toDateString();
+    
+    const matchesSubmitDate = !submitDateFilter || 
+      (candidate.task_submission?.submitted_at && 
+       new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
+    
+    return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate;
   });
 
   if (loading) {
@@ -165,6 +197,48 @@ const Candidates = () => {
                     <option value="Rejected">Rejected</option>
                   </select>
                 </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job (Active only)
+                  </label>
+                  <select
+                    value={jobFilter}
+                    onChange={(e) => setJobFilter(e.target.value)}
+                    className="input"
+                  >
+                    <option value="">All Jobs</option>
+                    {jobs.map((job) => (
+                      <option key={job._id} value={job.job_id}>
+                        {job.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Apply Date
+                  </label>
+                  <input
+                    type="date"
+                    value={applyDateFilter}
+                    onChange={(e) => setApplyDateFilter(e.target.value)}
+                    className="input"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Submit Date
+                  </label>
+                  <input
+                    type="date"
+                    value={submitDateFilter}
+                    onChange={(e) => setSubmitDateFilter(e.target.value)}
+                    className="input"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -195,6 +269,9 @@ const Candidates = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Applied Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Task Links
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -249,6 +326,40 @@ const Candidates = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(candidate.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {candidate.task_submission?.links && candidate.task_submission.links.length > 0 ? (
+                        <div className="space-y-1">
+                          {candidate.task_submission.links.slice(0, 2).map((link, index) => (
+                            <div key={index} className="flex items-center space-x-1">
+                              <LinkIcon className="h-3 w-3 text-gray-400" />
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                                link.type === 'github' ? 'bg-gray-100 text-gray-800' :
+                                link.type === 'live' ? 'bg-green-100 text-green-800' :
+                                'bg-blue-100 text-blue-800'
+                              }`}>
+                                {link.type}
+                              </span>
+                              <a
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary-600 hover:text-primary-700 text-xs truncate max-w-20"
+                                title={link.url}
+                              >
+                                {link.url.length > 20 ? link.url.substring(0, 20) + '...' : link.url}
+                              </a>
+                            </div>
+                          ))}
+                          {candidate.task_submission.links.length > 2 && (
+                            <p className="text-xs text-gray-500">
+                              +{candidate.task_submission.links.length - 2} more
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">No links</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">

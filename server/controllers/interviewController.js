@@ -7,7 +7,7 @@ const { sendInterviewScheduledNotification } = require('../helpers/emailService'
 // Schedule interview
 const scheduleInterview = async (req, res) => {
   try {
-    const { candidate_id, job_id, scheduled_date, interviewer, notes } = req.body;
+    const { candidate_id, job_id, scheduled_date, interviewer, location, meeting_link, notes } = req.body;
 
     // Validate candidate exists and is interview eligible
     const candidate = await Candidate.findById(candidate_id);
@@ -36,6 +36,8 @@ const scheduleInterview = async (req, res) => {
       job_id,
       scheduled_date: new Date(scheduled_date),
       interviewer,
+      location: location || 'In-Person',
+      meeting_link: location === 'Online' ? meeting_link : null,
       notes,
       scheduled_by: req.user._id,
     };
@@ -47,12 +49,14 @@ const scheduleInterview = async (req, res) => {
       status: 'Interview Scheduled',
       'interview.scheduled_date': new Date(scheduled_date),
       'interview.interviewer': interviewer,
+      'interview.location': location || 'In-Person',
+      'interview.meeting_link': location === 'Online' ? meeting_link : null,
     });
 
     // TODO Send interview notification email
     // await sendInterviewScheduledNotification(candidate.email, candidate.name, candidate.application_id, scheduled_date, interviewerUser.name);
 
-    const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
+    const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes scheduled_by');
 
     res.status(201).json(
       createSuccessResponse(
@@ -101,7 +105,7 @@ const getInterviews = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
+    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status ').populate('interviewer', 'name email').populate('job_id', 'title designation salary_range experience_in_year').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
 
     const pagination = generatePagination(page, limit, total);
 
@@ -316,6 +320,56 @@ const getUpcomingInterviews = async (req, res) => {
   }
 };
 
+// Complete interview
+const completeInterview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { candidate_id } = req.body;
+
+    const interview = await Interview.findById(id);
+    if (!interview) {
+      return res.status(404).json(createErrorResponse('Interview not found'));
+    }
+
+    if (interview.result !== 'Pending') {
+      return res.status(400).json(createErrorResponse('Interview is already completed'));
+    }
+
+    // Update interview result
+    const updatedInterview = await Interview.findByIdAndUpdate(
+      id,
+      {
+        result: 'Completed',
+        completed_at: new Date(),
+        completed_by: req.user._id,
+      },
+      { new: true }
+    )
+      .populate('candidate_id', 'name email application_id status')
+      .populate('interviewer', 'name email')
+      .populate('scheduled_by', 'name email');
+
+    // Update candidate status
+    await Candidate.findByIdAndUpdate(candidate_id, {
+      status: 'Interview Completed',
+      'interview.result': 'Completed',
+      'interview.completed_at': new Date(),
+    });
+
+    res.json(
+      createSuccessResponse(
+        {
+          interview: updatedInterview,
+        },
+        'Interview completed successfully'
+      )
+    );
+  } catch (error) {
+    console.error('Complete interview error:', error);
+    res.status(500).json(createErrorResponse('Failed to complete interview'));
+  }
+};
+
 module.exports = {
   scheduleInterview,
   getInterviews,
@@ -325,4 +379,5 @@ module.exports = {
   cancelInterview,
   getInterviewsByCandidate,
   getUpcomingInterviews,
+  completeInterview,
 };

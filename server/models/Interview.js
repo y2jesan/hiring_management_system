@@ -27,6 +27,11 @@ const interviewSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    scheduled_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     interview_type: {
       type: String,
       enum: ['Technical', 'HR', 'Final', 'Panel'],
@@ -34,7 +39,8 @@ const interviewSchema = new mongoose.Schema(
     },
     location: {
       type: String,
-      default: 'Online',
+      enum: ['Online', 'In-Person'],
+      default: 'In-Person',
     },
     meeting_link: {
       type: String,

@@ -166,7 +166,9 @@ const getCandidateById = async (req, res) => {
 // Get candidate by application ID (for candidate portal)
 const getCandidateByApplicationId = async (req, res) => {
   try {
-    const candidate = await Candidate.findOne({ application_id: req.params.application_id }).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active');
+    const candidate = await Candidate.findOne({ application_id: req.params.application_id })
+      .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
+      .populate('interview.interviewer', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Application not found'));

@@ -24,12 +24,15 @@ const Interviews = () => {
     const [selectedEvaluator, setSelectedEvaluator] = useState('');
     const [interviewDate, setInterviewDate] = useState('');
     const [interviewTime, setInterviewTime] = useState('');
+    const [interviewLocation, setInterviewLocation] = useState('In-Person');
+    const [meetingLink, setMeetingLink] = useState('');
 
     // Filter states
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [jobFilter, setJobFilter] = useState('');
     const [dateFilter, setDateFilter] = useState('');
+    const [locationFilter, setLocationFilter] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
@@ -75,6 +78,12 @@ const Interviews = () => {
             return;
         }
 
+        // Validate meeting link for online interviews
+        if (interviewLocation === 'Online' && !meetingLink.trim()) {
+            toast.error('Meeting link is required for online interviews');
+            return;
+        }
+
         try {
             // Format the date and time properly
             const scheduledDateTime = new Date(`${interviewDate}T${interviewTime}`);
@@ -103,6 +112,8 @@ const Interviews = () => {
                 job_id: jobId,
                 scheduled_date: scheduledDateTime.toISOString(),
                 interviewer: selectedEvaluator,
+                location: interviewLocation,
+                meeting_link: interviewLocation === 'Online' ? meetingLink.trim() : null,
                 notes: 'Interview scheduled via admin panel'
             };
 
@@ -113,6 +124,8 @@ const Interviews = () => {
             setSelectedEvaluator('');
             setInterviewDate('');
             setInterviewTime('');
+            setInterviewLocation('In-Person');
+            setMeetingLink('');
             fetchData();
         } catch (error) {
             console.error('Error scheduling interview:', error);
@@ -124,12 +137,32 @@ const Interviews = () => {
         }
     };
 
+    const handleCompleteInterview = async (interviewId, candidateId) => {
+        if (!confirm('Are you sure you want to mark this interview as completed? This will update the candidate status to "Interview Completed".')) {
+            return;
+        }
+
+        try {
+            await interviewService.completeInterview(interviewId, candidateId);
+            toast.success('Interview completed successfully');
+            fetchData();
+        } catch (error) {
+            console.error('Error completing interview:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Failed to complete interview');
+            }
+        }
+    };
+
     const getResultBadge = (result) => {
         const colors = {
             'Pending': 'bg-yellow-100 text-yellow-800',
             'Passed': 'bg-green-100 text-green-800',
             'Failed': 'bg-red-100 text-red-800',
-            'No Show': 'bg-gray-100 text-gray-800'
+            'No Show': 'bg-gray-100 text-gray-800',
+            'Completed': 'bg-blue-100 text-blue-800'
         };
 
         return (
@@ -155,7 +188,9 @@ const Interviews = () => {
         const matchesDate = !dateFilter ||
             new Date(interview.scheduled_date).toDateString() === new Date(dateFilter).toDateString();
 
-        return matchesSearch && matchesStatus && matchesJob && matchesDate;
+        const matchesLocation = !locationFilter || interview.location === locationFilter;
+
+        return matchesSearch && matchesStatus && matchesJob && matchesDate && matchesLocation;
     });
 
     if (loading) {
@@ -226,6 +261,7 @@ const Interviews = () => {
                                     >
                                         <option value="">All Results</option>
                                         <option value="Pending">Pending</option>
+                                        <option value="Completed">Completed</option>
                                         <option value="Passed">Passed</option>
                                         <option value="Failed">Failed</option>
                                         <option value="No Show">No Show</option>
@@ -261,6 +297,21 @@ const Interviews = () => {
                                         className="input"
                                     />
                                 </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Location
+                                    </label>
+                                    <select
+                                        value={locationFilter}
+                                        onChange={(e) => setLocationFilter(e.target.value)}
+                                        className="input"
+                                    >
+                                        <option value="">All Locations</option>
+                                        <option value="Online">Online</option>
+                                        <option value="In-Person">In-Person</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -281,7 +332,7 @@ const Interviews = () => {
                                                 {interview.candidate_id?.name || 'Unknown Candidate'}
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                {interview.candidate_id?.job_id?.title || interview.candidate_id?.job?.title || 'Unknown Position'}
+                                                {interview.job_id?.title || interview.job?.title || 'Unknown Position'}
                                             </p>
                                         </div>
                                     </div>
@@ -304,6 +355,22 @@ const Interviews = () => {
                                         <UserIcon className="h-4 w-4 mr-2" />
                                         {interview.interviewer?.name || 'TBD'}
                                     </div>
+                                    <div className="flex items-center text-sm text-gray-600">
+                                        <span className="font-medium">Location:</span> {interview.location || 'In-Person'}
+                                    </div>
+                                    {interview.location === 'Online' && interview.meeting_link && (
+                                        <div className="flex items-center text-sm text-gray-600">
+                                            <span className="font-medium">Meeting Link:</span>
+                                            <a
+                                                href={interview.meeting_link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="ml-1 text-blue-600 hover:text-blue-800 underline"
+                                            >
+                                                Join Meeting
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {interview.feedback && (
@@ -311,6 +378,18 @@ const Interviews = () => {
                                         <p className="text-sm text-gray-700">
                                             <span className="font-medium">Feedback:</span> {interview.feedback}
                                         </p>
+                                    </div>
+                                )}
+
+                                {/* Complete Interview Button */}
+                                {interview.result === 'Pending' && (
+                                    <div className="mt-4 pt-4 border-t border-gray-200">
+                                        <button
+                                            onClick={() => handleCompleteInterview(interview._id, interview.candidate_id._id)}
+                                            className="w-full btn btn-success text-sm"
+                                        >
+                                            Complete Interview
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -321,12 +400,12 @@ const Interviews = () => {
                 <div className="text-center py-12">
                     <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
                     <h3 className="mt-2 text-sm font-medium text-gray-900">
-                        {searchTerm || statusFilter || jobFilter || dateFilter
+                        {searchTerm || statusFilter || jobFilter || dateFilter || locationFilter
                             ? 'No interviews match your current filters.'
                             : 'No interviews scheduled'}
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                        {searchTerm || statusFilter || jobFilter || dateFilter
+                        {searchTerm || statusFilter || jobFilter || dateFilter || locationFilter
                             ? 'Try adjusting your search or filter criteria.'
                             : 'Get started by scheduling an interview for eligible candidates.'}
                     </p>
@@ -473,7 +552,7 @@ const Interviews = () => {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
                 <div className="bg-white overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
@@ -505,6 +584,26 @@ const Interviews = () => {
                                     <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
                                     <dd className="text-lg font-medium text-gray-900">
                                         {interviews.filter(i => i.result === 'Pending').length}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">C</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
+                                    <dd className="text-lg font-medium text-gray-900">
+                                        {interviews.filter(i => i.result === 'Completed').length}
                                     </dd>
                                 </dl>
                             </div>
@@ -639,6 +738,43 @@ const Interviews = () => {
                                                     </p>
                                                 </div>
 
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700">
+                                                        Interview Location
+                                                    </label>
+                                                    <select
+                                                        value={interviewLocation}
+                                                        onChange={(e) => setInterviewLocation(e.target.value)}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="In-Person">In-Person</option>
+                                                        <option value="Online">Online</option>
+                                                    </select>
+                                                    <p className="mt-1 text-xs text-gray-500">
+                                                        Select the interview location type
+                                                    </p>
+                                                </div>
+
+                                                {interviewLocation === 'Online' && (
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700">
+                                                            Meeting Link
+                                                        </label>
+                                                        <input
+                                                            type="url"
+                                                            value={meetingLink}
+                                                            onChange={(e) => setMeetingLink(e.target.value)}
+                                                            placeholder="https://meet.google.com/xxx-xxxx-xxx"
+                                                            className="mt-1 input"
+                                                            required={interviewLocation === 'Online'}
+                                                        />
+                                                        <p className="mt-1 text-xs text-gray-500">
+                                                            Enter the meeting link for online interview
+                                                        </p>
+                                                    </div>
+                                                )}
+
                                                 {interviewDate && interviewTime && (
                                                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                         <p className="text-sm text-blue-800">
@@ -667,6 +803,8 @@ const Interviews = () => {
                                             setSelectedEvaluator('');
                                             setInterviewDate('');
                                             setInterviewTime('');
+                                            setInterviewLocation('In-Person');
+                                            setMeetingLink('');
                                         }}
                                         className="btn btn-secondary sm:mt-0 sm:w-auto"
                                     >

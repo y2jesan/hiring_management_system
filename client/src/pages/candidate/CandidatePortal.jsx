@@ -340,7 +340,18 @@ const CandidatePortal = () => {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Task Submission</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mr-3">Task Submission</h3>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <a
+                    href={candidate.job_id.task_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    <LinkIcon className="h-4 w-4 mr-1" />
+                    View Task Details
+                  </a>
+                </div>
               </div>
               {(['Task Submitted', 'Under Review'].includes(candidate.status)) && (
                 <button
@@ -449,6 +460,28 @@ const CandidatePortal = () => {
                   {new Date(candidate.interview.scheduled_date).toLocaleTimeString()}
                 </p>
               </div>
+              {candidate.interview.location && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Type:</span>
+                  <p className="text-gray-900">{candidate.interview.location}</p>
+                </div>
+              )}
+              {candidate.interview.location === 'Online' && candidate.interview.meeting_link && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Meeting Link:</span>
+                  <div className="mt-1">
+                    <a
+                      href={candidate.interview.meeting_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      <LinkIcon className="h-4 w-4 mr-1" />
+                      Join Meeting
+                    </a>
+                  </div>
+                </div>
+              )}
               {candidate.interview.result && (
                 <div>
                   <span className="text-sm font-medium text-gray-500">Result:</span>

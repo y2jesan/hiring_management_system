@@ -88,6 +88,15 @@ const candidateSchema = new mongoose.Schema(
         ref: 'User',
         default: null,
       },
+      location: {
+        type: String,
+        enum: ['Online', 'In-Person'],
+        default: 'In-Person',
+      },
+      meeting_link: {
+        type: String,
+        default: null,
+      },
       result: {
         type: String,
         enum: ['Pending', 'Passed', 'Failed', 'No Show'],

@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { createErrorResponse } = require('../helpers/utils');
 
 // Ensure upload directories exist
 const createUploadDirs = () => {
@@ -45,12 +46,18 @@ const imageStorage = multer.diskStorage({
 
 // File filter function
 const fileFilter = (req, file, cb) => {
+  console.log('File filter - file:', file);
   const allowedTypes = process.env.ALLOWED_FILE_TYPES?.split(',') || ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
   const fileExt = path.extname(file.originalname).toLowerCase().substring(1);
   
+  console.log('File filter - allowedTypes:', allowedTypes);
+  console.log('File filter - fileExt:', fileExt);
+  
   if (allowedTypes.includes(fileExt)) {
+    console.log('File filter - accepted');
     cb(null, true);
   } else {
+    console.log('File filter - rejected');
     cb(new Error(`File type not allowed. Allowed types: ${allowedTypes.join(', ')}`), false);
   }
 };
@@ -84,24 +91,17 @@ const uploadImage = multer({
 
 // Error handling middleware for multer
 const handleUploadError = (error, req, res, next) => {
+  console.log('Upload error:', error);
+  
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
-        success: false,
-        message: 'File too large. Please upload a smaller file.'
-      });
+      return res.status(400).json(createErrorResponse('File too large. Please upload a smaller file.'));
     }
-    return res.status(400).json({
-      success: false,
-      message: 'File upload error'
-    });
+    return res.status(400).json(createErrorResponse('File upload error'));
   }
   
   if (error.message.includes('File type not allowed')) {
-    return res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    return res.status(400).json(createErrorResponse(error.message));
   }
   
   next(error);

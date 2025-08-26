@@ -6,6 +6,10 @@ const { sendApplicationConfirmation, sendTaskSubmittedNotification, sendSelectio
 // Apply for job (public endpoint)
 const applyForJob = async (req, res) => {
   try {
+    console.log('applyForJob - Request body:', req.body);
+    console.log('applyForJob - Request file:', req.file);
+    console.log('applyForJob - Request headers:', req.headers);
+
     const { name, email, phone } = req.body;
     const { job_id } = req.params;
 
@@ -27,7 +31,7 @@ const applyForJob = async (req, res) => {
 
     // Handle CV upload
     if (!req.file) {
-      return res.status(400).json(createErrorResponse('CV file is required'));
+      return res.status(400).json(createErrorResponse('CV file is required. Please upload a PDF, DOC, or DOCX file.'));
     }
 
     const cvPath = `cvs/${req.file.filename}`;

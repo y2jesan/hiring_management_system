@@ -108,51 +108,51 @@ const Interviews = () => {
                 </button>
             </div>
 
-            {/* Interviews Grid */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {interviews.map((interview) => (
-                    <div key={interview._id} className="card">
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center">
-                                    <CalendarIcon className="h-8 w-8 text-primary-600 mr-3" />
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">
-                                            {interview.candidate?.name || 'Unknown Candidate'}
-                                        </h3>
-                                        <p className="text-sm text-gray-500">
-                                            {interview.candidate?.job?.title || 'Unknown Position'}
-                                        </p>
+            {/* Interviews Content */}
+            {interviews.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {interviews.map((interview) => (
+                        <div key={interview._id} className="card">
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center">
+                                        <CalendarIcon className="h-8 w-8 text-primary-600 mr-3" />
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">
+                                                {interview.candidate?.name || 'Unknown Candidate'}
+                                            </h3>
+                                            <p className="text-sm text-gray-500">
+                                                {interview.candidate?.job?.title || 'Unknown Position'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {getResultBadge(interview.result)}
+                                </div>
+
+                                <div className="space-y-2 mb-4">
+                                    <div className="flex items-center text-sm text-gray-600">
+                                        <ClockIcon className="h-4 w-4 mr-2" />
+                                        {new Date(interview.scheduled_date).toLocaleDateString()} at{' '}
+                                        {new Date(interview.scheduled_date).toLocaleTimeString()}
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-600">
+                                        <UserIcon className="h-4 w-4 mr-2" />
+                                        {interview.interviewer || 'TBD'}
                                     </div>
                                 </div>
-                                {getResultBadge(interview.result)}
-                            </div>
 
-                            <div className="space-y-2 mb-4">
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <ClockIcon className="h-4 w-4 mr-2" />
-                                    {new Date(interview.scheduled_date).toLocaleDateString()} at{' '}
-                                    {new Date(interview.scheduled_date).toLocaleTimeString()}
-                                </div>
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <UserIcon className="h-4 w-4 mr-2" />
-                                    {interview.interviewer || 'TBD'}
-                                </div>
+                                {interview.feedback && (
+                                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                        <p className="text-sm text-gray-700">
+                                            <span className="font-medium">Feedback:</span> {interview.feedback}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
-
-                            {interview.feedback && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                    <p className="text-sm text-gray-700">
-                                        <span className="font-medium">Feedback:</span> {interview.feedback}
-                                    </p>
-                                </div>
-                            )}
                         </div>
-                    </div>
-                ))}
-            </div>
-
-            {interviews.length === 0 && (
+                    ))}
+                </div>
+            ) : (
                 <div className="text-center py-12">
                     <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
                     <h3 className="mt-2 text-sm font-medium text-gray-900">No interviews scheduled</h3>

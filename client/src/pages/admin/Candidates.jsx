@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import { candidateService } from '../../services/candidateService';
 
 const Candidates = () => {
@@ -231,12 +232,12 @@ const Candidates = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
                         <div className="font-medium">
-                          {candidate.job?.title ? (
-                            <Link to={`/admin/jobs/${candidate.job?.job_id}`} className="hover:underline">{candidate.job.title}</Link>
+                          {candidate.job_id?.title ? (
+                            <Link to={`/admin/jobs/${candidate.job_id?.job_id}`} className="hover:underline">{candidate.job_id.title}</Link>
                           ) : 'N/A'}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {candidate.job?.experience_in_year || 'N/A'} experience
+                          {candidate.job_id?.experience_in_year || 'N/A'} experience
                         </div>
                       </div>
                     </td>

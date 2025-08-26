@@ -1,10 +1,8 @@
 import {
     BriefcaseIcon,
     CalendarIcon,
-    CheckCircleIcon,
     ClockIcon,
-    UsersIcon,
-    XCircleIcon
+    UsersIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -171,6 +169,67 @@ const Dashboard = () => {
                 ))}
             </div>
 
+            {/* Quick Actions */}
+            <div className="bg-white shadow rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                        Quick Actions
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                            <div>
+                                <span className="rounded-lg inline-flex p-3 bg-primary-50 text-primary-700 ring-4 ring-white">
+                                    <BriefcaseIcon className="h-6 w-6" />
+                                </span>
+                            </div>
+                            <div className="mt-8">
+                                <h3 className="text-lg font-medium">
+                                    <span className="absolute inset-0" aria-hidden="true" />
+                                    Create New Job
+                                </h3>
+                                <p className="mt-2 text-sm text-gray-500">
+                                    Post a new job opening
+                                </p>
+                            </div>
+                        </button>
+
+                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                            <div>
+                                <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
+                                    <UsersIcon className="h-6 w-6" />
+                                </span>
+                            </div>
+                            <div className="mt-8">
+                                <h3 className="text-lg font-medium">
+                                    <span className="absolute inset-0" aria-hidden="true" />
+                                    View Candidates
+                                </h3>
+                                <p className="mt-2 text-sm text-gray-500">
+                                    Manage candidate applications
+                                </p>
+                            </div>
+                        </button>
+
+                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                            <div>
+                                <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
+                                    <CalendarIcon className="h-6 w-6" />
+                                </span>
+                            </div>
+                            <div className="mt-8">
+                                <h3 className="text-lg font-medium">
+                                    <span className="absolute inset-0" aria-hidden="true" />
+                                    Schedule Interview
+                                </h3>
+                                <p className="mt-2 text-sm text-gray-500">
+                                    Book interview slots
+                                </p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Recent Activities */}
             <div className="bg-white shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
@@ -285,66 +344,7 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Quick Actions */}
-            <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                        Quick Actions
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
-                            <div>
-                                <span className="rounded-lg inline-flex p-3 bg-primary-50 text-primary-700 ring-4 ring-white">
-                                    <BriefcaseIcon className="h-6 w-6" />
-                                </span>
-                            </div>
-                            <div className="mt-8">
-                                <h3 className="text-lg font-medium">
-                                    <span className="absolute inset-0" aria-hidden="true" />
-                                    Create New Job
-                                </h3>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    Post a new job opening
-                                </p>
-                            </div>
-                        </button>
-
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
-                            <div>
-                                <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
-                                    <UsersIcon className="h-6 w-6" />
-                                </span>
-                            </div>
-                            <div className="mt-8">
-                                <h3 className="text-lg font-medium">
-                                    <span className="absolute inset-0" aria-hidden="true" />
-                                    View Candidates
-                                </h3>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    Manage candidate applications
-                                </p>
-                            </div>
-                        </button>
-
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
-                            <div>
-                                <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
-                                    <CalendarIcon className="h-6 w-6" />
-                                </span>
-                            </div>
-                            <div className="mt-8">
-                                <h3 className="text-lg font-medium">
-                                    <span className="absolute inset-0" aria-hidden="true" />
-                                    Schedule Interview
-                                </h3>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    Book interview slots
-                                </p>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     );
 };

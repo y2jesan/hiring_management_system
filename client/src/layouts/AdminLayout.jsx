@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { 
-  HomeIcon, 
-  BriefcaseIcon, 
-  UsersIcon, 
-  CalendarIcon, 
-  ClipboardDocumentCheckIcon,
-  CheckCircleIcon,
+import {
   Bars3Icon,
-  XMarkIcon,
-  UserCircleIcon
+  BriefcaseIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  HomeIcon,
+  UserCircleIcon,
+  UsersIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const AdminLayout = () => {
   const { user, logout, isAuthenticated, loading } = useAuth();
@@ -136,7 +136,7 @@ const AdminLayout = () => {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-12xl px-4 sm:px-6 lg:px-8">
             <Outlet />
           </div>
         </main>

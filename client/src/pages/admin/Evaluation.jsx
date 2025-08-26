@@ -1,6 +1,6 @@
 import {
-  ClipboardDocumentCheckIcon,
-  StarIcon
+    ClipboardDocumentCheckIcon,
+    StarIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -88,80 +88,80 @@ const Evaluation = () => {
         </p>
       </div>
 
-      {/* Candidates Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {candidates.map((candidate) => (
-          <div key={candidate._id} className="card">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <ClipboardDocumentCheckIcon className="h-8 w-8 text-primary-600 mr-3" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
-                    <p className="text-sm text-gray-500">{candidate.job?.title}</p>
-                  </div>
-                </div>
-                {getStatusBadge(candidate.status)}
-              </div>
-
-              <div className="space-y-2 mb-4">
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Application ID:</span> {candidate.application_id}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Email:</span> {candidate.email}
-                </p>
-                {candidate.task_submission?.links && candidate.task_submission.links.length > 0 && (
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Task Links:</span>
-                    <div className="mt-1 space-y-1">
-                      {candidate.task_submission.links.slice(0, 2).map((link, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
-                            link.type === 'live' ? 'bg-green-100 text-green-800' :
-                              'bg-blue-100 text-blue-800'
-                            }`}>
-                            {link.type}
-                          </span>
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 hover:text-primary-700 truncate"
-                            title={link.url}
-                          >
-                            {link.url.length > 30 ? link.url.substring(0, 30) + '...' : link.url}
-                          </a>
-                        </div>
-                      ))}
-                      {candidate.task_submission.links.length > 2 && (
-                        <p className="text-xs text-gray-500">
-                          +{candidate.task_submission.links.length - 2} more links
-                        </p>
-                      )}
+      {/* Candidates Content */}
+      {candidates.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {candidates.map((candidate) => (
+            <div key={candidate._id} className="card">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <ClipboardDocumentCheckIcon className="h-8 w-8 text-primary-600 mr-3" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
+                      <p className="text-sm text-gray-500">{candidate.job?.title}</p>
                     </div>
                   </div>
-                )}
-                {candidate.task_submission?.submitted_at && (
+                  {getStatusBadge(candidate.status)}
+                </div>
+
+                <div className="space-y-2 mb-4">
                   <p className="text-sm text-gray-600">
-                    <span className="font-medium">Submitted:</span>{' '}
-                    {new Date(candidate.task_submission.submitted_at).toLocaleDateString()}
+                    <span className="font-medium">Application ID:</span> {candidate.application_id}
                   </p>
-                )}
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Email:</span> {candidate.email}
+                  </p>
+                  {candidate.task_submission?.links && candidate.task_submission.links.length > 0 && (
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium">Task Links:</span>
+                      <div className="mt-1 space-y-1">
+                        {candidate.task_submission.links.slice(0, 2).map((link, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
+                              link.type === 'live' ? 'bg-green-100 text-green-800' :
+                                'bg-blue-100 text-blue-800'
+                              }`}>
+                              {link.type}
+                            </span>
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary-600 hover:text-primary-700 truncate"
+                              title={link.url}
+                            >
+                              {link.url.length > 30 ? link.url.substring(0, 30) + '...' : link.url}
+                            </a>
+                          </div>
+                        ))}
+                        {candidate.task_submission.links.length > 2 && (
+                          <p className="text-xs text-gray-500">
+                            +{candidate.task_submission.links.length - 2} more links
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {candidate.task_submission?.submitted_at && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Submitted:</span>{' '}
+                      {new Date(candidate.task_submission.submitted_at).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setSelectedCandidate(candidate)}
+                  className="w-full btn btn-primary"
+                >
+                  Evaluate Task
+                </button>
               </div>
-
-              <button
-                onClick={() => setSelectedCandidate(candidate)}
-                className="w-full btn btn-primary"
-              >
-                Evaluate Task
-              </button>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {candidates.length === 0 && (
+          ))}
+        </div>
+      ) : (
         <div className="text-center py-12">
           <ClipboardDocumentCheckIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">No candidates to evaluate</h3>

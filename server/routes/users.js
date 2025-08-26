@@ -1,24 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const { body } = require('express-validator');
-const userController = require('../controllers/userController');
-const { authenticateToken, superAdminOnly } = require('../middlewares/auth');
+const { auth, authorize } = require('../middlewares/auth');
+const { getUsers, getUserById, createUser, updateUser, deleteUser, toggleUserStatus, getCurrentUser, updateCurrentUser } = require('../controllers/userController');
 
-// Validation middleware
-const validateCreateUser = [body('name').isLength({ min: 2 }).withMessage('Name must be at least 2 characters long'), body('email').isEmail().withMessage('Please enter a valid email'), body('role').isIn(['HR', 'Evaluator', 'MD', 'Super Admin']).withMessage('Invalid role'), body('department').optional().isLength({ min: 2 }).withMessage('Department must be at least 2 characters long')];
+// Apply authentication middleware to all routes
+router.use(auth);
 
-const validateUpdateUser = [body('name').optional().isLength({ min: 2 }).withMessage('Name must be at least 2 characters long'), body('email').optional().isEmail().withMessage('Please enter a valid email'), body('role').optional().isIn(['HR', 'Evaluator', 'MD', 'Super Admin']).withMessage('Invalid role'), body('department').optional().isLength({ min: 2 }).withMessage('Department must be at least 2 characters long'), body('is_active').optional().isBoolean().withMessage('is_active must be a boolean')];
+// Get current user profile
+router.get('/profile', getCurrentUser);
 
-// Protected routes (Super Admin only)
-router.use(authenticateToken, superAdminOnly);
+// Update current user profile
+router.put('/profile', updateCurrentUser);
 
-router.post('/', validateCreateUser, userController.createUser);
-router.get('/', userController.getUsers);
-router.get('/role/:role', userController.getUsersByRole);
-router.get('/:id', userController.getUserById);
-router.put('/:id', validateUpdateUser, userController.updateUser);
-router.delete('/:id', userController.deleteUser);
-router.patch('/:id/toggle-status', userController.toggleUserStatus);
-router.patch('/:id/reset-password', userController.resetUserPassword);
+// Get all users (requires HR, MD, or Super Admin role)
+router.get('/', authorize(['HR', 'MD', 'Super Admin']), getUsers);
+
+// Get user by ID (requires HR, MD, or Super Admin role)
+router.get('/:id', authorize(['HR', 'MD', 'Super Admin']), getUserById);
+
+// Create new user (requires HR, MD, or Super Admin role)
+router.post('/', authorize(['HR', 'MD', 'Super Admin']), createUser);
+
+// Update user (requires HR, MD, or Super Admin role)
+router.put('/:id', authorize(['HR', 'MD', 'Super Admin']), updateUser);
+
+// Delete user (requires HR, MD, or Super Admin role)
+router.delete('/:id', authorize(['HR', 'MD', 'Super Admin']), deleteUser);
+
+// Toggle user status (requires HR, MD, or Super Admin role)
+router.patch('/:id/toggle-status', authorize(['HR', 'MD', 'Super Admin']), toggleUserStatus);
 
 module.exports = router;

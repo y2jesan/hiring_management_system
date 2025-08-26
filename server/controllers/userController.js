@@ -1,70 +1,14 @@
 const User = require('../models/User');
-const { 
-  createSuccessResponse, 
-  createErrorResponse,
-  generatePagination,
-  sanitizeSearchQuery,
-  generateRandomPassword
-} = require('../helpers/utils');
+const { createSuccessResponse, createErrorResponse, generatePagination, sanitizeSearchQuery } = require('../helpers/utils');
 
-// Create new user
-const createUser = async (req, res) => {
-  try {
-    const { name, email, role, department } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(400).json(createErrorResponse('User with this email already exists'));
-    }
-
-    // Generate random password
-    const password = generateRandomPassword();
-
-    const userData = {
-      name,
-      email: email.toLowerCase(),
-      password,
-      role,
-      department
-    };
-
-    const user = await User.create(userData);
-
-    // Remove password from response
-    const userResponse = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      department: user.department,
-      is_active: user.is_active,
-      created_at: user.createdAt
-    };
-
-    res.status(201).json(createSuccessResponse({
-      user: userResponse,
-      password // Include password in response for admin to share with user
-    }, 'User created successfully'));
-
-  } catch (error) {
-    console.error('Create user error:', error);
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json(createErrorResponse(errors.join(', ')));
-    }
-    res.status(500).json(createErrorResponse('Failed to create user'));
-  }
-};
-
-// Get all users with pagination and filters
+// Get all users with filters and pagination
 const getUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search;
     const role = req.query.role;
-    const isActive = req.query.is_active;
+    const is_active = req.query.is_active;
 
     const query = {};
 
@@ -84,8 +28,8 @@ const getUsers = async (req, res) => {
     }
 
     // Active status filter
-    if (isActive !== undefined) {
-      query.is_active = isActive === 'true';
+    if (is_active !== undefined) {
+      query.is_active = is_active === 'true';
     }
 
     const skip = (page - 1) * limit;
@@ -101,11 +45,12 @@ const getUsers = async (req, res) => {
 
     const pagination = generatePagination(page, limit, total);
 
-    res.json(createSuccessResponse({
-      users,
-      pagination
-    }));
-
+    res.json(
+      createSuccessResponse({
+        users,
+        pagination,
+      })
+    );
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json(createErrorResponse('Failed to fetch users'));
@@ -128,46 +73,120 @@ const getUserById = async (req, res) => {
   }
 };
 
+// Create new user
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role, department } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json(createErrorResponse('User with this email already exists'));
+    }
+
+    // Validate role permissions
+    const currentUserRole = req.user.role;
+    const allowedRoles = ['Super Admin', 'HR', 'MD'];
+    
+    if (!allowedRoles.includes(currentUserRole)) {
+      return res.status(403).json(createErrorResponse('You do not have permission to create users'));
+    }
+
+    // Super Admin can create any role, others can only create HR and Evaluator
+    if (currentUserRole !== 'Super Admin' && ['MD', 'Super Admin'].includes(role)) {
+      return res.status(403).json(createErrorResponse('You can only create HR and Evaluator users'));
+    }
+
+    const userData = {
+      name,
+      email,
+      password,
+      role,
+      department,
+      created_by: req.user._id
+    };
+
+    const user = await User.create(userData);
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(201).json(
+      createSuccessResponse(
+        { user: userResponse },
+        'User created successfully'
+      )
+    );
+  } catch (error) {
+    console.error('Create user error:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json(createErrorResponse(errors.join(', ')));
+    }
+    res.status(500).json(createErrorResponse('Failed to create user'));
+  }
+};
+
 // Update user
 const updateUser = async (req, res) => {
   try {
-    const { name, email, role, department, is_active } = req.body;
+    const { name, email, password, role, department, is_active } = req.body;
     const { id } = req.params;
 
-    const updateData = {};
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json(createErrorResponse('User not found'));
+    }
 
-    if (name !== undefined) updateData.name = name;
-    if (role !== undefined) updateData.role = role;
-    if (department !== undefined) updateData.department = department;
-    if (is_active !== undefined) updateData.is_active = is_active;
+    // Check permissions
+    const currentUserRole = req.user.role;
+    const allowedRoles = ['Super Admin', 'HR', 'MD'];
+    
+    if (!allowedRoles.includes(currentUserRole)) {
+      return res.status(403).json(createErrorResponse('You do not have permission to update users'));
+    }
 
-    // Check email uniqueness if being updated
-    if (email) {
-      const existingUser = await User.findOne({ 
-        email: email.toLowerCase(),
-        _id: { $ne: id }
-      });
+    // Super Admin can update any user, others can only update HR and Evaluator
+    if (currentUserRole !== 'Super Admin' && ['MD', 'Super Admin'].includes(user.role)) {
+      return res.status(403).json(createErrorResponse('You can only update HR and Evaluator users'));
+    }
+
+    // Check if email is being changed and if it already exists
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json(createErrorResponse('User with this email already exists'));
       }
-      updateData.email = email.toLowerCase();
     }
 
-    const user = await User.findByIdAndUpdate(
+    // Validate role changes
+    if (role && currentUserRole !== 'Super Admin' && ['MD', 'Super Admin'].includes(role)) {
+      return res.status(403).json(createErrorResponse('You can only assign HR and Evaluator roles'));
+    }
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (password) updateData.password = password;
+    if (role) updateData.role = role;
+    if (department !== undefined) updateData.department = department;
+    if (is_active !== undefined) updateData.is_active = is_active;
+
+    const updatedUser = await User.findByIdAndUpdate(
       id,
       updateData,
       { new: true, runValidators: true }
     ).select('-password');
 
-    if (!user) {
-      return res.status(404).json(createErrorResponse('User not found'));
-    }
-
-    res.json(createSuccessResponse({ user }, 'User updated successfully'));
+    res.json(
+      createSuccessResponse(
+        { user: updatedUser },
+        'User updated successfully'
+      )
+    );
   } catch (error) {
     console.error('Update user error:', error);
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json(createErrorResponse(errors.join(', ')));
     }
     res.status(500).json(createErrorResponse('Failed to update user'));
@@ -179,18 +198,37 @@ const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Prevent deleting own account
-    if (id === req.user._id.toString()) {
-      return res.status(400).json(createErrorResponse('Cannot delete your own account'));
-    }
-
-    const user = await User.findByIdAndDelete(id);
-
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json(createErrorResponse('User not found'));
     }
 
-    res.json(createSuccessResponse(null, 'User deleted successfully'));
+    // Check permissions
+    const currentUserRole = req.user.role;
+    const allowedRoles = ['Super Admin', 'HR', 'MD'];
+    
+    if (!allowedRoles.includes(currentUserRole)) {
+      return res.status(403).json(createErrorResponse('You do not have permission to delete users'));
+    }
+
+    // Super Admin can delete any user, others can only delete HR and Evaluator
+    if (currentUserRole !== 'Super Admin' && ['MD', 'Super Admin'].includes(user.role)) {
+      return res.status(403).json(createErrorResponse('You can only delete HR and Evaluator users'));
+    }
+
+    // Prevent self-deletion
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json(createErrorResponse('You cannot delete your own account'));
+    }
+
+    await User.findByIdAndDelete(id);
+
+    res.json(
+      createSuccessResponse(
+        {},
+        'User deleted successfully'
+      )
+    );
   } catch (error) {
     console.error('Delete user error:', error);
     res.status(500).json(createErrorResponse('Failed to delete user'));
@@ -202,87 +240,105 @@ const toggleUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Prevent deactivating own account
-    if (id === req.user._id.toString()) {
-      return res.status(400).json(createErrorResponse('Cannot deactivate your own account'));
-    }
-
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json(createErrorResponse('User not found'));
     }
 
-    user.is_active = !user.is_active;
-    await user.save();
+    // Check permissions
+    const currentUserRole = req.user.role;
+    const allowedRoles = ['Super Admin', 'HR', 'MD'];
+    
+    if (!allowedRoles.includes(currentUserRole)) {
+      return res.status(403).json(createErrorResponse('You do not have permission to toggle user status'));
+    }
 
-    res.json(createSuccessResponse({
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        department: user.department,
-        is_active: user.is_active
-      }
-    }, `User ${user.is_active ? 'activated' : 'deactivated'} successfully`));
+    // Super Admin can toggle any user, others can only toggle HR and Evaluator
+    if (currentUserRole !== 'Super Admin' && ['MD', 'Super Admin'].includes(user.role)) {
+      return res.status(403).json(createErrorResponse('You can only toggle HR and Evaluator users'));
+    }
 
+    // Prevent self-deactivation
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json(createErrorResponse('You cannot deactivate your own account'));
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { is_active: !user.is_active },
+      { new: true }
+    ).select('-password');
+
+    res.json(
+      createSuccessResponse(
+        { user: updatedUser },
+        `User ${updatedUser.is_active ? 'activated' : 'deactivated'} successfully`
+      )
+    );
   } catch (error) {
     console.error('Toggle user status error:', error);
     res.status(500).json(createErrorResponse('Failed to toggle user status'));
   }
 };
 
-// Reset user password
-const resetUserPassword = async (req, res) => {
+// Get current user profile
+const getCurrentUser = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json(createErrorResponse('User not found'));
-    }
-
-    // Generate new password
-    const newPassword = generateRandomPassword();
-    user.password = newPassword;
-    await user.save();
-
-    res.json(createSuccessResponse({
-      password: newPassword
-    }, 'Password reset successfully'));
-
+    const user = await User.findById(req.user._id).select('-password');
+    res.json(createSuccessResponse({ user }));
   } catch (error) {
-    console.error('Reset user password error:', error);
-    res.status(500).json(createErrorResponse('Failed to reset password'));
+    console.error('Get current user error:', error);
+    res.status(500).json(createErrorResponse('Failed to fetch user profile'));
   }
 };
 
-// Get users by role
-const getUsersByRole = async (req, res) => {
+// Update current user profile
+const updateCurrentUser = async (req, res) => {
   try {
-    const { role } = req.params;
+    const { name, email, department } = req.body;
 
-    const users = await User.find({ 
-      role, 
-      is_active: true 
-    })
-      .select('name email department')
-      .sort({ name: 1 });
+    // Check if email is being changed and if it already exists
+    if (email && email !== req.user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json(createErrorResponse('User with this email already exists'));
+      }
+    }
 
-    res.json(createSuccessResponse({ users }));
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (department !== undefined) updateData.department = department;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json(
+      createSuccessResponse(
+        { user: updatedUser },
+        'Profile updated successfully'
+      )
+    );
   } catch (error) {
-    console.error('Get users by role error:', error);
-    res.status(500).json(createErrorResponse('Failed to fetch users'));
+    console.error('Update current user error:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json(createErrorResponse(errors.join(', ')));
+    }
+    res.status(500).json(createErrorResponse('Failed to update profile'));
   }
 };
 
 module.exports = {
-  createUser,
   getUsers,
   getUserById,
+  createUser,
   updateUser,
   deleteUser,
   toggleUserStatus,
-  resetUserPassword,
-  getUsersByRole
+  getCurrentUser,
+  updateCurrentUser,
 };

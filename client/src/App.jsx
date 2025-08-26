@@ -14,6 +14,7 @@ import Candidates from './pages/admin/Candidates';
 import Interviews from './pages/admin/Interviews';
 import Evaluation from './pages/admin/Evaluation';
 import FinalSelection from './pages/admin/FinalSelection';
+import Users from './pages/admin/Users';
 import CandidateDetails from './pages/admin/CandidateDetails';
 import JobDetails from './pages/admin/JobDetails';
 
@@ -75,6 +76,7 @@ function App() {
               <Route path="interviews" element={<Interviews />} />
               <Route path="evaluation" element={<Evaluation />} />
               <Route path="final-selection" element={<FinalSelection />} />
+              <Route path="users" element={<Users />} />
             </Route>
             
             {/* Default redirect */}

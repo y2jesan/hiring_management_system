@@ -7,8 +7,9 @@ const { authenticateToken, hrAndAbove } = require('../middlewares/auth');
 // Validation middleware
 const validateScheduleInterview = [
   body('candidate_id').isMongoId().withMessage('Valid candidate ID is required'),
+  body('job_id').isMongoId().withMessage('Valid job ID is required'),
   body('scheduled_date').isISO8601().withMessage('Valid scheduled date is required'),
-  body('interviewer_id').isMongoId().withMessage('Valid interviewer ID is required'),
+  body('interviewer').isMongoId().withMessage('Valid interviewer ID is required'),
   body('notes').optional().isLength({ min: 1 }).withMessage('Notes must not be empty')
 ];
 

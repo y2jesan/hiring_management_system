@@ -10,7 +10,7 @@ const authenticateToken = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Access token required'
+        message: 'Access token required',
       });
     }
 
@@ -20,7 +20,7 @@ const authenticateToken = async (req, res, next) => {
     if (!user || !user.is_active) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid or inactive user'
+        message: 'Invalid or inactive user',
       });
     }
 
@@ -30,18 +30,18 @@ const authenticateToken = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Invalid token',
       });
     }
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expired'
+        message: 'Token expired',
       });
     }
     return res.status(500).json({
       success: false,
-      message: 'Authentication error'
+      message: 'Authentication error',
     });
   }
 };
@@ -52,14 +52,23 @@ const authorizeRoles = (...roles) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required'
+        message: 'Authentication required',
       });
     }
 
-    if (!roles.includes(req.user.role)) {
+    const userRole = req.user.role;
+
+    if (roles.length > 0 && typeof roles[0] == 'object') {
+      roles = roles[0];
+    }
+
+    // Check if user role is in the allowed roles
+    const hasPermission = roles.some((role) => role === userRole);
+
+    if (!hasPermission) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied. Insufficient permissions.'
+        message: `Access denied. Insufficient permissions. User role: "${userRole}", Required roles: ${roles.join(', ')}`,
       });
     }
 
@@ -85,5 +94,7 @@ module.exports = {
   superAdminOnly,
   hrAndAbove,
   evaluatorAndAbove,
-  mdAndAbove
+  mdAndAbove,
+  auth: authenticateToken,
+  authorize: authorizeRoles,
 };

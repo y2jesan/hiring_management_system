@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { candidateService } from '../../services/candidateService';
-import { 
+import {
   CheckCircleIcon,
-  XCircleIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  XCircleIcon
 } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { candidateService } from '../../services/candidateService';
 
 const FinalSelection = () => {
   const [candidates, setCandidates] = useState([]);
@@ -21,13 +21,16 @@ const FinalSelection = () => {
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      const response = await candidateService.getAllCandidates({ 
-        status: ['Shortlisted', 'Interview Completed'] 
+      const response = await candidateService.getAllCandidates({
+        status: ['Shortlisted', 'Interview Completed']
       });
-      setCandidates(response.data || []);
+      // Handle different response structures
+      const candidatesData = response.data?.candidates || response.data || [];
+      setCandidates(Array.isArray(candidatesData) ? candidatesData : []);
     } catch (error) {
       console.error('Error fetching candidates:', error);
       toast.error('Failed to fetch candidates');
+      setCandidates([]);
     } finally {
       setLoading(false);
     }
@@ -93,77 +96,80 @@ const FinalSelection = () => {
       </div>
 
       {/* Candidates Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {candidates.map((candidate) => (
-          <div key={candidate._id} className="card">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <DocumentTextIcon className="h-8 w-8 text-primary-600 mr-3" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
-                    <p className="text-sm text-gray-500">{candidate.job?.title}</p>
+      {candidates.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {candidates.map((candidate) => (
+            <div key={candidate._id} className="card">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <DocumentTextIcon className="h-8 w-8 text-primary-600 mr-3" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
+                      <p className="text-sm text-gray-500">{candidate.job_id?.title || candidate.job?.title || 'N/A'}</p>
+                    </div>
                   </div>
+                  {getStatusBadge(candidate.status)}
                 </div>
-                {getStatusBadge(candidate.status)}
-              </div>
 
-              <div className="space-y-2 mb-4">
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Application ID:</span> {candidate.application_id}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Email:</span> {candidate.email}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Task Score:</span> {candidate.evaluation?.score || 'N/A'}%
-                </p>
-                {candidate.interview?.result && (
+                <div className="space-y-2 mb-4">
                   <p className="text-sm text-gray-600">
-                    <span className="font-medium">Interview Result:</span> {candidate.interview.result}
+                    <span className="font-medium">Application ID:</span> {candidate.application_id}
                   </p>
-                )}
-                {candidate.interview?.feedback && (
                   <p className="text-sm text-gray-600">
-                    <span className="font-medium">Interview Feedback:</span> {candidate.interview.feedback}
+                    <span className="font-medium">Email:</span> {candidate.email}
                   </p>
-                )}
-              </div>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Task Score:</span> {candidate.evaluation?.score || 'N/A'}%
+                  </p>
+                  {candidate.interview?.result && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Interview Result:</span> {candidate.interview.result}
+                    </p>
+                  )}
+                  {candidate.interview?.feedback && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Interview Feedback:</span> {candidate.interview.feedback}
+                    </p>
+                  )}
+                </div>
 
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => {
-                    setSelectedCandidate(candidate);
-                    setDecision('selected');
-                  }}
-                  className="flex-1 btn btn-success flex items-center justify-center"
-                >
-                  <CheckCircleIcon className="h-5 w-5 mr-2" />
-                  Select
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedCandidate(candidate);
-                    setDecision('rejected');
-                  }}
-                  className="flex-1 btn btn-danger flex items-center justify-center"
-                >
-                  <XCircleIcon className="h-5 w-5 mr-2" />
-                  Reject
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      setSelectedCandidate(candidate);
+                      setDecision('selected');
+                    }}
+                    className="flex-1 btn btn-success flex items-center justify-center"
+                  >
+                    <CheckCircleIcon className="h-5 w-5 mr-2" />
+                    Select
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedCandidate(candidate);
+                      setDecision('rejected');
+                    }}
+                    className="flex-1 btn btn-danger flex items-center justify-center"
+                  >
+                    <XCircleIcon className="h-5 w-5 mr-2" />
+                    Reject
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {candidates.length === 0 && (
+          ))}
+        </div>
+      ) : (
         <div className="text-center py-12">
           <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">No candidates for final selection</h3>
           <p className="mt-1 text-sm text-gray-500">
             No candidates have been shortlisted or completed interviews yet.
           </p>
+          <div className="mt-4 text-xs text-gray-400">
+            <p>Candidates need to be in "Shortlisted" or "Interview Completed" status to appear here.</p>
+          </div>
         </div>
       )}
 
@@ -180,7 +186,7 @@ const FinalSelection = () => {
                       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                         Final Decision - {selectedCandidate.name}
                       </h3>
-                      
+
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -190,11 +196,10 @@ const FinalSelection = () => {
                             <button
                               type="button"
                               onClick={() => setDecision('selected')}
-                              className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${
-                                decision === 'selected'
+                              className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${decision === 'selected'
                                   ? 'border-green-500 bg-green-50 text-green-700'
                                   : 'border-gray-300 hover:border-gray-400'
-                              }`}
+                                }`}
                             >
                               <CheckCircleIcon className="h-5 w-5 mr-2" />
                               Select Candidate
@@ -202,11 +207,10 @@ const FinalSelection = () => {
                             <button
                               type="button"
                               onClick={() => setDecision('rejected')}
-                              className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${
-                                decision === 'rejected'
+                              className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${decision === 'rejected'
                                   ? 'border-red-500 bg-red-50 text-red-700'
                                   : 'border-gray-300 hover:border-gray-400'
-                              }`}
+                                }`}
                             >
                               <XCircleIcon className="h-5 w-5 mr-2" />
                               Reject Candidate
@@ -231,7 +235,7 @@ const FinalSelection = () => {
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <h4 className="text-sm font-medium text-gray-900 mb-2">Candidate Summary</h4>
                           <div className="space-y-1 text-sm text-gray-600">
-                            <p><span className="font-medium">Position:</span> {selectedCandidate.job?.title}</p>
+                            <p><span className="font-medium">Position:</span> {selectedCandidate.job_id?.title || selectedCandidate.job?.title || 'N/A'}</p>
                             <p><span className="font-medium">Task Score:</span> {selectedCandidate.evaluation?.score || 'N/A'}%</p>
                             <p><span className="font-medium">Interview Result:</span> {selectedCandidate.interview?.result || 'N/A'}</p>
                             {selectedCandidate.evaluation?.comments && (
@@ -243,13 +247,12 @@ const FinalSelection = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     type="submit"
-                    className={`btn sm:ml-3 sm:w-auto ${
-                      decision === 'selected' ? 'btn-success' : 'btn-danger'
-                    }`}
+                    className={`btn sm:ml-3 sm:w-auto ${decision === 'selected' ? 'btn-success' : 'btn-danger'
+                      }`}
                   >
                     {decision === 'selected' ? 'Select Candidate' : 'Reject Candidate'}
                   </button>

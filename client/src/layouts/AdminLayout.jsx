@@ -33,10 +33,11 @@ const AdminLayout = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
+    { name: 'Users', href: '/admin/users', icon: UserCircleIcon },
     { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon },
     { name: 'Candidates', href: '/admin/candidates', icon: UsersIcon },
-    { name: 'Interviews', href: '/admin/interviews', icon: CalendarIcon },
     { name: 'Evaluation', href: '/admin/evaluation', icon: ClipboardDocumentCheckIcon },
+    { name: 'Interviews', href: '/admin/interviews', icon: CalendarIcon },
     { name: 'Final Selection', href: '/admin/final-selection', icon: CheckCircleIcon },
   ];
 
@@ -62,11 +63,10 @@ const AdminLayout = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                  isActive(item.href)
-                    ? 'bg-primary-100 text-primary-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
+                  ? 'bg-primary-100 text-primary-900'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <item.icon className="mr-3 h-5 w-5" />
@@ -88,11 +88,10 @@ const AdminLayout = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                  isActive(item.href)
-                    ? 'bg-primary-100 text-primary-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
+                  ? 'bg-primary-100 text-primary-900'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
               >
                 <item.icon className="mr-3 h-5 w-5" />
                 {item.name}

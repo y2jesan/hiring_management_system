@@ -322,12 +322,6 @@ const CandidatePortal = () => {
                   <LinkIcon className="h-4 w-4 mr-1" />
                   View Task Details
                 </a>
-                <button
-                  onClick={() => window.open(candidate.job_id.task_link, '_blank')}
-                  className="btn btn-primary text-sm"
-                >
-                  Open Task in New Tab
-                </button>
               </div>
             </div>
 
@@ -455,12 +449,6 @@ const CandidatePortal = () => {
                   {new Date(candidate.interview.scheduled_date).toLocaleTimeString()}
                 </p>
               </div>
-              {candidate.interview.interviewer && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Interviewer:</span>
-                  <p className="text-gray-900">{candidate.interview.interviewer}</p>
-                </div>
-              )}
               {candidate.interview.result && (
                 <div>
                   <span className="text-sm font-medium text-gray-500">Result:</span>

@@ -7,7 +7,7 @@ const { sendInterviewScheduledNotification } = require('../helpers/emailService'
 // Schedule interview
 const scheduleInterview = async (req, res) => {
   try {
-    const { candidate_id, scheduled_date, interviewer_id, notes } = req.body;
+    const { candidate_id, job_id, scheduled_date, interviewer, notes } = req.body;
 
     // Validate candidate exists and is interview eligible
     const candidate = await Candidate.findById(candidate_id);
@@ -20,8 +20,8 @@ const scheduleInterview = async (req, res) => {
     }
 
     // Validate interviewer exists
-    const interviewer = await User.findById(interviewer_id);
-    if (!interviewer) {
+    const interviewerUser = await User.findById(interviewer);
+    if (!interviewerUser) {
       return res.status(404).json(createErrorResponse('Interviewer not found'));
     }
 
@@ -33,8 +33,9 @@ const scheduleInterview = async (req, res) => {
 
     const interviewData = {
       candidate_id,
+      job_id,
       scheduled_date: new Date(scheduled_date),
-      interviewer_id,
+      interviewer,
       notes,
       scheduled_by: req.user._id,
     };
@@ -45,13 +46,13 @@ const scheduleInterview = async (req, res) => {
     await Candidate.findByIdAndUpdate(candidate_id, {
       status: 'Interview Scheduled',
       'interview.scheduled_date': new Date(scheduled_date),
-      'interview.interviewer': interviewer_id,
+      'interview.interviewer': interviewer,
     });
 
-    // Send interview notification email
-    await sendInterviewScheduledNotification(candidate.email, candidate.name, candidate.application_id, scheduled_date, interviewer.name);
+    // TODO Send interview notification email
+    // await sendInterviewScheduledNotification(candidate.email, candidate.name, candidate.application_id, scheduled_date, interviewerUser.name);
 
-    const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer_id', 'name email').populate('scheduled_by', 'name email');
+    const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
 
     res.status(201).json(
       createSuccessResponse(
@@ -78,7 +79,7 @@ const getInterviews = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search;
     const status = req.query.status;
-    const interviewer_id = req.query.interviewer_id;
+    const interviewer = req.query.interviewer;
 
     const query = {};
 
@@ -94,13 +95,13 @@ const getInterviews = async (req, res) => {
     }
 
     // Interviewer filter
-    if (interviewer_id) {
-      query.interviewer_id = interviewer_id;
+    if (interviewer) {
+      query.interviewer = interviewer;
     }
 
     const skip = (page - 1) * limit;
 
-    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status').populate('interviewer_id', 'name email').populate('scheduled_by', 'name email').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
+    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
 
     const pagination = generatePagination(page, limit, total);
 
@@ -119,7 +120,7 @@ const getInterviews = async (req, res) => {
 // Get interview by ID
 const getInterviewById = async (req, res) => {
   try {
-    const interview = await Interview.findById(req.params.id).populate('candidate_id', 'name email application_id status job_id').populate('interviewer_id', 'name email').populate('scheduled_by', 'name email');
+    const interview = await Interview.findById(req.params.id).populate('candidate_id', 'name email application_id status job_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
 
     if (!interview) {
       return res.status(404).json(createErrorResponse('Interview not found'));
@@ -159,7 +160,7 @@ const updateInterviewResult = async (req, res) => {
       updateData.score = score;
     }
 
-    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id status').populate('interviewer_id', 'name email').populate('scheduled_by', 'name email');
+    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
 
     // Update candidate status based on result
     let candidateStatus = 'Interview Completed';
@@ -210,7 +211,7 @@ const rescheduleInterview = async (req, res) => {
       updateData.notes = notes;
     }
 
-    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id').populate('interviewer_id', 'name email').populate('scheduled_by', 'name email');
+    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
 
     // Update candidate interview date
     await Candidate.findByIdAndUpdate(interview.candidate_id, {
@@ -218,7 +219,7 @@ const rescheduleInterview = async (req, res) => {
     });
 
     // Send reschedule notification email
-    await sendInterviewScheduledNotification(updatedInterview.candidate_id.email, updatedInterview.candidate_id.name, updatedInterview.candidate_id.application_id, scheduled_date, updatedInterview.interviewer_id.name);
+    await sendInterviewScheduledNotification(updatedInterview.candidate_id.email, updatedInterview.candidate_id.name, updatedInterview.candidate_id.application_id, scheduled_date, updatedInterview.interviewer.name);
 
     res.json(
       createSuccessResponse(
@@ -259,7 +260,7 @@ const cancelInterview = async (req, res) => {
       updateData.cancellation_reason = reason;
     }
 
-    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id').populate('interviewer_id', 'name email');
+    const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email');
 
     // Update candidate status
     await Candidate.findByIdAndUpdate(interview.candidate_id, {
@@ -287,7 +288,7 @@ const getInterviewsByCandidate = async (req, res) => {
   try {
     const { candidate_id } = req.params;
 
-    const interviews = await Interview.find({ candidate_id }).populate('interviewer_id', 'name email').populate('scheduled_by', 'name email').sort({ scheduled_date: -1 });
+    const interviews = await Interview.find({ candidate_id }).populate('interviewer', 'name email').populate('scheduled_by', 'name email').sort({ scheduled_date: -1 });
 
     res.json(createSuccessResponse({ interviews }));
   } catch (error) {
@@ -304,7 +305,7 @@ const getUpcomingInterviews = async (req, res) => {
       result: 'Pending',
     })
       .populate('candidate_id', 'name email application_id')
-      .populate('interviewer_id', 'name email')
+      .populate('interviewer', 'name email')
       .sort({ scheduled_date: 1 })
       .limit(10);
 

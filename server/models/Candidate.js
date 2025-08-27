@@ -38,6 +38,28 @@ const candidateSchema = new mongoose.Schema(
       ref: 'User',
       default: null,
     },
+    years_of_experience: {
+      type: Number,
+      required: [true, 'Years of experience is required'],
+      min: 0,
+      default: 0,
+    },
+    expected_salary: {
+      type: Number,
+      required: [true, 'Expected salary is required'],
+      min: 0,
+      default: 0,
+    },
+    notice_period_in_months: {
+      type: Number,
+      required: [true, 'Notice period is required'],
+      min: 0,
+      default: 1,
+    },
+    core_experience: {
+      type: [String],
+      default: [],
+    },
     task_submission: {
       links: [
         {
@@ -155,5 +177,9 @@ candidateSchema.index({ email: 1 });
 candidateSchema.index({ status: 1 });
 candidateSchema.index({ job_id: 1 });
 candidateSchema.index({ reference: 1 });
+candidateSchema.index({ years_of_experience: 1 });
+candidateSchema.index({ expected_salary: 1 });
+candidateSchema.index({ notice_period_in_months: 1 });
+candidateSchema.index({ core_experience: 1 });
 
 module.exports = mongoose.model('Candidate', candidateSchema);

@@ -10,7 +10,7 @@ const applyForJob = async (req, res) => {
     console.log('applyForJob - Request file:', req.file);
     console.log('applyForJob - Request headers:', req.headers);
 
-    const { name, email, phone } = req.body;
+    const { name, email, phone, years_of_experience, expected_salary, notice_period_in_months, core_experience } = req.body;
     const { job_id } = req.params;
 
     // Validate job exists and is active
@@ -41,6 +41,10 @@ const applyForJob = async (req, res) => {
       name,
       email: email.toLowerCase(),
       phone,
+      years_of_experience: parseFloat(years_of_experience) || 0,
+      expected_salary: parseFloat(expected_salary) || 0,
+      notice_period_in_months: parseInt(notice_period_in_months) || 1,
+      core_experience: Array.isArray(core_experience) ? core_experience : core_experience ? [core_experience] : [],
       cv_file_path: cvPath,
       application_id: applicationId,
       job_id: job._id,
@@ -93,7 +97,7 @@ const getCandidates = async (req, res) => {
     // Search filter
     if (search) {
       const sanitizedSearch = sanitizeSearchQuery(search);
-      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }];
+      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }, { core_experience: { $regex: sanitizedSearch, $options: 'i' } }];
     }
 
     // Status filter
@@ -145,12 +149,7 @@ const getCandidates = async (req, res) => {
 // Get candidate by ID
 const getCandidateById = async (req, res) => {
   try {
-    const candidate = await Candidate.findById(req.params.id)
-      .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
-      .populate('reference', 'name email')
-      .populate('evaluation.evaluated_by', 'name email')
-      .populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id')
-      .populate('final_selection.selected_by', 'name email');
+    const candidate = await Candidate.findById(req.params.id).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('reference', 'name email').populate('evaluation.evaluated_by', 'name email').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id').populate('final_selection.selected_by', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Candidate not found'));
@@ -158,11 +157,7 @@ const getCandidateById = async (req, res) => {
 
     // Get all interviews for this candidate
     const Interview = require('../models/Interview');
-    const interviews = await Interview.find({ candidate_id: candidate._id })
-      .populate('interviewer', 'name email')
-      .populate('scheduled_by', 'name email')
-      .populate('completed_by', 'name email')
-      .sort({ scheduled_date: -1 });
+    const interviews = await Interview.find({ candidate_id: candidate._id }).populate('interviewer', 'name email').populate('scheduled_by', 'name email').populate('completed_by', 'name email').sort({ scheduled_date: -1 });
 
     const candidateWithUrls = {
       ...candidate.toObject(),
@@ -180,10 +175,7 @@ const getCandidateById = async (req, res) => {
 // Get candidate by application ID (for candidate portal)
 const getCandidateByApplicationId = async (req, res) => {
   try {
-    const candidate = await Candidate.findOne({ application_id: req.params.application_id })
-      .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
-      .populate('interviews', 'scheduled_date interviewer location meeting_link result feedback completed_at job_id')
-      .populate('interviews.interviewer', 'name email');
+    const candidate = await Candidate.findOne({ application_id: req.params.application_id }).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback completed_at job_id').populate('interviews.interviewer', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Application not found'));
@@ -425,7 +417,7 @@ const finalSelection = async (req, res) => {
 // Update candidate
 const updateCandidate = async (req, res) => {
   try {
-    const { name, email, phone, status, reference, job_id } = req.body;
+    const { name, email, phone, status, reference, job_id, years_of_experience, expected_salary, notice_period_in_months, core_experience } = req.body;
     const { id } = req.params;
 
     const candidate = await Candidate.findById(id);
@@ -458,7 +450,7 @@ const updateCandidate = async (req, res) => {
     }
 
     // Validate reference if provided
-    if (reference) {
+    if (reference && reference !== '') {
       const User = require('../models/User');
       const user = await User.findById(reference);
       if (!user) {
@@ -480,14 +472,14 @@ const updateCandidate = async (req, res) => {
     if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
     if (status) updateData.status = status;
-    if (reference !== undefined) updateData.reference = reference;
+    if (reference !== undefined && reference !== '') updateData.reference = reference;
     if (job_id) updateData.job_id = job_id;
+    if (years_of_experience !== undefined) updateData.years_of_experience = parseFloat(years_of_experience);
+    if (expected_salary !== undefined) updateData.expected_salary = parseFloat(expected_salary);
+    if (notice_period_in_months !== undefined) updateData.notice_period_in_months = parseInt(notice_period_in_months);
+    if (core_experience !== undefined) updateData.core_experience = Array.isArray(core_experience) ? core_experience : [];
 
-    const updatedCandidate = await Candidate.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    ).populate('reference', 'name email').populate('job_id', 'title job_id');
+    const updatedCandidate = await Candidate.findByIdAndUpdate(id, updateData, { new: true }).populate('reference', 'name email').populate('job_id', 'title job_id');
 
     res.json(
       createSuccessResponse(
@@ -500,6 +492,86 @@ const updateCandidate = async (req, res) => {
   } catch (error) {
     console.error('Update candidate error:', error);
     res.status(500).json(createErrorResponse('Failed to update candidate'));
+  }
+};
+
+// Export candidates
+const exportCandidates = async (req, res) => {
+  try {
+    const search = req.query.search;
+    const status = req.query.status;
+    const jobId = req.query.job_id;
+    const minExperience = req.query.min_experience;
+    const minSalary = req.query.min_salary;
+
+    const query = {};
+
+    // Search filter
+    if (search) {
+      const sanitizedSearch = sanitizeSearchQuery(search);
+      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }, { core_experience: { $regex: sanitizedSearch, $options: 'i' } }];
+    }
+
+    // Status filter
+    if (status) {
+      query.status = status;
+    }
+
+    // Job filter
+    if (jobId) {
+      const job = await Job.findOne({ job_id: jobId });
+      if (job) {
+        query.job_id = job._id;
+      }
+    }
+
+    // Experience filter
+    if (minExperience) {
+      query.years_of_experience = { $gte: parseFloat(minExperience) };
+    }
+
+    // Salary filter
+    if (minSalary) {
+      query.expected_salary = { $gte: parseFloat(minSalary) };
+    }
+
+    const candidates = await Candidate.find(query).populate('job_id', 'title designation job_id experience_in_year').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email').sort({ createdAt: -1 });
+
+    // Convert to CSV format
+    const csvData = candidates.map((candidate, index) => ({
+      'No.': index + 1,
+      Name: candidate.name,
+      Email: candidate.email,
+      Phone: candidate.phone,
+      'Application ID': candidate.application_id,
+      'Job Title': candidate.job_id?.title || 'N/A',
+      'Years of Experience': candidate.years_of_experience || 0,
+      'Expected Salary': candidate.expected_salary || 0,
+      'Notice Period (Months)': candidate.notice_period_in_months || 1,
+      'Core Experience': candidate.core_experience ? candidate.core_experience.join(', ') : '',
+      Status: candidate.status,
+      'Task Score': candidate.evaluation?.score || 'N/A',
+      'Applied Date': new Date(candidate.createdAt).toLocaleDateString(),
+      'Task Submitted Date': candidate.task_submission?.submitted_at ? new Date(candidate.task_submission.submitted_at).toLocaleDateString() : 'N/A',
+    }));
+
+    // Set headers for CSV download
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=candidates.csv');
+
+    // Convert to CSV string
+    const csvHeaders = Object.keys(csvData[0] || {}).join(',');
+    const csvRows = csvData.map((row) =>
+      Object.values(row)
+        .map((value) => `"${value}"`)
+        .join(',')
+    );
+    const csvContent = [csvHeaders, ...csvRows].join('\n');
+
+    res.send(csvContent);
+  } catch (error) {
+    console.error('Export candidates error:', error);
+    res.status(500).json(createErrorResponse('Failed to export candidates'));
   }
 };
 
@@ -530,4 +602,5 @@ module.exports = {
   updateCandidate,
   finalSelection,
   deleteCandidate,
+  exportCandidates,
 };

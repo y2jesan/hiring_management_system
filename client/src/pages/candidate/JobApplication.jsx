@@ -1,4 +1,8 @@
 import {
+    AcademicCapIcon,
+    BriefcaseIcon,
+    ClockIcon,
+    CurrencyDollarIcon,
     DocumentIcon,
     EnvelopeIcon,
     PhoneIcon,
@@ -20,6 +24,7 @@ const JobApplication = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [selectedCV, setSelectedCV] = useState(null);
+    const [coreExperience, setCoreExperience] = useState(['']);
 
     const {
         register,
@@ -70,6 +75,29 @@ const JobApplication = () => {
             return;
         }
 
+        // Validate new fields
+        if (!data.years_of_experience || parseFloat(data.years_of_experience) < 0) {
+            toast.error('Years of experience must be a positive number');
+            return;
+        }
+
+        if (!data.expected_salary || parseFloat(data.expected_salary) < 0) {
+            toast.error('Expected salary must be a positive number');
+            return;
+        }
+
+        if (!data.notice_period_in_months || parseInt(data.notice_period_in_months) < 0) {
+            toast.error('Notice period must be a positive number');
+            return;
+        }
+
+        // Validate core experience
+        const validCoreExperience = coreExperience.filter(exp => exp.trim() !== '');
+        if (validCoreExperience.length === 0) {
+            toast.error('At least one core experience is required');
+            return;
+        }
+
         try {
             setSubmitting(true);
 
@@ -79,6 +107,12 @@ const JobApplication = () => {
             formData.append('name', data.name);
             formData.append('email', data.email);
             formData.append('phone', data.phone);
+            formData.append('years_of_experience', data.years_of_experience);
+            formData.append('expected_salary', data.expected_salary);
+            formData.append('notice_period_in_months', data.notice_period_in_months);
+            validCoreExperience.forEach(exp => {
+                formData.append('core_experience', exp);
+            });
 
             const resp = await candidateService.createCandidate(job.job_id, formData);
             const created = resp.data?.candidate || resp.candidate || resp.data;
@@ -295,6 +329,76 @@ const JobApplication = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                <BriefcaseIcon className="h-4 w-4 inline mr-1" />
+                                Years of Experience *
+                            </label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.years_of_experience ? '!border-danger-500' : ''}`}
+                                placeholder="e.g., 2.5"
+                                {...register('years_of_experience', {
+                                    required: 'Years of experience is required',
+                                    min: {
+                                        value: 0,
+                                        message: 'Years of experience must be a positive number'
+                                    }
+                                })}
+                            />
+                            {errors.years_of_experience && (
+                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.years_of_experience.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                <CurrencyDollarIcon className="h-4 w-4 inline mr-1" />
+                                Expected Salary (BDT) *
+                            </label>
+                            <input
+                                type="number"
+                                min="0"
+                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.expected_salary ? '!border-danger-500' : ''}`}
+                                placeholder="e.g., 50000"
+                                {...register('expected_salary', {
+                                    required: 'Expected salary is required',
+                                    min: {
+                                        value: 0,
+                                        message: 'Expected salary must be a positive number'
+                                    }
+                                })}
+                            />
+                            {errors.expected_salary && (
+                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.expected_salary.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                <ClockIcon className="h-4 w-4 inline mr-1" />
+                                Notice Period (Months) *
+                            </label>
+                            <input
+                                type="number"
+                                min="0"
+                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.notice_period_in_months ? '!border-danger-500' : ''}`}
+                                placeholder="e.g., 1"
+                                {...register('notice_period_in_months', {
+                                    required: 'Notice period is required',
+                                    min: {
+                                        value: 0,
+                                        message: 'Notice period must be a positive number'
+                                    }
+                                })}
+                            />
+                            {errors.notice_period_in_months && (
+                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.notice_period_in_months.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                 <DocumentIcon className="h-4 w-4 inline mr-1" />
                                 CV/Resume (PDF, DOC, DOCX)
                             </label>
@@ -312,6 +416,53 @@ const JobApplication = () => {
                             )}
                             <p className="mt-1 text-sm text-gray-500 !text-gray-500">
                                 Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                <AcademicCapIcon className="h-4 w-4 inline mr-1" />
+                                Core Experience *
+                            </label>
+                            <div className="space-y-2">
+                                {coreExperience.map((exp, index) => (
+                                    <div key={index} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={exp}
+                                            onChange={(e) => {
+                                                const newExp = [...coreExperience];
+                                                newExp[index] = e.target.value;
+                                                setCoreExperience(newExp);
+                                            }}
+                                            className="flex-1 input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500"
+                                            placeholder="e.g., React.js, Node.js, MongoDB"
+                                            required={index === 0}
+                                        />
+                                        {coreExperience.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newExp = coreExperience.filter((_, i) => i !== index);
+                                                    setCoreExperience(newExp);
+                                                }}
+                                                className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 rounded-md hover:bg-red-50"
+                                            >
+                                                Remove
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setCoreExperience([...coreExperience, ''])}
+                                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                                >
+                                    + Add Another Experience
+                                </button>
+                            </div>
+                            <p className="mt-1 text-sm text-gray-500 !text-gray-500">
+                                Add your key technical skills and areas of expertise
                             </p>
                         </div>
 

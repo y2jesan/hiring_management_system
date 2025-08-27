@@ -23,8 +23,10 @@ const Candidates = () => {
   const [jobFilter, setJobFilter] = useState('');
   const [applyDateFilter, setApplyDateFilter] = useState('');
   const [submitDateFilter, setSubmitDateFilter] = useState('');
+  const [experienceFilter, setExperienceFilter] = useState('');
+  const [salaryFilter, setSalaryFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Edit modal states
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
@@ -34,7 +36,11 @@ const Candidates = () => {
     phone: '',
     status: '',
     reference: '',
-    job_id: ''
+    job_id: '',
+    years_of_experience: '',
+    expected_salary: '',
+    notice_period_in_months: '',
+    core_experience: []
   });
   const [users, setUsers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -88,6 +94,8 @@ const Candidates = () => {
       if (statusFilter) params.status = statusFilter;
       if (applyDateFilter) params.apply_date = applyDateFilter;
       if (submitDateFilter) params.submit_date = submitDateFilter;
+      if (experienceFilter) params.min_experience = experienceFilter;
+      if (salaryFilter) params.min_salary = salaryFilter;
 
       const blob = await candidateService.exportCandidates(params);
       const url = window.URL.createObjectURL(blob);
@@ -113,7 +121,11 @@ const Candidates = () => {
       phone: candidate.phone || '',
       status: candidate.status || '',
       reference: candidate.reference?._id || '',
-      job_id: candidate.job_id?._id || ''
+      job_id: candidate.job_id?._id || '',
+      years_of_experience: candidate.years_of_experience || '',
+      expected_salary: candidate.expected_salary || '',
+      notice_period_in_months: candidate.notice_period_in_months || '',
+      core_experience: candidate.core_experience || []
     });
     setShowEditModal(true);
   };
@@ -134,7 +146,11 @@ const Candidates = () => {
         phone: '',
         status: '',
         reference: '',
-        job_id: ''
+        job_id: '',
+        years_of_experience: '',
+        expected_salary: '',
+        notice_period_in_months: '',
+        core_experience: []
       });
       fetchData();
     } catch (error) {
@@ -173,7 +189,10 @@ const Candidates = () => {
   const filteredCandidates = candidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase());
+      candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (candidate.core_experience && candidate.core_experience.some(exp =>
+        exp.toLowerCase().includes(searchTerm.toLowerCase())
+      ));
 
     const matchesStatus = !statusFilter || candidate.status === statusFilter;
 
@@ -186,7 +205,13 @@ const Candidates = () => {
       (candidate.task_submission?.submitted_at &&
         new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
 
-    return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate;
+    const matchesExperience = !experienceFilter ||
+      (candidate.years_of_experience && candidate.years_of_experience >= parseFloat(experienceFilter));
+
+    const matchesSalary = !salaryFilter ||
+      (candidate.expected_salary && candidate.expected_salary >= parseFloat(salaryFilter));
+
+    return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate && matchesExperience && matchesSalary;
   });
 
   if (loading) {
@@ -245,9 +270,9 @@ const Candidates = () => {
               >
                 <FunnelIcon className="h-5 w-5 mr-2" />
                 Filters
-                {(statusFilter || jobFilter || applyDateFilter || submitDateFilter) && (
+                {(statusFilter || jobFilter || applyDateFilter || submitDateFilter || experienceFilter || salaryFilter) && (
                   <span className="ml-2 bg-primary-100 text-primary-700 text-xs font-medium px-2 py-1 rounded-full">
-                    {[statusFilter, jobFilter, applyDateFilter, submitDateFilter].filter(Boolean).length}
+                    {[statusFilter, jobFilter, applyDateFilter, submitDateFilter, experienceFilter, salaryFilter].filter(Boolean).length}
                   </span>
                 )}
               </button>
@@ -321,6 +346,35 @@ const Candidates = () => {
                     className="input"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Min Experience (Years)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={experienceFilter}
+                    onChange={(e) => setExperienceFilter(e.target.value)}
+                    className="input"
+                    placeholder="e.g., 2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Min Expected Salary (BDT)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={salaryFilter}
+                    onChange={(e) => setSalaryFilter(e.target.value)}
+                    className="input"
+                    placeholder="e.g., 50000"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -328,7 +382,7 @@ const Candidates = () => {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-6">
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
@@ -406,6 +460,52 @@ const Candidates = () => {
             </div>
           </div>
         </div>
+
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">E</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Avg Experience</dt>
+                  <dd className="text-lg font-medium text-gray-900 dark:text-white">
+                    {candidates.length > 0
+                      ? (candidates.reduce((sum, c) => sum + (c.years_of_experience || 0), 0) / candidates.length).toFixed(1)
+                      : '0'
+                    } years
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-indigo-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">S</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Avg Expected Salary</dt>
+                  <dd className="text-lg font-medium text-gray-900 dark:text-white">
+                    {candidates.length > 0
+                      ? `BDT ${(candidates.reduce((sum, c) => sum + (c.expected_salary || 0), 0) / candidates.length).toLocaleString()}`
+                      : 'BDT 0'
+                    }
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Candidates Table */}
@@ -431,6 +531,12 @@ const Candidates = () => {
                     Status
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Experience
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Expected Salary
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Score
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -445,7 +551,7 @@ const Candidates = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredCandidates.map((candidate,i) => (
+                {filteredCandidates.map((candidate, i) => (
                   <tr key={candidate._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-4 py-2 whitespace-nowrap">
                       {i + 1}
@@ -491,6 +597,12 @@ const Candidates = () => {
                       {getStatusBadge(candidate.status)}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {candidate.years_of_experience ? `${candidate.years_of_experience} years` : 'N/A'}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {candidate.expected_salary ? `BDT ${candidate.expected_salary.toLocaleString()}` : 'N/A'}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {candidate.evaluation?.score ? `${candidate.evaluation.score}%` : 'N/A'}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -503,8 +615,8 @@ const Candidates = () => {
                             <div key={index} className="flex items-center space-x-1">
                               {/* <LinkIcon className="h-3 w-3 text-gray-400 dark:text-gray-500" /> */}
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' :
-                                  link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                                    'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                                link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                  'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
                                 }`}>
                                 {link.type}
                               </span>
@@ -687,6 +799,94 @@ const Candidates = () => {
                               </option>
                             ))}
                           </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Years of Experience *
+                          </label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            value={editFormData.years_of_experience}
+                            onChange={(e) => setEditFormData({ ...editFormData, years_of_experience: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Expected Salary (BDT) *
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={editFormData.expected_salary}
+                            onChange={(e) => setEditFormData({ ...editFormData, expected_salary: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Notice Period (Months) *
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={editFormData.notice_period_in_months}
+                            onChange={(e) => setEditFormData({ ...editFormData, notice_period_in_months: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Core Experience
+                          </label>
+                          <div className="space-y-2">
+                            {editFormData.core_experience.map((exp, index) => (
+                              <div key={index} className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={exp}
+                                  onChange={(e) => {
+                                    const newExp = [...editFormData.core_experience];
+                                    newExp[index] = e.target.value;
+                                    setEditFormData({ ...editFormData, core_experience: newExp });
+                                  }}
+                                  className="flex-1 input"
+                                  placeholder="e.g., React.js, Node.js"
+                                />
+                                {editFormData.core_experience.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newExp = editFormData.core_experience.filter((_, i) => i !== index);
+                                      setEditFormData({ ...editFormData, core_experience: newExp });
+                                    }}
+                                    className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 rounded-md hover:bg-red-50"
+                                  >
+                                    Remove
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => setEditFormData({
+                                ...editFormData,
+                                core_experience: [...editFormData.core_experience, '']
+                              })}
+                              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                            >
+                              + Add Another Experience
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

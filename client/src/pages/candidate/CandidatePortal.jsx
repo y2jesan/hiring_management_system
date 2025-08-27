@@ -180,11 +180,11 @@ const CandidatePortal = () => {
   };
 
   if (loading) {
-          return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
-          <Loader size="md" />
-        </div>
-      );
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+        <Loader size="md" />
+      </div>
+    );
   }
 
   if (!candidate) {
@@ -209,7 +209,7 @@ const CandidatePortal = () => {
               <UserIcon className="h-8 w-8 text-white" />
             </div> */}
           </div>
-                          <h1 className="text-3xl font-bold text-primary-800 !text-primary-800 mb-2">QTEC Candidate Portal</h1>
+          <h1 className="text-3xl font-bold text-primary-800 !text-primary-800 mb-2">QTEC Candidate Portal</h1>
           <p className="text-lg text-gray-600 !text-gray-600">Track your application progress</p>
         </div>
 
@@ -244,9 +244,18 @@ const CandidatePortal = () => {
                   <p className="text-gray-900 !text-gray-900">{candidate.phone}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Applied Date:</span>
-                  <p className="text-gray-900 !text-gray-900">{new Date(candidate.createdAt).toLocaleDateString()}</p>
+                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Years of Experience:</span>
+                  <p className="text-gray-900 !text-gray-900">{candidate.years_of_experience || 'N/A'}</p>
                 </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Expected Salary:</span>
+                  <p className="text-gray-900 !text-gray-900">{candidate.expected_salary ? `BDT ${candidate.expected_salary.toLocaleString()}` : 'N/A'}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Notice Period:</span>
+                  <p className="text-gray-900 !text-gray-900">{candidate.notice_period_in_months ? `${candidate.notice_period_in_months} month(s)` : 'N/A'}</p>
+                </div>
+
               </div>
             </div>
 
@@ -268,6 +277,24 @@ const CandidatePortal = () => {
                 <div>
                   <span className="text-sm font-medium text-gray-500 !text-gray-500">Salary Range:</span>
                   <p className="text-gray-900 !text-gray-900">{candidate.job_id?.salary_range}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Core Experience:</span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {candidate.core_experience && candidate.core_experience.length > 0 ? (
+                      candidate.core_experience.map((exp, index) => (
+                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800">
+                          {exp}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-gray-400 !text-gray-400">No core experience listed</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Applied Date:</span>
+                  <p className="text-gray-900 !text-gray-900">{new Date(candidate.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
             </div>
@@ -465,13 +492,12 @@ const CandidatePortal = () => {
                     <div className="flex items-center">
                       <h4 className="text-lg font-semibold text-gray-900 !text-gray-900">Interview #{idx + 1}</h4>
                       {interview.result && ['Selected', 'Rejected', 'Shortlisted'].includes(candidate.status) && (
-                        <span className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
+                        <span className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
                           interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
-                          interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
-                          interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
-                          'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800'
-                        }`}>
+                            interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
+                              interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
+                                'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800'
+                          }`}>
                           {interview.result === 'Taken' ? 'Evaluating' : interview.result}
                         </span>
                       )}
@@ -489,7 +515,7 @@ const CandidatePortal = () => {
                         {new Date(interview.scheduled_date).toLocaleDateString()} at {new Date(interview.scheduled_date).toLocaleTimeString()}
                       </p>
                     </div>
-                    
+
                     <div>
                       <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Type</span>
                       <p className="text-gray-900 !text-gray-900 font-medium">{interview.location}</p>
@@ -512,27 +538,26 @@ const CandidatePortal = () => {
                     )}
 
                     {/* Interview Status Section */}
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Status</span>
-                    <div className="mt-1">
-                      {interview.result ? (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          interview.result === 'Pending' ? 'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800' :
-                          interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
-                          interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
-                          interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
-                          interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
-                          'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800'
-                        }`}>
-                          {interview.result === 'Taken' ? 'Evaluating' : interview.result}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800">
-                          Scheduled
-                        </span>
-                      )}
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Status</span>
+                      <div className="mt-1">
+                        {interview.result ? (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${interview.result === 'Pending' ? 'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800' :
+                            interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
+                              interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
+                                interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
+                                  interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
+                                    'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800'
+                            }`}>
+                            {interview.result === 'Taken' ? 'Evaluating' : interview.result}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800">
+                            Scheduled
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
                   </div>
 
                   {/* Meeting Link Section */}
@@ -543,10 +568,10 @@ const CandidatePortal = () => {
                           <span className="text-sm font-medium text-blue-800 !text-blue-800">Meeting Link</span>
                           <p className="text-xs text-blue-600 !text-blue-600 mt-1">Click to join the online interview</p>
                         </div>
-                        <a 
-                          href={interview.meeting_link} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={interview.meeting_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center px-3 py-1 bg-blue-600 !bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 !hover:bg-blue-700 transition-colors"
                         >
                           <LinkIcon className="h-4 w-4 mr-1" />
@@ -556,7 +581,7 @@ const CandidatePortal = () => {
                     </div>
                   )}
 
-                  
+
 
                   {/* Feedback Section - Only show to candidates when final decision made */}
                   {['Selected', 'Rejected', 'Shortlisted'].includes(candidate.status) && interview.feedback && (
@@ -572,7 +597,7 @@ const CandidatePortal = () => {
                   {!interview.result && new Date(interview.scheduled_date) > new Date() && (
                     <div className="mt-4 p-3 bg-blue-50 !bg-blue-50 rounded-lg border border-blue-200 !border-blue-200">
                       <p className="text-blue-800 !text-blue-800 text-sm">
-                        <strong>Upcoming Interview:</strong> Please be prepared and join on time. 
+                        <strong>Upcoming Interview:</strong> Please be prepared and join on time.
                         {interview.location === 'Online' && ' You will receive meeting details closer to the interview time.'}
                       </p>
                     </div>
@@ -582,7 +607,7 @@ const CandidatePortal = () => {
                   {!interview.result && new Date(interview.scheduled_date) < new Date() && (
                     <div className="mt-4 p-3 bg-yellow-50 !bg-yellow-50 rounded-lg border border-yellow-200 !border-yellow-200">
                       <p className="text-yellow-800 !text-yellow-800 text-sm">
-                        <strong>Interview Completed:</strong> Your interview has been completed and is under review. 
+                        <strong>Interview Completed:</strong> Your interview has been completed and is under review.
                         You will be notified of the results soon.
                       </p>
                     </div>
@@ -631,7 +656,7 @@ const CandidatePortal = () => {
                                   <select
                                     value={link.type}
                                     onChange={(e) => updateLink(index, 'type', e.target.value)}
-                                    className="mt-1 input"
+                                    className="input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500"
                                   >
                                     <option value="github">GitHub Repository</option>
                                     <option value="live">Live Demo</option>
@@ -647,7 +672,7 @@ const CandidatePortal = () => {
                                     type="url"
                                     value={link.url}
                                     onChange={(e) => updateLink(index, 'url', e.target.value)}
-                                    className="mt-1 input"
+                                    className="input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500"
                                     placeholder={
                                       link.type === 'github' ? 'https://github.com/username/repository' :
                                         link.type === 'live' ? 'https://your-demo-url.com' :

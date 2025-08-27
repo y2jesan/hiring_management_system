@@ -98,8 +98,8 @@ const UserInfo = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-primary-800">Profile Information</h1>
-                      <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+          <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">Profile Information</h1>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
               Manage your account settings and profile information
             </p>
         </div>
@@ -117,15 +117,15 @@ const UserInfo = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
         <div className="lg:col-span-1">
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div className="text-center">
-              <div className="mx-auto h-24 w-24 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-                <UserCircleIcon className="h-12 w-12 text-primary-600" />
+              <div className="mx-auto h-24 w-24 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-4">
+                <UserCircleIcon className="h-12 w-12 text-primary-600 dark:text-primary-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900">{user?.name}</h3>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">{user?.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
               <div className="mt-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-200">
                   <ShieldCheckIcon className="h-4 w-4 mr-1" />
                   {getRoleDisplayName(user?.role)}
                 </span>
@@ -136,9 +136,9 @@ const UserInfo = () => {
 
         {/* Profile Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                 {isEditing ? 'Edit Profile' : 'Profile Details'}
               </h3>
             </div>
@@ -146,7 +146,7 @@ const UserInfo = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Full Name
                   </label>
                   {isEditing ? (
@@ -156,15 +156,15 @@ const UserInfo = () => {
                       {...register('name', { required: 'Name is required' })}
                     />
                   ) : (
-                    <p className="text-gray-900">{user?.name}</p>
+                    <p className="text-gray-900 dark:text-white">{user?.name}</p>
                   )}
                   {errors.name && (
-                    <p className="mt-1 text-sm text-danger-600">{errors.name.message}</p>
+                    <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.name.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email Address
                   </label>
                   {isEditing ? (
@@ -181,34 +181,34 @@ const UserInfo = () => {
                     />
                   ) : (
                     <div className="flex items-center">
-                      <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-2" />
-                      <p className="text-gray-900">{user?.email}</p>
+                      <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
+                      <p className="text-gray-900 dark:text-white">{user?.email}</p>
                     </div>
                   )}
                   {errors.email && (
-                    <p className="mt-1 text-sm text-danger-600">{errors.email.message}</p>
+                    <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.email.message}</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Role
                 </label>
                 <div className="flex items-center">
-                  <ShieldCheckIcon className="h-5 w-5 text-gray-400 mr-2" />
-                  <p className="text-gray-900">{getRoleDisplayName(user?.role)}</p>
+                  <ShieldCheckIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
+                  <p className="text-gray-900 dark:text-white">{getRoleDisplayName(user?.role)}</p>
                 </div>
               </div>
 
               {isEditing && (
                 <>
-                  <div className="border-t border-gray-200 pt-6">
-                    <h4 className="text-md font-medium text-gray-900 mb-4">Change Password (Optional)</h4>
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                    <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">Change Password (Optional)</h4>
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Current Password
                         </label>
                         <input
@@ -221,7 +221,7 @@ const UserInfo = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             New Password
                           </label>
                           <input
@@ -236,12 +236,12 @@ const UserInfo = () => {
                             placeholder="Enter new password"
                           />
                           {errors.newPassword && (
-                            <p className="mt-1 text-sm text-danger-600">{errors.newPassword.message}</p>
+                            <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.newPassword.message}</p>
                           )}
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Confirm New Password
                           </label>
                           <input
@@ -251,14 +251,14 @@ const UserInfo = () => {
                             placeholder="Confirm new password"
                           />
                           {errors.confirmPassword && (
-                            <p className="mt-1 text-sm text-danger-600">{errors.confirmPassword.message}</p>
+                            <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.confirmPassword.message}</p>
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                  <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-600">
                     <button
                       type="button"
                       onClick={handleCancel}

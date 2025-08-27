@@ -37,13 +37,13 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-                  <div className="relative flex items-center justify-center mb-4">
+          <div className="relative flex items-center justify-center mb-4">
             <div className="animate-spin rounded-full h-24 w-24 border-b-4 border-primary-400"></div>
             <img src={qtecLogo} alt="QTEC Logo" className="absolute h-12 w-12" />
-        </div>
-          {/* <p className="mt-4 text-gray-600">Loading QTEC Hiring Management System...</p> */}
+          </div>
+          {/* <p className="mt-4 text-gray-600 dark:text-gray-400">Loading QTEC Hiring Management System...</p> */}
         </div>
       </div>
     );

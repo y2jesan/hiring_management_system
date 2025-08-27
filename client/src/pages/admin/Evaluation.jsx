@@ -76,12 +76,12 @@ const Evaluation = () => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      'Task Submitted': 'bg-purple-100 text-purple-800',
-      'Under Review': 'bg-orange-100 text-orange-800'
+      'Task Submitted': 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200',
+      'Under Review': 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200'
     };
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-800'}`}>
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}>
         {status}
       </span>
     );
@@ -116,29 +116,35 @@ const Evaluation = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-primary-800">Evaluation</h1>
-                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+        <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">Evaluation</h1>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
             Review and score candidate task submissions
           </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search by name, email, or application ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 input"
+                  className="pl-10 pr-12 sm:pr-10 input"
                 />
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 sm:hidden p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                >
+                  <FunnelIcon className="h-5 w-5" />
+                </button>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="hidden sm:flex gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="btn btn-secondary flex items-center"
@@ -150,10 +156,10 @@ const Evaluation = () => {
           </div>
 
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
                   </label>
                   <select
@@ -168,7 +174,7 @@ const Evaluation = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Job (Active only)
                   </label>
                   <select
@@ -186,7 +192,7 @@ const Evaluation = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Submit Date
                   </label>
                   <input
@@ -204,7 +210,7 @@ const Evaluation = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -214,8 +220,8 @@ const Evaluation = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Task Submitted</dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Task Submitted</dt>
+                  <dd className="text-lg font-medium text-gray-900 dark:text-white">
                     {candidates.filter(c => c.status === 'Task Submitted').length}
                   </dd>
                 </dl>
@@ -224,7 +230,7 @@ const Evaluation = () => {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -234,8 +240,8 @@ const Evaluation = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Under Review</dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Under Review</dt>
+                  <dd className="text-lg font-medium text-gray-900 dark:text-white">
                     {candidates.filter(c => c.status === 'Under Review').length}
                   </dd>
                 </dl>
@@ -244,7 +250,7 @@ const Evaluation = () => {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -254,8 +260,8 @@ const Evaluation = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Pending</dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Pending</dt>
+                  <dd className="text-lg font-medium text-gray-900 dark:text-white">
                     {candidates.filter(c => ['Task Submitted', 'Under Review'].includes(c.status)).length}
                   </dd>
                 </dl>
@@ -273,31 +279,31 @@ const Evaluation = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
-                    <ClipboardDocumentCheckIcon className="h-8 w-8 text-primary-600 mr-3" />
+                    <ClipboardDocumentCheckIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
                     <div>
-                      <Link to={`/admin/candidates/${candidate._id}`} className="text-lg font-semibold text-gray-900">{candidate.name}</Link>
-                      <p className="text-sm text-gray-500">{candidate.job_id?.title || 'N/A'}</p>
+                      <Link to={`/admin/candidates/${candidate._id}`} className="text-lg font-semibold text-gray-900 dark:text-white">{candidate.name}</Link>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{candidate.job_id?.title || 'N/A'}</p>
                     </div>
                   </div>
                   {getStatusBadge(candidate.status)}
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     <span className="font-medium">Application ID:</span> {candidate.application_id}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     <span className="font-medium">Email:</span> {candidate.email}
                   </p>
                   {candidate.task_submission?.links && candidate.task_submission.links.length > 0 && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
                       <span className="font-medium">Task Links:</span>
                       <div className="mt-1 space-y-1">
                         {candidate.task_submission.links.slice(0, 2).map((link, index) => (
                           <div key={index} className="flex items-center space-x-2">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
-                              link.type === 'live' ? 'bg-green-100 text-green-800' :
-                                'bg-blue-100 text-blue-800'
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200' :
+                              link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
                               }`}>
                               {link.type}
                             </span>
@@ -305,7 +311,7 @@ const Evaluation = () => {
                               href={link.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-primary-600 hover:text-primary-700 truncate"
+                              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 truncate"
                               title={link.url}
                             >
                               {link.url.length > 30 ? link.url.substring(0, 30) + '...' : link.url}
@@ -313,7 +319,7 @@ const Evaluation = () => {
                           </div>
                         ))}
                         {candidate.task_submission.links.length > 2 && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             +{candidate.task_submission.links.length - 2} more links
                           </p>
                         )}
@@ -321,7 +327,7 @@ const Evaluation = () => {
                     </div>
                   )}
                   {candidate.task_submission?.submitted_at && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       <span className="font-medium">Submitted:</span>{' '}
                       {new Date(candidate.task_submission.submitted_at).toLocaleDateString()}
                     </p>
@@ -340,9 +346,9 @@ const Evaluation = () => {
         </div>
       ) : (
         <div className="text-center py-12">
-          <ClipboardDocumentCheckIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No candidates to evaluate</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <ClipboardDocumentCheckIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No candidates to evaluate</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {searchTerm || statusFilter || jobFilter || submitDateFilter
               ? 'No candidates match your current filters.'
               : 'All candidates have been evaluated or no tasks have been submitted yet.'}
@@ -357,18 +363,18 @@ const Evaluation = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <form onSubmit={handleEvaluate}>
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                         Evaluate {selectedCandidate.name}
                       </h3>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Score (0-100)
                           </label>
                           <div className="mt-1 flex items-center">
@@ -378,13 +384,13 @@ const Evaluation = () => {
                                 type="button"
                                 onClick={() => setScore(value.toString())}
                                 className={`mr-2 p-2 rounded-lg border ${score === value.toString()
-                                  ? 'border-primary-500 bg-primary-50'
-                                  : 'border-gray-300 hover:border-gray-400'
+                                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                                   }`}
                               >
-                                <StarIcon className={`h-5 w-5 ${score === value.toString() ? 'text-primary-600' : 'text-gray-400'
+                                <StarIcon className={`h-5 w-5 ${score === value.toString() ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'
                                   }`} />
-                                <span className="ml-1 text-sm">{value}</span>
+                                <span className="ml-1 text-sm dark:text-white">{value}</span>
                               </button>
                             ))}
                           </div>
@@ -401,7 +407,7 @@ const Evaluation = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Comments
                           </label>
                           <textarea
@@ -415,16 +421,16 @@ const Evaluation = () => {
 
                         {selectedCandidate.task_submission?.links && selectedCandidate.task_submission.links.length > 0 && (
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Task Submission Links
                             </label>
                             <div className="mt-2 space-y-2">
                               {selectedCandidate.task_submission.links.map((link, index) => (
-                                <div key={index} className="bg-gray-50 rounded-lg p-3">
+                                <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                   <div className="flex items-center space-x-2 mb-1">
-                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 text-gray-800' :
-                                      link.type === 'live' ? 'bg-green-100 text-green-800' :
-                                        'bg-blue-100 text-blue-800'
+                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200' :
+                                      link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                        'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
                                       }`}>
                                       {link.type}
                                     </span>
@@ -433,7 +439,7 @@ const Evaluation = () => {
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-primary-600 hover:text-primary-700 break-all"
+                                    className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 break-all"
                                   >
                                     {link.url}
                                   </a>
@@ -447,7 +453,7 @@ const Evaluation = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     type="submit"
                     className="btn btn-primary sm:ml-3 sm:w-auto"

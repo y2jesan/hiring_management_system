@@ -97,20 +97,20 @@ const JobApplication = () => {
     };
 
     if (loading) {
-                  return (
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                  <Loader size="md" />
-              </div>
-          );
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+                <Loader size="md" />
+            </div>
+        );
     }
 
     if (!job) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
-                    <p className="text-gray-600">The job you're looking for is no longer available.</p>
-                    <p className="text-sm text-gray-500 mt-2">Job ID: {jobId}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 !text-gray-900 mb-4">Job Not Found</h1>
+                    <p className="text-gray-600 !text-gray-600">The job you're looking for is no longer available.</p>
+                    <p className="text-sm text-gray-500 !text-gray-500 mt-2">Job ID: {jobId}</p>
                 </div>
             </div>
         );
@@ -118,7 +118,7 @@ const JobApplication = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -128,12 +128,12 @@ const JobApplication = () => {
                             <BriefcaseIcon className="h-8 w-8 text-white" />
                         </div> */}
                     </div>
-                    <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Job Application</h1>
-                    <p className="text-lg text-gray-600">Apply for the position below</p>
+                    <h1 className="text-3xl font-bold text-primary-800 !text-primary-800 mb-2">QTEC Job Application</h1>
+                    <p className="text-lg text-gray-600 !text-gray-600">Apply for the position below</p>
                 </div>
 
                 {/* Job Details */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+                <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
                     <div className="flex items-start space-x-4">
                         {job.image && (
                             <img
@@ -143,10 +143,10 @@ const JobApplication = () => {
                             />
                         )}
                         <div className="flex-1">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">{job.title}</h2>
-                            <p className="text-lg text-gray-600 mb-4">{job.designation}</p>
+                            <h2 className="text-2xl font-bold text-gray-900 !text-gray-900 mb-2">{job.title}</h2>
+                            <p className="text-lg text-gray-600 !text-gray-600 mb-4">{job.designation}</p>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 !text-gray-600">
                                 <div>
                                     <span className="font-medium">Experience:</span> {job.experience_in_year || 'N/A'}
                                 </div>
@@ -158,7 +158,7 @@ const JobApplication = () => {
                                 </div>
                                 <div>
                                     <span className="font-medium">Status:</span>{' '}
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${job.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${job.is_active ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' : 'bg-red-100 !bg-red-100 text-red-800 !text-red-800'
                                         }`}>
                                         {job.is_active ? 'Active' : 'Closed'}
                                     </span>
@@ -167,16 +167,16 @@ const JobApplication = () => {
 
                             {/* Job Description */}
                             {job.job_description && (
-                                <div className="mt-6 pt-6 border-t border-gray-200">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
-                                    <div className="prose prose-sm max-w-none text-gray-700">
+                                <div className="mt-6 pt-6 border-t border-gray-200 !border-gray-200">
+                                    <h3 className="text-lg font-semibold text-gray-900 !text-gray-900 mb-3">Job Description</h3>
+                                    <div className="prose prose-sm max-w-none text-gray-700 !text-gray-700">
                                         <div
                                             className="markdown-content"
                                             dangerouslySetInnerHTML={{
                                                 __html: job.job_description
-                                                    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-900 mt-4 mb-2">$1</h3>')
-                                                    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-3">$1</h2>')
-                                                    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-gray-900 mt-6 mb-4">$1</h1>')
+                                                    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-900 !text-gray-900 mt-4 mb-2">$1</h3>')
+                                                    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-gray-900 !text-gray-900 mt-6 mb-3">$1</h2>')
+                                                    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-gray-900 !text-gray-900 mt-6 mb-4">$1</h1>')
                                                     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
                                                     .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
                                                     .replace(/^- (.*$)/gim, '<li class="ml-4">$1</li>')
@@ -197,19 +197,19 @@ const JobApplication = () => {
                 </div>
 
                 {/* Application Form */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Application Form</h3>
+                <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 !text-gray-900 mb-6">Application Form</h3>
 
                     <form id="application-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                     <UserIcon className="h-4 w-4 inline mr-1" />
                                     Full Name
                                 </label>
                                 <input
                                     type="text"
-                                    className={`input ${errors.name ? 'border-danger-500' : ''}`}
+                                    className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.name ? '!border-danger-500' : ''}`}
                                     placeholder="Enter your full name"
                                     {...register('name', {
                                         required: 'Full name is required',
@@ -217,18 +217,18 @@ const JobApplication = () => {
                                     })}
                                 />
                                 {errors.name && (
-                                    <p className="mt-1 text-sm text-danger-600">{errors.name.message}</p>
+                                    <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.name.message}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                     <EnvelopeIcon className="h-4 w-4 inline mr-1" />
                                     Email Address
                                 </label>
                                 <input
                                     type="email"
-                                    className={`input ${errors.email ? 'border-danger-500' : ''}`}
+                                    className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.email ? '!border-danger-500' : ''}`}
                                     placeholder="Enter your email address"
                                     {...register('email', {
                                         required: 'Email is required',
@@ -239,19 +239,19 @@ const JobApplication = () => {
                                     })}
                                 />
                                 {errors.email && (
-                                    <p className="mt-1 text-sm text-danger-600">{errors.email.message}</p>
+                                    <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.email.message}</p>
                                 )}
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                 <PhoneIcon className="h-4 w-4 inline mr-1" />
                                 Phone Number
                             </label>
                             <input
                                 type="tel"
-                                className={`input ${errors.phone ? 'border-danger-500' : ''}`}
+                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.phone ? '!border-danger-500' : ''}`}
                                 placeholder="01XXXXXXXXX (11 digits starting with 01)"
                                 {...register('phone', {
                                     required: 'Phone number is required',
@@ -270,12 +270,12 @@ const JobApplication = () => {
                                 })}
                             />
                             {errors.phone && (
-                                <p className="mt-1 text-sm text-danger-600">{errors.phone.message}</p>
+                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.phone.message}</p>
                             )}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                 <DocumentIcon className="h-4 w-4 inline mr-1" />
                                 CV/Resume (PDF, DOC, DOCX)
                             </label>
@@ -283,22 +283,22 @@ const JobApplication = () => {
                                 type="file"
                                 accept=".pdf,.doc,.docx"
                                 onChange={handleCVChange}
-                                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                className="mt-1 block w-full text-sm text-gray-500 !text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 !file:bg-primary-50 file:text-primary-700 !file:text-primary-700 hover:file:bg-primary-100 !hover:file:bg-primary-100"
                                 required
                             />
                             {selectedCV && (
-                                <p className="mt-2 text-sm text-gray-600">
+                                <p className="mt-2 text-sm text-gray-600 !text-gray-600">
                                     Selected file: {selectedCV.name}
                                 </p>
                             )}
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className="mt-1 text-sm text-gray-500 !text-gray-500">
                                 Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX
                             </p>
                         </div>
 
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 className="text-sm font-medium text-blue-900 mb-2">What happens next?</h4>
-                            <ul className="text-sm text-blue-800 space-y-1">
+                        <div className="bg-blue-50 !bg-blue-50 border border-blue-200 !border-blue-200 rounded-lg p-4">
+                            <h4 className="text-sm font-medium text-blue-900 !text-blue-900 mb-2">What happens next?</h4>
+                            <ul className="text-sm text-blue-800 !text-blue-800 space-y-1">
                                 <li>• You'll receive a confirmation email with your Application ID</li>
                                 <li>• We'll review your application and send you a task assignment</li>
                                 <li>• Complete the task and submit it through your candidate portal</li>

@@ -8,6 +8,7 @@ import {
 import { ClockPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { interviewService } from '../../services/interviewService';
@@ -159,15 +160,15 @@ const Interviews = () => {
 
     const getResultBadge = (result) => {
         const colors = {
-            'Pending': 'bg-yellow-100 text-yellow-800',
-            'Passed': 'bg-green-100 text-green-800',
-            'Failed': 'bg-red-100 text-red-800',
-            'No Show': 'bg-gray-100 text-gray-800',
-            'Completed': 'bg-blue-100 text-blue-800'
+            'Pending': 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200',
+            'Passed': 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
+            'Failed': 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200',
+            'No Show': 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+            'Completed': 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
         };
 
         return (
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[result] || 'bg-gray-100 text-gray-800'}`}>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[result] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}>
                 {result}
             </span>
         );
@@ -207,8 +208,8 @@ const Interviews = () => {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-primary-800">Interviews</h1>
-                    <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+                    <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">Interviews</h1>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
                         Schedule and manage candidate interviews
                     </p>
                 </div>
@@ -222,22 +223,28 @@ const Interviews = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white shadow rounded-lg">
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 <input
                                     type="text"
                                     placeholder="Search by candidate name, email, or application ID..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 input"
+                                    className="pl-10 pr-12 sm:pr-10 input"
                                 />
+                                <button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 sm:hidden p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                                >
+                                    <FunnelIcon className="h-5 w-5" />
+                                </button>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="hidden sm:flex gap-2">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className="btn btn-secondary flex items-center"
@@ -249,10 +256,10 @@ const Interviews = () => {
                     </div>
 
                     {showFilters && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Interview Result
                                     </label>
                                     <select
@@ -270,7 +277,7 @@ const Interviews = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Job (Active only)
                                     </label>
                                     <select
@@ -288,7 +295,7 @@ const Interviews = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Interview Date
                                     </label>
                                     <input
@@ -300,7 +307,7 @@ const Interviews = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Location
                                     </label>
                                     <select
@@ -321,7 +328,7 @@ const Interviews = () => {
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -331,15 +338,15 @@ const Interviews = () => {
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Total Interviews</dt>
-                                    <dd className="text-lg font-medium text-gray-900">{interviews.length}</dd>
+                                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Interviews</dt>
+                                    <dd className="text-lg font-medium text-gray-900 dark:text-white">{interviews.length}</dd>
                                 </dl>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -349,8 +356,8 @@ const Interviews = () => {
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
+                                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Pending</dt>
+                                    <dd className="text-lg font-medium text-gray-900 dark:text-white">
                                         {interviews.filter(i => i.result === 'Pending').length}
                                     </dd>
                                 </dl>
@@ -359,7 +366,7 @@ const Interviews = () => {
                     </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -369,8 +376,8 @@ const Interviews = () => {
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
+                                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Completed</dt>
+                                    <dd className="text-lg font-medium text-gray-900 dark:text-white">
                                         {interviews.filter(i => i.result === 'Completed').length}
                                     </dd>
                                 </dl>
@@ -379,7 +386,7 @@ const Interviews = () => {
                     </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -389,8 +396,8 @@ const Interviews = () => {
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Passed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
+                                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Passed</dt>
+                                    <dd className="text-lg font-medium text-gray-900 dark:text-white">
                                         {interviews.filter(i => i.result === 'Passed').length}
                                     </dd>
                                 </dl>
@@ -399,7 +406,7 @@ const Interviews = () => {
                     </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div className="p-5">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -409,8 +416,8 @@ const Interviews = () => {
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Failed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
+                                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Failed</dt>
+                                    <dd className="text-lg font-medium text-gray-900 dark:text-white">
                                         {interviews.filter(i => i.result === 'Failed').length}
                                     </dd>
                                 </dl>
@@ -428,12 +435,12 @@ const Interviews = () => {
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center">
-                                        <CalendarIcon className="h-8 w-8 text-primary-600 mr-3" />
+                                        <CalendarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-900">
+                                            <Link to={`/admin/candidates/${interview.candidate_id._id}`} className="text-lg font-semibold text-gray-900 dark:text-white">
                                                 {interview.candidate_id?.name || 'Unknown Candidate'}
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
+                                            </Link>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                                 {interview.job_id?.title || interview.job?.title || 'Unknown Position'}
                                             </p>
                                         </div>
@@ -442,32 +449,32 @@ const Interviews = () => {
                                 </div>
 
                                 <div className="space-y-2 mb-4">
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-medium">Application ID:</span> {interview.candidate_id?.application_id || 'N/A'}
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-medium">Email:</span> {interview.candidate_id?.email || 'N/A'}
                                     </p>
-                                    <div className="flex items-center text-sm text-gray-600">
+                                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                         <ClockIcon className="h-4 w-4 mr-2" />
                                         {new Date(interview.scheduled_date).toLocaleDateString()} at{' '}
                                         {new Date(interview.scheduled_date).toLocaleTimeString()}
                                     </div>
-                                    <div className="flex items-center text-sm text-gray-600">
+                                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                         <UserIcon className="h-4 w-4 mr-2" />
                                         {interview.interviewer?.name || 'TBD'}
                                     </div>
-                                    <div className="flex items-center text-sm text-gray-600">
+                                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-medium">Location:</span> {interview.location || 'In-Person'}
                                     </div>
                                     {interview.location === 'Online' && interview.meeting_link && (
-                                        <div className="flex items-center text-sm text-gray-600">
+                                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                             <span className="font-medium">Meeting Link:</span>
                                             <a
                                                 href={interview.meeting_link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="ml-1 text-blue-600 hover:text-blue-800 underline"
+                                                className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
                                             >
                                                 Join Meeting
                                             </a>
@@ -476,8 +483,8 @@ const Interviews = () => {
                                 </div>
 
                                 {interview.feedback && (
-                                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                        <p className="text-sm text-gray-700">
+                                    <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-700 dark:text-gray-300">
                                             <span className="font-medium">Feedback:</span> {interview.feedback}
                                         </p>
                                     </div>
@@ -485,7 +492,7 @@ const Interviews = () => {
 
                                 {/* Complete Interview Button */}
                                 {interview.result === 'Pending' && (
-                                    <div className="mt-4 pt-4 border-t border-gray-200">
+                                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                                         <button
                                             onClick={() => handleCompleteInterview(interview._id, interview.candidate_id._id)}
                                             className="w-full btn btn-success text-sm"
@@ -500,13 +507,13 @@ const Interviews = () => {
                 </div>
             ) : (
                 <div className="text-center py-12">
-                    <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">
+                    <CalendarIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                         {searchTerm || statusFilter || jobFilter || dateFilter || locationFilter
                             ? 'No interviews match your current filters.'
                             : 'No interviews scheduled'}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {searchTerm || statusFilter || jobFilter || dateFilter || locationFilter
                             ? 'Try adjusting your search or filter criteria.'
                             : 'Get started by scheduling an interview for eligible candidates.'}
@@ -515,12 +522,12 @@ const Interviews = () => {
             )}
 
             {/* Eligible Candidates Section */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                 <div className="px-4 py-5 sm:p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-900">Eligible Candidates for Interview</h3>
-                            <p className="text-sm text-gray-500">Candidates who are eligible for interview scheduling</p>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Eligible Candidates for Interview</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Candidates who are eligible for interview scheduling</p>
                         </div>
                     </div>
 
@@ -529,7 +536,7 @@ const Interviews = () => {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1">
                                 <div className="relative">
-                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                     <input
                                         type="text"
                                         placeholder="Search eligible candidates..."
@@ -544,79 +551,79 @@ const Interviews = () => {
 
                     {/* Eligible Candidates Table */}
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                            <thead className="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Candidate
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Application ID
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Job
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Task Score
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Applied Date
                                     </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
                                 {candidates.map((candidate) => (
-                                    <tr key={candidate._id} className="hover:bg-gray-50">
+                                    <tr key={candidate._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-primary-700">
+                                                    <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-primary-700 dark:text-primary-200">
                                                             {candidate.name.charAt(0).toUpperCase()}
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
                                                         {candidate.name}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {candidate.email}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {candidate.phone}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             {candidate.application_id}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             <div>
                                                 <div className="font-medium">
                                                     {candidate.job_id?.title || 'N/A'}
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
                                                     {candidate.job_id?.experience_in_year || 'N/A'} experience
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                                                 Interview Eligible
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             {candidate.evaluation?.score ? `${candidate.evaluation.score}%` : 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {new Date(candidate.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -639,13 +646,13 @@ const Interviews = () => {
 
                     {candidates.length === 0 && (
                         <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 text-gray-400">
+                            <div className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500">
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No eligible candidates found</h3>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No eligible candidates found</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 No candidates are currently eligible for interview scheduling.
                             </p>
                         </div>
@@ -660,18 +667,18 @@ const Interviews = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <form onSubmit={handleScheduleInterview}>
-                                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                     <div className="sm:flex sm:items-start">
                                         <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                                            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                                                 Schedule Interview
                                             </h3>
 
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Select Candidate
                                                     </label>
                                                     <select
@@ -690,7 +697,7 @@ const Interviews = () => {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Select Evaluator
                                                     </label>
                                                     <select
@@ -709,7 +716,7 @@ const Interviews = () => {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Interview Date
                                                     </label>
                                                     <input
@@ -720,13 +727,13 @@ const Interviews = () => {
                                                         className="mt-1 input"
                                                         required
                                                     />
-                                                    <p className="mt-1 text-xs text-gray-500">
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Select a future date for the interview
                                                     </p>
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Interview Time
                                                     </label>
                                                     <input
@@ -736,13 +743,13 @@ const Interviews = () => {
                                                         className="mt-1 input"
                                                         required
                                                     />
-                                                    <p className="mt-1 text-xs text-gray-500">
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Select the time for the interview
                                                     </p>
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Interview Location
                                                     </label>
                                                     <select
@@ -754,14 +761,14 @@ const Interviews = () => {
                                                         <option value="In-Person">In-Person</option>
                                                         <option value="Online">Online</option>
                                                     </select>
-                                                    <p className="mt-1 text-xs text-gray-500">
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Select the interview location type
                                                     </p>
                                                 </div>
 
                                                 {interviewLocation === 'Online' && (
                                                     <div>
-                                                        <label className="block text-sm font-medium text-gray-700">
+                                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                             Meeting Link
                                                         </label>
                                                         <input
@@ -772,15 +779,15 @@ const Interviews = () => {
                                                             className="mt-1 input"
                                                             required={interviewLocation === 'Online'}
                                                         />
-                                                        <p className="mt-1 text-xs text-gray-500">
+                                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                             Enter the meeting link for online interview
                                                         </p>
                                                     </div>
                                                 )}
 
                                                 {interviewDate && interviewTime && (
-                                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                                        <p className="text-sm text-blue-800">
+                                                    <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                                                        <p className="text-sm text-blue-800 dark:text-blue-200">
                                                             <span className="font-medium">Scheduled for:</span>{' '}
                                                             {new Date(`${interviewDate}T${interviewTime}`).toLocaleString()}
                                                         </p>
@@ -791,7 +798,7 @@ const Interviews = () => {
                                     </div>
                                 </div>
 
-                                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                     <button
                                         type="submit"
                                         className="btn btn-primary sm:ml-3 sm:w-auto"

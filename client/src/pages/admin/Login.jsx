@@ -21,7 +21,7 @@ const Login = () => {
     // Show loading spinner while authentication is being checked
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
                 <Loader size="md" />
             </div>
         );
@@ -44,7 +44,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <div className="flex items-center justify-center mb-4">
@@ -55,10 +55,10 @@ const Login = () => {
                             </svg>
                         </div> */}
                     </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-primary-800">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-primary-800 dark:text-primary-200">
                         QTEC Admin Login
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
+                    <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
                         Sign in to your hiring management account
                     </p>
                 </div>
@@ -66,7 +66,7 @@ const Login = () => {
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Email Address
                             </label>
                             <input
@@ -84,12 +84,12 @@ const Login = () => {
                                 })}
                             />
                             {errors.email && (
-                                <p className="mt-1 text-sm text-danger-600">{errors.email.message}</p>
+                                <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.email.message}</p>
                             )}
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Password
                             </label>
                             <div className="mt-1 relative">
@@ -113,14 +113,14 @@ const Login = () => {
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                                        <EyeSlashIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                     ) : (
-                                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                                        <EyeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                     )}
                                 </button>
                             </div>
                             {errors.password && (
-                                <p className="mt-1 text-sm text-danger-600">{errors.password.message}</p>
+                                <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.password.message}</p>
                             )}
                         </div>
                     </div>
@@ -143,10 +143,10 @@ const Login = () => {
                     </div>
 
                     <div className="text-center">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                             Demo Credentials:
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                             Email: admin@qtecsolution.com | Password: admin123
                         </p>
                     </div>

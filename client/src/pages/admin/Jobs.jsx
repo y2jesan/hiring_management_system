@@ -111,11 +111,11 @@ const Jobs = () => {
 
     const getStatusBadge = (isActive) => {
         return isActive ? (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                 Active
             </span>
         ) : (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
                 Inactive
             </span>
         );
@@ -172,21 +172,21 @@ const Jobs = () => {
                                 <div className="flex items-center">
                                     <BriefcaseIcon className="h-8 w-8 text-primary-600 mr-3" />
                                     <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
-                                        <p className="text-sm text-gray-500">ID: {job.job_id}</p>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{job.title}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">ID: {job.job_id}</p>
                                     </div>
                                 </div>
                                 {getStatusBadge(job.is_active)}
                             </div>
 
                             <div className="space-y-2 mb-4">
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Designation:</span> {job.designation}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Experience:</span> {job.experience_in_year || 'N/A'}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Salary:</span> {job.salary_range}
                                 </p>
                             </div>
@@ -238,10 +238,10 @@ const Jobs = () => {
             {filteredJobs.length === 0 && (
                 <div className="text-center py-12">
                     <BriefcaseIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                         {jobs.length === 0 ? 'No jobs' : 'No jobs match the selected filter'}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {jobs.length === 0 ? 'Get started by creating a new job posting.' : 'Try adjusting your filter criteria.'}
                     </p>
                 </div>
@@ -252,23 +252,23 @@ const Jobs = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                <div className="bg-white px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
+                                <div className="bg-white dark:bg-gray-800 px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
                                     <div className="sm:flex sm:items-start">
                                         <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                                            <h3 className="text-lg leading-6 font-medium text-primary-800 mb-4">
+                                            <h3 className="text-lg leading-6 font-medium text-primary-800 dark:text-primary-200 mb-4">
                                                 {editingJob ? 'Edit Job' : 'Create New Job'}
                                             </h3>
                                             {!editingJob && (
-                                                <p className="text-sm text-gray-500 mb-4">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                                                     Fill in the details below to create a new job posting.
                                                 </p>
                                             )}
 
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Job Title
                                                     </label>
                                                     <input
@@ -277,12 +277,12 @@ const Jobs = () => {
                                                         {...register('title', { required: 'Job title is required' })}
                                                     />
                                                     {errors.title && (
-                                                        <p className="mt-1 text-sm text-danger-600">{errors.title.message}</p>
+                                                        <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.title.message}</p>
                                                     )}
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Designation
                                                     </label>
                                                     <input
@@ -291,12 +291,12 @@ const Jobs = () => {
                                                         {...register('designation', { required: 'Designation is required' })}
                                                     />
                                                     {errors.designation && (
-                                                        <p className="mt-1 text-sm text-danger-600">{errors.designation.message}</p>
+                                                        <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.designation.message}</p>
                                                     )}
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Job Description (Markdown)
                                                     </label>
                                                     <textarea
@@ -309,14 +309,14 @@ const Jobs = () => {
                                                         })}
                                                     />
                                                     {errors.job_description && (
-                                                        <p className="mt-1 text-sm text-danger-600">{errors.job_description.message}</p>
+                                                        <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.job_description.message}</p>
                                                     )}
-                                                    <p className="mt-1 text-xs text-gray-500">
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Supports markdown formatting (headings, lists, bold, italic, etc.)
                                                     </p>
-                                                    <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                                                        <p className="text-xs font-medium text-gray-700 mb-2">Markdown Formatting Guide:</p>
-                                                        <div className="text-xs text-gray-600 space-y-1">
+                                                    <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+                                                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Markdown Formatting Guide:</p>
+                                                        <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                                                             <div><strong>Headings:</strong> # Main Title, ## Section, ### Subsection</div>
                                                             <div><strong>Bold:</strong> **text** or __text__</div>
                                                             <div><strong>Italic:</strong> *text* or _text_</div>
@@ -329,7 +329,7 @@ const Jobs = () => {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Salary Range
                                                     </label>
                                                     <input
@@ -339,12 +339,12 @@ const Jobs = () => {
                                                         {...register('salary_range', { required: 'Salary range is required' })}
                                                     />
                                                     {errors.salary_range && (
-                                                        <p className="mt-1 text-sm text-danger-600">{errors.salary_range.message}</p>
+                                                        <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.salary_range.message}</p>
                                                     )}
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Experience
                                                     </label>
                                                     <input
@@ -354,12 +354,12 @@ const Jobs = () => {
                                                         {...register('experience_in_year')}
                                                     />
                                                     {errors.experience_in_year && (
-                                                        <p className="mt-1 text-sm text-danger-600">{errors.experience_in_year.message}</p>
+                                                        <p className="mt-1 text-sm text-danger-600 dark:text-danger-400">{errors.experience_in_year.message}</p>
                                                     )}
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Task Link (Optional)
                                                     </label>
                                                     <input
@@ -374,13 +374,7 @@ const Jobs = () => {
                                     </div>
                                 </div>
 
-                                <div className="bg-primary-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary sm:ml-3 sm:w-auto"
-                                    >
-                                        {editingJob ? 'Update' : 'Create'}
-                                    </button>
+                                <div className="bg-primary-50 dark:bg-primary-900 px-4 py-3 sm:px-6 flex justify-end">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -388,9 +382,15 @@ const Jobs = () => {
                                             setEditingJob(null);
                                             reset();
                                         }}
-                                        className="btn btn-secondary sm:mt-0 sm:w-auto"
+                                        className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
                                     >
                                         Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary sm:w-auto"
+                                    >
+                                        {editingJob ? 'Update' : 'Create'}
                                     </button>
                                 </div>
                             </form>

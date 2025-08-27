@@ -36,8 +36,8 @@ const JobDetails = () => {
   if (!job) {
     return (
       <div className="space-y-2">
-        <h1 className="text-xl font-semibold text-gray-900">Job not found</h1>
-        <p className="text-gray-600">The job you are looking for does not exist.</p>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Job not found</h1>
+        <p className="text-gray-600 dark:text-gray-400">The job you are looking for does not exist.</p>
       </div>
     );
   }
@@ -45,12 +45,12 @@ const JobDetails = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-primary-800">{job.title}</h1>
-                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">Job ID: {job.job_id}</p>
+        <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">{job.title}</h1>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">Job ID: {job.job_id}</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
           <div>
             <span className="font-medium">Designation:</span> {job.designation}
           </div>
@@ -65,16 +65,16 @@ const JobDetails = () => {
           </div>
         </div>
         {job.job_description && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
-            <div className="prose prose-sm max-w-none text-gray-700">
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Job Description</h3>
+            <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
               <div
                 className="markdown-content"
                 dangerouslySetInnerHTML={{
                   __html: job.job_description
-                    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-900 mt-4 mb-2">$1</h3>')
-                    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-3">$1</h2>')
-                    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-gray-900 mt-6 mb-4">$1</h1>')
+                    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-900 dark:text-white mt-4 mb-2">$1</h3>')
+                    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-gray-900 dark:text-white mt-6 mb-3">$1</h2>')
+                    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-gray-900 dark:text-white mt-6 mb-4">$1</h1>')
                     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
                     .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
                     .replace(/^- (.*$)/gim, '<li class="ml-4">$1</li>')

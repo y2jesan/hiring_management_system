@@ -50,6 +50,25 @@ const JobApplication = () => {
             toast.error('Please upload your CV');
             return;
         }
+        if (!job.is_active) {
+            toast.error('This job is not active right now!');
+            return;
+        }
+        if (data.name.length < 2) {
+            toast.error('Name must be at least 2 characters');
+            return;
+        }
+        if (!data.email.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i)) {
+            toast.error('Invalid email address');
+        }
+        if (!data.phone.match(/^01\d{9}$/)) {
+            toast.error('Invalid phone number');
+            return;
+        }
+        if (data.phone.length !== 11) {
+            toast.error('Phone number must be 11 digits');
+            return;
+        }
 
         try {
             setSubmitting(true);

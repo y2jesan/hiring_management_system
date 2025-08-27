@@ -1,5 +1,4 @@
 import {
-    ArrowRightIcon,
     BriefcaseIcon,
     DocumentTextIcon,
     PencilIcon,
@@ -199,16 +198,15 @@ const Jobs = () => {
                                         rel="noopener noreferrer"
                                         className="btn btn-secondary flex items-center text-sm h-8 px-3"
                                     >
-                                        <DocumentTextIcon className="h-4 w-4 mr-1" />
-                                        Application
+                                        <DocumentTextIcon className="h-4 w-4 mr-1 lg:mr-1" />
+                                        <span className="hidden lg:inline">Application</span>
                                     </a>
                                     <button
                                         onClick={() => navigate(`/admin/candidates?job_id=${job.job_id}`)}
                                         className="btn btn-primary flex items-center text-sm h-8 px-3"
                                     >
-                                        <UsersIcon className="h-4 w-4 mr-1" />
-                                        Candidates
-                                        <ArrowRightIcon className="h-4 w-4 ml-1" />
+                                        <UsersIcon className="h-4 w-4 mr-1 lg:mr-1" />
+                                        <span className="hidden lg:inline">Candidates</span>
                                     </button>
                                 </div>
                                 <div className="flex space-x-2">
@@ -218,6 +216,19 @@ const Jobs = () => {
                                         title="Edit Job"
                                     >
                                         <PencilIcon className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const applicationUrl = `${window.location.origin}/job-application/${job.job_id}`;
+                                            navigator.clipboard.writeText(applicationUrl);
+                                            toast.success('Application link copied to clipboard!');
+                                        }}
+                                        className="text-gray-400 hover:text-gray-600 p-1"
+                                        title="Copy Application Link"
+                                    >
+                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
                                     </button>
                                     <button
                                         onClick={() => handleToggleStatus(job._id, job.is_active)}

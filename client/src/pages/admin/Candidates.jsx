@@ -2,7 +2,6 @@ import {
   DocumentArrowDownIcon,
   EyeIcon,
   FunnelIcon,
-  LinkIcon,
   MagnifyingGlassIcon,
   PencilIcon,
   TrashIcon
@@ -29,19 +28,19 @@ const Candidates = () => {
   useEffect(() => {
     const jobIdFromUrl = searchParams.get('job_id');
     const statusFromUrl = searchParams.get('status');
-    
+
     if (jobIdFromUrl) {
       setJobFilter(jobIdFromUrl);
     }
     if (statusFromUrl) {
       setStatusFilter(statusFromUrl);
     }
-    
+
     // Show filters if there are any active filters from URL
     if (jobIdFromUrl || statusFromUrl) {
       setShowFilters(true);
     }
-    
+
     fetchData();
   }, [searchParams]);
 
@@ -73,7 +72,7 @@ const Candidates = () => {
       if (statusFilter) params.status = statusFilter;
       if (applyDateFilter) params.apply_date = applyDateFilter;
       if (submitDateFilter) params.submit_date = submitDateFilter;
-      
+
       const blob = await candidateService.exportCandidates(params);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -115,27 +114,27 @@ const Candidates = () => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = !statusFilter || candidate.status === statusFilter;
-    
+
     const matchesJob = !jobFilter || candidate.job_id?.job_id === jobFilter;
-    
-    const matchesApplyDate = !applyDateFilter || 
+
+    const matchesApplyDate = !applyDateFilter ||
       new Date(candidate.createdAt).toDateString() === new Date(applyDateFilter).toDateString();
-    
-    const matchesSubmitDate = !submitDateFilter || 
-      (candidate.task_submission?.submitted_at && 
-       new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
-    
+
+    const matchesSubmitDate = !submitDateFilter ||
+      (candidate.task_submission?.submitted_at &&
+        new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
+
     return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate;
   });
 
   if (loading) {
-          return (
-        <div className="flex items-center justify-center h-64">
-          <Loader size="md" />
-        </div>
-      );
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader size="md" />
+      </div>
+    );
   }
 
   return (
@@ -144,9 +143,9 @@ const Candidates = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">Candidates</h1>
-                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
-              Manage candidate applications and track their progress
-            </p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
+            Manage candidate applications and track their progress
+          </p>
         </div>
         <button
           onClick={handleExport}
@@ -220,7 +219,7 @@ const Candidates = () => {
                     <option value="Rejected">Rejected</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Job (Active only)
@@ -238,7 +237,7 @@ const Candidates = () => {
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Apply Date
@@ -250,7 +249,7 @@ const Candidates = () => {
                     className="input"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Submit Date
@@ -350,50 +349,56 @@ const Candidates = () => {
       </div>
 
       {/* Candidates Table */}
-                  <div className="card overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="px-4 py-5 sm:p-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-50 dark:bg-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    No.
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Candidate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Application ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Job
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Score
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Applied Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Task Links
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredCandidates.map((candidate) => (
+                {filteredCandidates.map((candidate,i) => (
                   <tr key={candidate._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {i + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
+                        {/* <div className="flex-shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
                             <span className="text-sm font-medium text-primary-700 dark:text-primary-200">
                               {candidate.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                        </div>
+                        </div> */}
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             <Link to={`/admin/candidates/${candidate._id}`} className="hover:underline">{candidate.name}</Link>
@@ -407,10 +412,10 @@ const Candidates = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {candidate.application_id}
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <Link to={`/application/${candidate.application_id}`} className="hover:underline">{candidate.application_id}</Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       <div>
                         <div className="font-medium">
                           {candidate.job_id?.title ? (
@@ -422,26 +427,25 @@ const Candidates = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       {getStatusBadge(candidate.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {candidate.evaluation?.score ? `${candidate.evaluation.score}%` : 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {new Date(candidate.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {candidate.task_submission?.links && candidate.task_submission.links.length > 0 ? (
                         <div className="space-y-1">
                           {candidate.task_submission.links.slice(0, 2).map((link, index) => (
                             <div key={index} className="flex items-center space-x-1">
-                              <LinkIcon className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
-                                link.type === 'github' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' :
-                                link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                              }`}>
+                              {/* <LinkIcon className="h-3 w-3 text-gray-400 dark:text-gray-500" /> */}
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${link.type === 'github' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' :
+                                  link.type === 'live' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                    'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                                }`}>
                                 {link.type}
                               </span>
                               <a
@@ -465,7 +469,7 @@ const Candidates = () => {
                         <span className="text-gray-400 dark:text-gray-500">No links</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">
                         <button
                           className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
@@ -509,7 +513,7 @@ const Candidates = () => {
         </div>
       </div>
 
-      
+
     </div>
   );
 };

@@ -5,6 +5,7 @@ import {
   CalendarIcon,
   CheckCircleIcon,
   ClipboardDocumentCheckIcon,
+  ClockIcon,
   HomeIcon,
   MoonIcon,
   SunIcon,
@@ -44,6 +45,7 @@ const AdminLayout = () => {
     { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon },
     { name: 'Candidates', href: '/admin/candidates', icon: UsersIcon },
     { name: 'Evaluation', href: '/admin/evaluation', icon: ClipboardDocumentCheckIcon },
+    { name: 'Schedule Interview', href: '/admin/scheduleInterview', icon: ClockIcon },
     { name: 'Interviews', href: '/admin/interviews', icon: CalendarIcon },
     { name: 'Final Selection', href: '/admin/final-selection', icon: CheckCircleIcon },
   ];
@@ -84,7 +86,7 @@ const AdminLayout = () => {
               </Link>
             ))}
           </nav>
-          
+
           {/* User controls at bottom of mobile sidebar */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex flex-row justify-between">
@@ -96,15 +98,15 @@ const AdminLayout = () => {
                 <UserCircleIcon className="mr-3 h-5 w-5" />
                 Profile
               </Link>
-              
-                
-                <button
-                  onClick={logout}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  title="Logout"
-                >
-                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                </button>
+
+
+              <button
+                onClick={logout}
+                className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                title="Logout"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -134,7 +136,7 @@ const AdminLayout = () => {
               </Link>
             ))}
           </nav>
-          
+
           {/* User controls at bottom of desktop sidebar */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex flex-row justify-between">
@@ -145,13 +147,13 @@ const AdminLayout = () => {
                 <UserCircleIcon className="mr-3 h-5 w-5" />
                 Profile
               </Link>
-                <button
-                  onClick={logout}
-                  className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  title="Logout"
-                >
-                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                </button>
+              <button
+                onClick={logout}
+                className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                title="Logout"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -161,13 +163,13 @@ const AdminLayout = () => {
       <div className="lg:pl-64">
         {/* Top bar */}
         <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-                      <button
-              type="button"
-              className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-200 lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Bars3Icon className="h-6 w-6" />
-            </button>
+          <button
+            type="button"
+            className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-200 lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Bars3Icon className="h-6 w-6" />
+          </button>
 
           {/* Centered logo for mobile/tablet */}
           <div className="absolute left-1/2 transform -translate-x-1/2 lg:hidden">
@@ -178,7 +180,7 @@ const AdminLayout = () => {
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1" />
-            
+
             {/* Theme toggle for mobile */}
             <button
               onClick={toggleTheme}
@@ -191,7 +193,7 @@ const AdminLayout = () => {
                 <MoonIcon className="h-5 w-5" />
               )}
             </button>
-            
+
             <Link to={'/admin/user-info'} className="hidden lg:flex items-center gap-x-4 lg:gap-x-6 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 transition-colors duration-200">
               <div className="flex items-center gap-x-2">
                 <UserCircleIcon className="h-8 w-8 text-gray-400 dark:text-gray-300" />
@@ -201,7 +203,7 @@ const AdminLayout = () => {
                 </div>
               </div>
             </Link>
-            
+
             {/* Theme toggle for desktop */}
             <button
               onClick={toggleTheme}

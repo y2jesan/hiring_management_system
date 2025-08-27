@@ -17,6 +17,7 @@ import Interviews from './pages/admin/Interviews';
 import JobDetails from './pages/admin/JobDetails';
 import Jobs from './pages/admin/Jobs';
 import Login from './pages/admin/Login';
+import ScheduleInterview from './pages/admin/ScheduleInterview';
 import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
@@ -54,7 +55,7 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App">
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,
@@ -64,35 +65,36 @@ function App() {
                 },
               }}
             />
-          
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/job-application/:jobId" element={<JobApplication />} />
-            <Route path="/application/:applicationId" element={<CandidatePortal />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="jobs" element={<Jobs />} />
-              <Route path="jobs/:jobId" element={<JobDetails />} />
-              <Route path="candidates" element={<Candidates />} />
-              <Route path="candidates/:id" element={<CandidateDetails />} />
-              <Route path="interviews" element={<Interviews />} />
-              <Route path="evaluation" element={<Evaluation />} />
-              <Route path="final-selection" element={<FinalSelection />} />
-              <Route path="users" element={<Users />} />
-              <Route path="user-info" element={<UserInfo />} />
-            </Route>
-            
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/admin/login" replace />} />
-            <Route path="*" element={<Navigate to="/admin/login" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/job-application/:jobId" element={<JobApplication />} />
+              <Route path="/application/:applicationId" element={<CandidatePortal />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<Login />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="jobs" element={<Jobs />} />
+                <Route path="jobs/:jobId" element={<JobDetails />} />
+                <Route path="candidates" element={<Candidates />} />
+                <Route path="candidates/:id" element={<CandidateDetails />} />
+                <Route path="scheduleInterview" element={<ScheduleInterview />} />
+                <Route path="interviews" element={<Interviews />} />
+                <Route path="evaluation" element={<Evaluation />} />
+                <Route path="final-selection" element={<FinalSelection />} />
+                <Route path="users" element={<Users />} />
+                <Route path="user-info" element={<UserInfo />} />
+              </Route>
+
+              {/* Default redirect */}
+              <Route path="/" element={<Navigate to="/admin/login" replace />} />
+              <Route path="*" element={<Navigate to="/admin/login" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

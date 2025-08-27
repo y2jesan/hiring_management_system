@@ -69,7 +69,7 @@ const getDashboardStats = async (req, res) => {
 
     // Calculate pass rate
     const totalCompletedInterviews = (resultCounts['Passed'] || 0) + (resultCounts['Failed'] || 0) + (resultCounts['No Show'] || 0);
-    const passRate = totalCompletedInterviews > 0 ? 
+    const passRate = totalCompletedInterviews > 0 ?
       Math.round(((resultCounts['Passed'] || 0) / totalCompletedInterviews) * 100) : 0;
 
     // Get top performing jobs
@@ -225,7 +225,7 @@ const getAnalytics = async (req, res) => {
       {
         $lookup: {
           from: 'users',
-          localField: 'interviewer_id',
+          localField: 'interviewer',
           foreignField: '_id',
           as: 'interviewer'
         }
@@ -235,7 +235,7 @@ const getAnalytics = async (req, res) => {
       },
       {
         $group: {
-          _id: '$interviewer_id',
+          _id: '$interviewer',
           interviewerName: { $first: '$interviewer.name' },
           totalInterviews: { $sum: 1 },
           passedInterviews: {
@@ -317,7 +317,7 @@ const getRecentActivities = async (req, res) => {
     // Get recent interviews
     const recentInterviews = await Interview.find()
       .populate('candidate_id', 'name email')
-      .populate('interviewer_id', 'name')
+      .populate('interviewer', 'name')
       .sort({ scheduled_date: -1 })
       .limit(parseInt(limit));
 
@@ -370,7 +370,7 @@ const exportCandidateData = async (req, res) => {
         'Applied Date': candidate.createdAt.toLocaleDateString(),
         'Task Score': candidate.evaluation?.score || 'N/A',
         'Evaluated By': candidate.evaluation?.evaluated_by?.name || 'N/A',
-        'Interview Date': candidate.interview?.scheduled_date ? 
+        'Interview Date': candidate.interview?.scheduled_date ?
           new Date(candidate.interview.scheduled_date).toLocaleDateString() : 'N/A',
         'Interviewer': candidate.interview?.interviewer?.name || 'N/A',
         'Interview Result': candidate.interview?.result || 'N/A',
@@ -378,7 +378,7 @@ const exportCandidateData = async (req, res) => {
         'Selected By': candidate.final_selection?.selected_by?.name || 'N/A'
       }));
 
-      res.json(createSuccessResponse({ 
+      res.json(createSuccessResponse({
         data: excelData,
         message: 'Data prepared for Excel export'
       }));

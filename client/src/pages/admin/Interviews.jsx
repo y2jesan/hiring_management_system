@@ -318,6 +318,107 @@ const Interviews = () => {
                 </div>
             </div>
 
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">T</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Total Interviews</dt>
+                                    <dd className="text-lg font-medium text-gray-900">{interviews.length}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">P</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
+                                    <dd className="text-lg font-medium text-gray-900">
+                                        {interviews.filter(i => i.result === 'Pending').length}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">C</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
+                                    <dd className="text-lg font-medium text-gray-900">
+                                        {interviews.filter(i => i.result === 'Completed').length}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-green-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">S</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Passed</dt>
+                                    <dd className="text-lg font-medium text-gray-900">
+                                        {interviews.filter(i => i.result === 'Passed').length}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="h-8 w-8 bg-red-500 rounded-md flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">F</span>
+                                </div>
+                            </div>
+                            <div className="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt className="text-sm font-medium text-gray-500 truncate">Failed</dt>
+                                    <dd className="text-lg font-medium text-gray-900">
+                                        {interviews.filter(i => i.result === 'Failed').length}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Interviews Content */}
             {filteredInterviews.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -551,106 +652,7 @@ const Interviews = () => {
                 </div>
             </div>
 
-            {/* Summary Stats */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">T</span>
-                                </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Total Interviews</dt>
-                                    <dd className="text-lg font-medium text-gray-900">{interviews.length}</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className="h-8 w-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">P</span>
-                                </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
-                                        {interviews.filter(i => i.result === 'Pending').length}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">C</span>
-                                </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
-                                        {interviews.filter(i => i.result === 'Completed').length}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className="h-8 w-8 bg-green-500 rounded-md flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">S</span>
-                                </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Passed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
-                                        {interviews.filter(i => i.result === 'Passed').length}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className="h-8 w-8 bg-red-500 rounded-md flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">F</span>
-                                </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">Failed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">
-                                        {interviews.filter(i => i.result === 'Failed').length}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
             {/* Schedule Interview Modal */}
             {showModal && (

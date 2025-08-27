@@ -27,9 +27,20 @@ const Candidates = () => {
 
   useEffect(() => {
     const jobIdFromUrl = searchParams.get('job_id');
+    const statusFromUrl = searchParams.get('status');
+    
     if (jobIdFromUrl) {
       setJobFilter(jobIdFromUrl);
     }
+    if (statusFromUrl) {
+      setStatusFilter(statusFromUrl);
+    }
+    
+    // Show filters if there are any active filters from URL
+    if (jobIdFromUrl || statusFromUrl) {
+      setShowFilters(true);
+    }
+    
     fetchData();
   }, [searchParams]);
 
@@ -168,6 +179,11 @@ const Candidates = () => {
               >
                 <FunnelIcon className="h-5 w-5 mr-2" />
                 Filters
+                {(statusFilter || jobFilter || applyDateFilter || submitDateFilter) && (
+                  <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2 py-1 rounded-full">
+                    {[statusFilter, jobFilter, applyDateFilter, submitDateFilter].filter(Boolean).length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -242,6 +258,87 @@ const Candidates = () => {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">A</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
+                  <dd className="text-lg font-medium text-gray-900">{candidates.length}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">S</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Selected</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => c.status === 'Selected').length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">P</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Pending Review</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => ['Task Submitted', 'Under Review'].includes(c.status)).length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-red-500 rounded-md flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">R</span>
+                </div>
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Rejected</dt>
+                  <dd className="text-lg font-medium text-gray-900">
+                    {candidates.filter(c => c.status === 'Rejected').length}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -405,86 +502,7 @@ const Candidates = () => {
         </div>
       </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">A</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
-                  <dd className="text-lg font-medium text-gray-900">{candidates.length}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-green-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">S</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Selected</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {candidates.filter(c => c.status === 'Selected').length}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">P</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Pending Review</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {candidates.filter(c => ['Task Submitted', 'Under Review'].includes(c.status)).length}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-red-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">R</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Rejected</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {candidates.filter(c => c.status === 'Rejected').length}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };

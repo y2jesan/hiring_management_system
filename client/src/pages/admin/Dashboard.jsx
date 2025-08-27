@@ -1,14 +1,16 @@
 import {
+    ArrowTopRightOnSquareIcon,
     BriefcaseIcon,
     CalendarIcon,
     ClockIcon,
     UsersIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { dashboardService } from '../../services/dashboardService';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [recentActivities, setRecentActivities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,10 +29,15 @@ const Dashboard = () => {
                 setStats(statsFromResponse);
 
                 // Extract activities from the nested structure
-                const activitiesFromResponse = activitiesData.data?.activities || activitiesData.data || {};
+                const activitiesFromResponse = activitiesData.data?.activities || {};
                 setRecentActivities(activitiesFromResponse);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    response: error.response?.data,
+                    status: error.response?.status
+                });
                 // Set default values on error
                 setStats({});
                 setRecentActivities({});
@@ -47,49 +54,37 @@ const Dashboard = () => {
             name: 'Total Applications',
             value: stats?.overview?.totalCandidates || 0,
             icon: UsersIcon,
-            color: 'bg-blue-500',
-            change: '+12%',
-            changeType: 'positive'
+            color: 'bg-blue-500'
         },
         {
             name: 'Active Jobs',
             value: stats?.overview?.activeJobs || 0,
             icon: BriefcaseIcon,
-            color: 'bg-green-500',
-            change: '+5%',
-            changeType: 'positive'
+            color: 'bg-green-500'
         },
         {
             name: 'Total Jobs',
             value: stats?.overview?.totalJobs || 0,
             icon: BriefcaseIcon,
-            color: 'bg-indigo-500',
-            change: '+3%',
-            changeType: 'positive'
+            color: 'bg-indigo-500'
         },
         {
             name: 'Total Interviews',
             value: stats?.overview?.totalInterviews || 0,
             icon: CalendarIcon,
-            color: 'bg-purple-500',
-            change: '+15%',
-            changeType: 'positive'
+            color: 'bg-purple-500'
         },
         {
             name: 'Recent Applications (7 days)',
             value: stats?.overview?.recentApplications || 0,
             icon: ClockIcon,
-            color: 'bg-yellow-500',
-            change: '+8%',
-            changeType: 'positive'
+            color: 'bg-yellow-500'
         },
         {
             name: 'Upcoming Interviews',
             value: stats?.overview?.upcomingInterviews || 0,
             icon: CalendarIcon,
-            color: 'bg-orange-500',
-            change: '+10%',
-            changeType: 'positive'
+            color: 'bg-orange-500'
         }
     ];
 
@@ -118,6 +113,10 @@ const Dashboard = () => {
             default:
                 return 'bg-gray-100 text-gray-800';
         }
+    };
+
+    const handleStatusCardClick = (status) => {
+        navigate(`/admin/candidates?status=${encodeURIComponent(status)}`);
     };
 
     if (loading) {
@@ -156,10 +155,10 @@ const Dashboard = () => {
                                             <div className="text-2xl font-semibold text-gray-900">
                                                 {stat.value}
                                             </div>
-                                            <div className={`ml-2 flex items-baseline text-sm font-semibold ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                                            {/* <div className={`ml-2 flex items-baseline text-sm font-semibold ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
                                                 }`}>
                                                 {stat.change}
-                                            </div>
+                                            </div> */}
                                         </dd>
                                     </dl>
                                 </div>
@@ -176,7 +175,7 @@ const Dashboard = () => {
                         Quick Actions
                     </h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                        <Link to={'/admin/jobs?create=true'} className="relative group text-center bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
                             <div>
                                 <span className="rounded-lg inline-flex p-3 bg-primary-50 text-primary-700 ring-4 ring-white">
                                     <BriefcaseIcon className="h-6 w-6" />
@@ -191,9 +190,9 @@ const Dashboard = () => {
                                     Post a new job opening
                                 </p>
                             </div>
-                        </button>
+                        </Link>
 
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                        <Link to={'/admin/candidates'} className="relative group text-center bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
                             <div>
                                 <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
                                     <UsersIcon className="h-6 w-6" />
@@ -208,9 +207,9 @@ const Dashboard = () => {
                                     Manage candidate applications
                                 </p>
                             </div>
-                        </button>
+                        </Link>
 
-                        <button className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                        <Link to={'/admin/interviews'} className="relative group text-center bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
                             <div>
                                 <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
                                     <CalendarIcon className="h-6 w-6" />
@@ -225,10 +224,42 @@ const Dashboard = () => {
                                     Book interview slots
                                 </p>
                             </div>
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
+
+            {/* Candidate Status Distribution */}
+            {stats?.candidateStatus && Object.keys(stats.candidateStatus).length > 0 && (
+                <div className="bg-white shadow rounded-lg">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            Candidate Status Distribution
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {Object.entries(stats.candidateStatus).map(([status, count]) => (
+                                <div 
+                                    key={status} 
+                                    className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 hover:shadow-md transition-all duration-200 group border border-transparent hover:border-gray-200"
+                                    onClick={() => handleStatusCardClick(status)}
+                                    title={`View all ${status} candidates`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900">{status}</p>
+                                            <p className="text-2xl font-bold text-gray-900">{count}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-3 h-3 rounded-full ${getStatusColor(status).replace('bg-', 'bg-').replace('text-', '')}`}></div>
+                                            <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Recent Activities */}
             <div className="bg-white shadow rounded-lg">
@@ -284,29 +315,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Candidate Status Distribution */}
-            {stats?.candidateStatus && Object.keys(stats.candidateStatus).length > 0 && (
-                <div className="bg-white shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                            Candidate Status Distribution
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {Object.entries(stats.candidateStatus).map(([status, count]) => (
-                                <div key={status} className="bg-gray-50 rounded-lg p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900">{status}</p>
-                                            <p className="text-2xl font-bold text-gray-900">{count}</p>
-                                        </div>
-                                        <div className={`w-3 h-3 rounded-full ${getStatusColor(status).replace('bg-', 'bg-').replace('text-', '')}`}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+            
 
             {/* Interview Results */}
             {stats?.interviewResults && Object.keys(stats.interviewResults).length > 0 && (
@@ -342,9 +351,7 @@ const Dashboard = () => {
                         )}
                     </div>
                 </div>
-            )}
-
-            
+            )} 
         </div>
     );
 };

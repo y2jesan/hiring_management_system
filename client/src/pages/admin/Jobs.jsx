@@ -9,11 +9,12 @@ import {
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { jobService } from '../../services/jobService';
 
 const Jobs = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -29,7 +30,17 @@ const Jobs = () => {
 
     useEffect(() => {
         fetchJobs();
-    }, []);
+        
+        // Check if create parameter is present in URL
+        const createParam = searchParams.get('create');
+        if (createParam === 'true') {
+            setShowModal(true);
+            setEditingJob(null);
+            reset();
+            // Clear the create parameter from URL to prevent reopening on refresh
+            navigate('/admin/jobs', { replace: true });
+        }
+    }, [searchParams]);
 
     const fetchJobs = async () => {
         try {
@@ -248,6 +259,11 @@ const Jobs = () => {
                                             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                                                 {editingJob ? 'Edit Job' : 'Create New Job'}
                                             </h3>
+                                            {!editingJob && (
+                                                <p className="text-sm text-gray-500 mb-4">
+                                                    Fill in the details below to create a new job posting.
+                                                </p>
+                                            )}
 
                                             <div className="space-y-4">
                                                 <div>

@@ -77,5 +77,11 @@ export const candidateService = {
       responseType: 'blob'
     });
     return response.data;
+  },
+
+  // Final selection
+  finalSelection: async (id, selectionData) => {
+    const response = await api.post(`/candidates/${id}/final-selection`, selectionData);
+    return response.data;
   }
 };

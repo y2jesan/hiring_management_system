@@ -21,7 +21,7 @@ const validateComplete = [
   body('candidate_id').isMongoId().withMessage('Valid candidate ID is required'),
   body('candidateStatus').isIn(['Interview Completed', 'Shortlisted']).withMessage('Invalid candidate status'),
   body('interviewResult').isIn(['Taken', 'Passed', 'Failed', 'No Show', 'Cancelled']).withMessage('Invalid interview result'),
-  body('interviewStatus').isIn(['Taken', 'Passed', 'Failed', 'No Show', 'Cancelled']).withMessage('Invalid interview status'),
+  body('interviewStatus').isIn(['Pending', 'Rescheduled', 'Taken', 'Passed', 'Failed', 'No Show', 'Cancelled', 'Completed']).withMessage('Invalid interview status'),
   body('feedback').optional().isLength({ min: 1 }).withMessage('Feedback must not be empty'),
   body('notes').optional().isLength({ min: 1 }).withMessage('Notes must not be empty')
 ];

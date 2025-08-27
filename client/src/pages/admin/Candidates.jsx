@@ -3,8 +3,6 @@ import {
   EyeIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
-  PencilIcon,
-  TrashIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -379,7 +377,7 @@ const Candidates = () => {
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Task Links
                   </th>
-                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -469,15 +467,15 @@ const Candidates = () => {
                         <span className="text-gray-400 dark:text-gray-500">No links</span>
                       )}
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-4 py-2 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-end space-x-2">
-                        <button
+                        <Link to={`/admin/candidates/${candidate._id}`}
                           className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
                           title="View Details"
                         >
                           <EyeIcon className="h-5 w-5" />
-                        </button>
-                        <button
+                        </Link>
+                        {/* <button
                           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
                           title="Edit"
                         >
@@ -488,7 +486,7 @@ const Candidates = () => {
                           title="Delete"
                         >
                           <TrashIcon className="h-5 w-5" />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>

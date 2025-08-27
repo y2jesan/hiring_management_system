@@ -405,7 +405,7 @@ const completeInterview = async (req, res) => {
     }
 
     // Validate interview status
-    const validInterviewStatuses = ['Taken', 'Passed', 'Failed', 'No Show', 'Cancelled'];
+    const validInterviewStatuses = ['Pending', 'Rescheduled', 'Taken', 'Passed', 'Failed', 'No Show', 'Cancelled', 'Completed'];
     if (!validInterviewStatuses.includes(interviewStatus)) {
       return res.status(400).json(createErrorResponse('Invalid interview status'));
     }

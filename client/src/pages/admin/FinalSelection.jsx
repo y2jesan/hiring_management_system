@@ -46,15 +46,18 @@ const FinalSelection = () => {
     }
 
     try {
-      const updateData = {
-        status: decision === 'selected' ? 'Selected' : 'Rejected',
-        final_selection: {
-          selected: decision === 'selected',
-          selected_at: new Date().toISOString()
-        }
+      const selectionData = {
+        selected: decision === 'selected'
       };
 
-      await candidateService.updateCandidate(selectedCandidate._id, updateData);
+      // Add offer letter path if provided and candidate is selected
+      if (decision === 'selected' && offerLetter) {
+        // Note: In a real implementation, you would upload the file first
+        // and get the file path, then include it in selectionData
+        // selectionData.offer_letter_path = uploadedFilePath;
+      }
+
+      await candidateService.finalSelection(selectedCandidate._id, selectionData);
       toast.success(`Candidate ${decision === 'selected' ? 'selected' : 'rejected'} successfully`);
       setSelectedCandidate(null);
       setDecision('');

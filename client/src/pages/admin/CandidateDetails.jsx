@@ -236,7 +236,7 @@ const CandidateDetails = () => {
                 <div>
                   <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">All Interview Records</h3>
                   <div className="space-y-4">
-                    {candidate.interviews.map((interview, index) => (
+                    {[...candidate.interviews].sort((a,b)=> new Date(a.scheduled_date)-new Date(b.scheduled_date)).map((interview, index) => (
                       <div key={interview._id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="text-sm font-medium text-gray-900 dark:text-white">

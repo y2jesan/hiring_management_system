@@ -41,10 +41,12 @@ const Interviews = () => {
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [showNextInterviewModal, setShowNextInterviewModal] = useState(false);
     const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [selectedInterview, setSelectedInterview] = useState(null);
     const [completeFormData, setCompleteFormData] = useState({
         candidateStatus: 'Interview Completed',
-        interviewResult: 'Pending',
+        interviewResult: 'Taken',
+        interviewStatus: 'Completed',
         feedback: '',
         notes: ''
     });
@@ -62,6 +64,11 @@ const Interviews = () => {
         scheduled_date: '',
         scheduled_time: '',
         notes: ''
+    });
+    const [cancelData, setCancelData] = useState({
+        feedback: '',
+        notes: '',
+        candidateStatus: 'Interview Eligible'
     });
     const [submitting, setSubmitting] = useState(false);
 
@@ -171,7 +178,8 @@ const Interviews = () => {
         setSelectedInterview(interview);
         setCompleteFormData({
             candidateStatus: 'Interview Completed',
-            interviewResult: interview.result || 'Pending',
+            interviewResult: interview.result || 'Taken',
+            interviewStatus: interview.result || 'Taken',
             feedback: interview.feedback || '',
             notes: interview.notes || ''
         });
@@ -192,6 +200,7 @@ const Interviews = () => {
             const completeData = {
                 candidateStatus: completeFormData.candidateStatus,
                 interviewResult: completeFormData.interviewResult,
+                interviewStatus: completeFormData.interviewStatus,
                 feedback: completeFormData.feedback,
                 notes: completeFormData.notes
             };
@@ -202,7 +211,8 @@ const Interviews = () => {
             setSelectedInterview(null);
             setCompleteFormData({
                 candidateStatus: 'Interview Completed',
-                interviewResult: 'Pending',
+                interviewResult: 'Taken',
+                interviewStatus: 'Taken',
                 feedback: '',
                 notes: ''
             });
@@ -229,6 +239,7 @@ const Interviews = () => {
             interviewer: '',
             location: 'In-Person',
             meeting_link: '',
+            feedback: '',
             notes: ''
         });
         setShowNextInterviewModal(true);
@@ -332,13 +343,58 @@ const Interviews = () => {
         }
     };
 
+    const handleCancelInterview = (interview) => {
+        setSelectedInterview(interview);
+        setCancelData({
+            feedback: '',
+            notes: '',
+            candidateStatus: 'Interview Eligible'
+        });
+        setShowCancelModal(true);
+    };
+
+    const handleSubmitCancel = async (e) => {
+        e.preventDefault();
+        
+        if (!selectedInterview) {
+            toast.error('No interview selected');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            
+            await interviewService.cancelInterview(selectedInterview._id, cancelData);
+            toast.success('Interview cancelled successfully');
+            setShowCancelModal(false);
+            setSelectedInterview(null);
+            setCancelData({
+                feedback: '',
+                notes: '',
+                candidateStatus: 'Interview Eligible'
+            });
+            fetchData();
+        } catch (error) {
+            console.error('Error cancelling interview:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Failed to cancel interview');
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const getResultBadge = (result) => {
         const colors = {
             'Pending': 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200',
+            'Rescheduled': 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200',
             'Taken': 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
             'Passed': 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
             'Failed': 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200',
             'No Show': 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+            'Cancelled': 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200',
             'Completed': 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
         };
 
@@ -667,7 +723,32 @@ const Interviews = () => {
 
                                 {/* Action Buttons */}
                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                    {interview.result === 'Pending' && (
+                                    {/* 3 Buttons for Interview Scheduled + Pending/Rescheduled */}
+                                    {interview.candidate_id?.status === 'Interview Scheduled' && (interview.result === 'Pending' || interview.result === 'Rescheduled') && (
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <button
+                                                onClick={() => handleCancelInterview(interview)}
+                                                className="btn btn-danger text-sm"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={() => handleRescheduleInterview(interview)}
+                                                className="btn btn-secondary text-sm"
+                                            >
+                                                Reschedule
+                                            </button>
+                                            <button
+                                                onClick={() => handleCompleteInterview(interview)}
+                                                className="btn btn-success text-sm"
+                                            >
+                                                Complete
+                                            </button>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Other conditions */}
+                                    {interview.result === 'Pending' && interview.candidate_id?.status !== 'Interview Scheduled' && (
                                         <div className="space-y-2">
                                             <button
                                                 onClick={() => handleCompleteInterview(interview)}
@@ -675,18 +756,10 @@ const Interviews = () => {
                                             >
                                                 Complete Interview
                                             </button>
-                                            {interview.candidate_id?.status === 'Interview Scheduled' && (
-                                                <button
-                                                    onClick={() => handleRescheduleInterview(interview)}
-                                                    className="w-full btn btn-secondary text-sm"
-                                                >
-                                                    Reschedule
-                                                </button>
-                                            )}
                                         </div>
                                     )}
                                     {interview.candidate_id?.status === 'Interview Completed' && interview.result === 'Taken' && (
-                                        <div className="space-y-2">
+                                        <div className="flex flex-row gap-2">
                                             <button
                                                 onClick={() => handleCompleteInterview(interview)}
                                                 className="w-full btn btn-success text-sm"
@@ -1071,14 +1144,32 @@ const Interviews = () => {
                                                         className="mt-1 input"
                                                         required
                                                     >
-                                                        <option value="Pending">Pending</option>
                                                         <option value="Taken">Taken (Under Evaluation)</option>
                                                         <option value="Passed">Passed</option>
                                                         <option value="Failed">Failed</option>
                                                         <option value="No Show">No Show</option>
+                                                        <option value="Cancelled">Cancelled</option>
                                                     </select>
                                                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Interview result status
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Interview Status *
+                                                    </label>
+                                                    <select
+                                                        value={completeFormData.interviewStatus}
+                                                        onChange={(e) => setCompleteFormData({ ...completeFormData, interviewStatus: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="Completed">Completed</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                    </select>
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Interview status for tracking
                                                     </p>
                                                 </div>
 
@@ -1249,6 +1340,19 @@ const Interviews = () => {
 
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Feedback
+                                                    </label>
+                                                    <textarea
+                                                        value={nextInterviewData.feedback}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, feedback: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Additional feedback for the interview..."
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         Notes
                                                     </label>
                                                     <textarea
@@ -1380,6 +1484,115 @@ const Interviews = () => {
                                         className="btn btn-primary sm:w-auto disabled:opacity-50"
                                     >
                                         {submitting ? 'Rescheduling...' : 'Reschedule Interview'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Cancel Interview Modal */}
+            {showCancelModal && selectedInterview && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-4xl sm:max-w-lg">
+                            <form onSubmit={handleSubmitCancel}>
+                                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <div className="sm:flex sm:items-start">
+                                        <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                                                Cancel Interview - {selectedInterview.candidate_id?.name}
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Candidate Status *
+                                                    </label>
+                                                    <select
+                                                        value={cancelData.candidateStatus}
+                                                        onChange={(e) => setCancelData({ ...cancelData, candidateStatus: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="Interview Eligible">Interview Eligible</option>
+                                                        <option value="Interview Scheduled">Interview Scheduled</option>
+                                                        <option value="Interview Completed">Interview Completed</option>
+                                                        <option value="Shortlisted">Shortlisted</option>
+                                                        <option value="Selected">Selected</option>
+                                                        <option value="Rejected">Rejected</option>
+                                                    </select>
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Update candidate's application status after cancellation
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Feedback (Visible to Candidate)
+                                                    </label>
+                                                    <textarea
+                                                        value={cancelData.feedback}
+                                                        onChange={(e) => setCancelData({ ...cancelData, feedback: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Provide feedback that will be visible to the candidate..."
+                                                    />
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        This feedback will be shown to the candidate in their portal
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Admin Notes (Internal)
+                                                    </label>
+                                                    <textarea
+                                                        value={cancelData.notes}
+                                                        onChange={(e) => setCancelData({ ...cancelData, notes: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Internal notes for admin reference..."
+                                                    />
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        These notes are only visible to admin users
+                                                    </p>
+                                                </div>
+
+                                                <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-3">
+                                                    <p className="text-sm text-red-800 dark:text-red-200">
+                                                        <span className="font-medium">Warning:</span> This action will cancel the interview and set the result to "Cancelled". This action cannot be undone.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowCancelModal(false);
+                                            setSelectedInterview(null);
+                                            setCancelData({
+                                                feedback: '',
+                                                notes: '',
+                                                candidateStatus: 'Interview Eligible'
+                                            });
+                                        }}
+                                        className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="btn btn-danger sm:w-auto disabled:opacity-50"
+                                    >
+                                        {submitting ? 'Cancelling...' : 'Cancel Interview'}
                                     </button>
                                 </div>
                             </form>

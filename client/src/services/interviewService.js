@@ -69,4 +69,10 @@ export const interviewService = {
     const response = await api.put(`/interviews/${interviewId}/reschedule`, rescheduleData);
     return response.data;
   },
+
+  // Cancel interview
+  cancelInterview: async (interviewId, cancelData) => {
+    const response = await api.put(`/interviews/${interviewId}/cancel`, cancelData);
+    return response.data;
+  },
 };

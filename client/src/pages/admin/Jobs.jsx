@@ -40,6 +40,12 @@ const Jobs = () => {
             // Clear the create parameter from URL to prevent reopening on refresh
             navigate('/admin/jobs', { replace: true });
         }
+
+        // Check if status parameter is present in URL
+        const statusParam = searchParams.get('status');
+        if (statusParam) {
+            setStatusFilter(statusParam);
+        }
     }, [searchParams]);
 
     const fetchJobs = async () => {

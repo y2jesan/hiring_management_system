@@ -55,37 +55,43 @@ const Dashboard = () => {
             name: 'Total Applications',
             value: stats?.overview?.totalCandidates || 0,
             icon: UsersIcon,
-            color: 'bg-blue-500'
+            color: 'bg-blue-500',
+            link: '/admin/candidates'
         },
         {
             name: 'Active Jobs',
             value: stats?.overview?.activeJobs || 0,
             icon: BriefcaseIcon,
-            color: 'bg-green-500'
+            color: 'bg-green-500',
+            link: '/admin/jobs?status=active'
         },
         {
             name: 'Total Jobs',
             value: stats?.overview?.totalJobs || 0,
             icon: BriefcaseIcon,
-            color: 'bg-indigo-500'
+            color: 'bg-indigo-500',
+            link: '/admin/jobs'
         },
         {
             name: 'Total Interviews',
             value: stats?.overview?.totalInterviews || 0,
             icon: CalendarIcon,
-            color: 'bg-purple-500'
+            color: 'bg-purple-500',
+            link: '/admin/interviews'
         },
         {
-            name: 'Recent Applications (7 days)',
-            value: stats?.overview?.recentApplications || 0,
+            name: 'Pending Evaluation',
+            value: stats?.overview?.pendingEvaluation || 0,
             icon: ClockIcon,
-            color: 'bg-yellow-500'
+            color: 'bg-yellow-500',
+            link: '/admin/evaluation'
         },
         {
             name: 'Upcoming Interviews',
             value: stats?.overview?.upcomingInterviews || 0,
             icon: CalendarIcon,
-            color: 'bg-orange-500'
+            color: 'bg-orange-500',
+            link: '/admin/interviews'
         }
     ];
 
@@ -141,7 +147,7 @@ const Dashboard = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {statCards.map((stat) => (
-                    <div key={stat.name} className="card">
+                    <Link key={stat.name} to={stat.link} className="card hover:shadow-lg transition-shadow duration-200 cursor-pointer">
                         <div className="p-5">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
@@ -165,7 +171,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 

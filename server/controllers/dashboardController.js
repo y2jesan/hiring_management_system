@@ -52,6 +52,11 @@ const getDashboardStats = async (req, res) => {
       result: 'Pending'
     });
 
+    // Get pending evaluation count (candidates with status "Task Submitted")
+    const pendingEvaluation = await Candidate.countDocuments({
+      status: 'Task Submitted'
+    });
+
     // Get interview results
     const interviewResults = await Interview.aggregate([
       {
@@ -129,7 +134,8 @@ const getDashboardStats = async (req, res) => {
         totalUsers,
         totalInterviews,
         recentApplications,
-        upcomingInterviews
+        upcomingInterviews,
+        pendingEvaluation
       },
       candidateStatus: statusCounts,
       interviewResults: resultCounts,

@@ -3,6 +3,7 @@ import {
   EyeIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -10,6 +11,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { jobService } from '../../services/jobService';
+import { userService } from '../../services/userService';
 
 const Candidates = () => {
   const [searchParams] = useSearchParams();
@@ -22,6 +24,20 @@ const Candidates = () => {
   const [applyDateFilter, setApplyDateFilter] = useState('');
   const [submitDateFilter, setSubmitDateFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Edit modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCandidate, setEditingCandidate] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    status: '',
+    reference: '',
+    job_id: ''
+  });
+  const [users, setUsers] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const jobIdFromUrl = searchParams.get('job_id');
@@ -45,12 +61,14 @@ const Candidates = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [candidatesResponse, jobsResponse] = await Promise.all([
+      const [candidatesResponse, jobsResponse, usersResponse] = await Promise.all([
         candidateService.getAllCandidates(),
-        jobService.getAllJobs({ is_active: true })
+        jobService.getAllJobs({ is_active: true }),
+        userService.getAllUsers({ is_active: true })
       ]);
       setCandidates(candidatesResponse.data?.candidates || candidatesResponse.data || []);
       setJobs(jobsResponse.data?.jobs || jobsResponse.data || []);
+      setUsers(usersResponse.data?.users || usersResponse.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response?.status === 401) {
@@ -84,6 +102,50 @@ const Candidates = () => {
     } catch (error) {
       console.error('Error exporting candidates:', error);
       toast.error('Failed to export candidates');
+    }
+  };
+
+  const handleEdit = (candidate) => {
+    setEditingCandidate(candidate);
+    setEditFormData({
+      name: candidate.name || '',
+      email: candidate.email || '',
+      phone: candidate.phone || '',
+      status: candidate.status || '',
+      reference: candidate.reference?._id || '',
+      job_id: candidate.job_id?._id || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    if (!editingCandidate) return;
+
+    try {
+      setSubmitting(true);
+      await candidateService.updateCandidate(editingCandidate._id, editFormData);
+      toast.success('Candidate updated successfully');
+      setShowEditModal(false);
+      setEditingCandidate(null);
+      setEditFormData({
+        name: '',
+        email: '',
+        phone: '',
+        status: '',
+        reference: '',
+        job_id: ''
+      });
+      fetchData();
+    } catch (error) {
+      console.error('Error updating candidate:', error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Failed to update candidate');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -475,13 +537,14 @@ const Candidates = () => {
                         >
                           <EyeIcon className="h-5 w-5" />
                         </Link>
-                        {/* <button
+                        <button
+                          onClick={() => handleEdit(candidate)}
                           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300"
                           title="Edit"
                         >
                           <PencilIcon className="h-5 w-5" />
                         </button>
-                        <button
+                        {/* <button
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           title="Delete"
                         >
@@ -511,6 +574,157 @@ const Candidates = () => {
         </div>
       </div>
 
+      {/* Edit Candidate Modal */}
+      {showEditModal && editingCandidate && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <form onSubmit={handleSubmitEdit}>
+                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                        Edit Candidate - {editingCandidate.name}
+                      </h3>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={editFormData.name}
+                            onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Email *
+                          </label>
+                          <input
+                            type="email"
+                            value={editFormData.email}
+                            onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Phone *
+                          </label>
+                          <input
+                            type="text"
+                            value={editFormData.phone}
+                            onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Status *
+                          </label>
+                          <select
+                            value={editFormData.status}
+                            onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          >
+                            <option value="">Select Status</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Task Pending">Task Pending</option>
+                            <option value="Task Submitted">Task Submitted</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Interview Eligible">Interview Eligible</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Interview Completed">Interview Completed</option>
+                            <option value="Shortlisted">Shortlisted</option>
+                            <option value="Selected">Selected</option>
+                            <option value="Rejected">Rejected</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Job *
+                          </label>
+                          <select
+                            value={editFormData.job_id}
+                            onChange={(e) => setEditFormData({ ...editFormData, job_id: e.target.value })}
+                            className="mt-1 input"
+                            required
+                          >
+                            <option value="">Select Job</option>
+                            {jobs.map((job) => (
+                              <option key={job._id} value={job._id}>
+                                {job.title}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Reference
+                          </label>
+                          <select
+                            value={editFormData.reference}
+                            onChange={(e) => setEditFormData({ ...editFormData, reference: e.target.value })}
+                            className="mt-1 input"
+                          >
+                            <option value="">No Reference</option>
+                            {users.map((user) => (
+                              <option key={user._id} value={user._id}>
+                                {user.name} - {user.email}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="btn btn-primary sm:ml-3 sm:w-auto disabled:opacity-50"
+                  >
+                    {submitting ? 'Updating...' : 'Update Candidate'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setEditingCandidate(null);
+                      setEditFormData({
+                        name: '',
+                        email: '',
+                        phone: '',
+                        status: '',
+                        reference: '',
+                        job_id: ''
+                      });
+                    }}
+                    className="btn btn-secondary sm:mt-0 sm:w-auto"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

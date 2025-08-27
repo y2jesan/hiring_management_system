@@ -24,6 +24,15 @@ const validateStatusUpdate = [body('status').isIn(['Applied', 'Task Pending', 'T
 
 const validateFinalSelection = [body('selected').isBoolean().withMessage('Selected must be a boolean'), body('offer_letter_path').optional().isLength({ min: 1 }).withMessage('Offer letter path must not be empty')];
 
+const validateCandidateUpdate = [
+  body('name').optional().isLength({ min: 2 }).withMessage('Name must be at least 2 characters long'),
+  body('email').optional().isEmail().withMessage('Please enter a valid email'),
+  body('phone').optional().isLength({ min: 11, max: 11 }).withMessage('Phone number must be exactly 11 digits'),
+  body('status').optional().isIn(['Applied', 'Task Pending', 'Task Submitted', 'Under Review', 'Interview Eligible', 'Interview Scheduled', 'Interview Completed', 'Shortlisted', 'Selected', 'Rejected']).withMessage('Invalid status'),
+  body('reference').optional().isMongoId().withMessage('Invalid reference user ID'),
+  body('job_id').optional().isMongoId().withMessage('Invalid job ID'),
+];
+
 // Public routes
 router.post('/apply/:job_id', uploadCV.single('cv'), handleUploadError, validateApplication, candidateController.applyForJob);
 router.get('/application/:application_id', candidateController.getCandidateByApplicationId);
@@ -36,6 +45,7 @@ router.get('/', candidateController.getCandidates);
 router.get('/:id', candidateController.getCandidateById);
 router.post('/:id/evaluate', validateEvaluation, candidateController.evaluateCandidate);
 router.patch('/:id/status', validateStatusUpdate, candidateController.updateCandidateStatus);
+router.put('/:id', validateCandidateUpdate, candidateController.updateCandidate);
 router.post('/:id/final-selection', validateFinalSelection, candidateController.finalSelection);
 router.delete('/:id', candidateController.deleteCandidate);
 

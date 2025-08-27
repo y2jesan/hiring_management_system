@@ -33,6 +33,11 @@ const candidateSchema = new mongoose.Schema(
       ref: 'Job',
       required: true,
     },
+    reference: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
     task_submission: {
       links: [
         {
@@ -149,5 +154,6 @@ candidateSchema.index({ application_id: 1 });
 candidateSchema.index({ email: 1 });
 candidateSchema.index({ status: 1 });
 candidateSchema.index({ job_id: 1 });
+candidateSchema.index({ reference: 1 });
 
 module.exports = mongoose.model('Candidate', candidateSchema);

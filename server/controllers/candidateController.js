@@ -147,6 +147,7 @@ const getCandidateById = async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id)
       .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
+      .populate('reference', 'name email')
       .populate('evaluation.evaluated_by', 'name email')
       .populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id')
       .populate('final_selection.selected_by', 'name email');
@@ -421,6 +422,87 @@ const finalSelection = async (req, res) => {
   }
 };
 
+// Update candidate
+const updateCandidate = async (req, res) => {
+  try {
+    const { name, email, phone, status, reference, job_id } = req.body;
+    const { id } = req.params;
+
+    const candidate = await Candidate.findById(id);
+    if (!candidate) {
+      return res.status(404).json(createErrorResponse('Candidate not found'));
+    }
+
+    // Validate status if provided
+    if (status) {
+      const validStatuses = ['Applied', 'Task Pending', 'Task Submitted', 'Under Review', 'Interview Eligible', 'Interview Scheduled', 'Interview Completed', 'Shortlisted', 'Selected', 'Rejected'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json(createErrorResponse('Invalid status'));
+      }
+    }
+
+    // Validate email format if provided
+    if (email) {
+      const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json(createErrorResponse('Invalid email format'));
+      }
+    }
+
+    // Check if email is already taken by another candidate
+    if (email && email !== candidate.email) {
+      const existingCandidate = await Candidate.findOne({ email, _id: { $ne: id } });
+      if (existingCandidate) {
+        return res.status(400).json(createErrorResponse('Email is already taken by another candidate'));
+      }
+    }
+
+    // Validate reference if provided
+    if (reference) {
+      const User = require('../models/User');
+      const user = await User.findById(reference);
+      if (!user) {
+        return res.status(400).json(createErrorResponse('Invalid reference user'));
+      }
+    }
+
+    // Validate job_id if provided
+    if (job_id) {
+      const Job = require('../models/Job');
+      const job = await Job.findById(job_id);
+      if (!job) {
+        return res.status(400).json(createErrorResponse('Invalid job'));
+      }
+    }
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (status) updateData.status = status;
+    if (reference !== undefined) updateData.reference = reference;
+    if (job_id) updateData.job_id = job_id;
+
+    const updatedCandidate = await Candidate.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    ).populate('reference', 'name email').populate('job_id', 'title job_id');
+
+    res.json(
+      createSuccessResponse(
+        {
+          candidate: updatedCandidate,
+        },
+        'Candidate updated successfully'
+      )
+    );
+  } catch (error) {
+    console.error('Update candidate error:', error);
+    res.status(500).json(createErrorResponse('Failed to update candidate'));
+  }
+};
+
 // Delete candidate
 const deleteCandidate = async (req, res) => {
   try {
@@ -445,6 +527,7 @@ module.exports = {
   submitTask,
   evaluateCandidate,
   updateCandidateStatus,
+  updateCandidate,
   finalSelection,
   deleteCandidate,
 };

@@ -90,11 +90,12 @@ const Interviews = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [interviewsData, candidatesData, jobsData, evaluatorsData] = await Promise.all([
+            const [interviewsData, candidatesData, jobsData, evaluatorsData, mdUsersData] = await Promise.all([
                 interviewService.getAllInterviews(),
                 candidateService.getAllCandidates({ status: 'Interview Eligible' }),
                 jobService.getAllJobs({ is_active: true }),
-                userService.getAllUsers({ role: 'Evaluator', is_active: true })
+                userService.getAllUsers({ role: 'Evaluator', is_active: true }),
+                userService.getAllUsers({ role: 'MD', is_active: true })
             ]);
 
             // Handle different response structures
@@ -102,11 +103,18 @@ const Interviews = () => {
             const candidatesArray = candidatesData.data?.candidates || candidatesData.candidates || [];
             const jobsArray = jobsData.data?.jobs || jobsData.jobs || [];
             const evaluatorsArray = evaluatorsData.data?.users || evaluatorsData.users || [];
+            const mdUsersArray = mdUsersData.data?.users || mdUsersData.users || [];
+
+            // Combine evaluators and MD users
+            const allEvaluators = [
+                ...(Array.isArray(evaluatorsArray) ? evaluatorsArray : []),
+                ...(Array.isArray(mdUsersArray) ? mdUsersArray : [])
+            ];
 
             setInterviews(Array.isArray(interviewsArray) ? interviewsArray : []);
             setCandidates(Array.isArray(candidatesArray) ? candidatesArray : []);
             setJobs(Array.isArray(jobsArray) ? jobsArray : []);
-            setEvaluators(Array.isArray(evaluatorsArray) ? evaluatorsArray : []);
+            setEvaluators(allEvaluators);
         } catch (error) {
             console.error('Error fetching data:', error);
             toast.error('Failed to fetch data');
@@ -1286,7 +1294,7 @@ const Interviews = () => {
                                                         <option value="">Choose an evaluator...</option>
                                                         {evaluators.map((evaluator) => (
                                                             <option key={evaluator._id} value={evaluator._id}>
-                                                                {evaluator.name} - {evaluator.department || 'No Department'}
+                                                                {evaluator.name} - {evaluator.department ? evaluator.department : ''}
                                                             </option>
                                                         ))}
                                                     </select>
@@ -1577,7 +1585,7 @@ const Interviews = () => {
                                                         <option value="">Choose an evaluator...</option>
                                                         {evaluators.map((evaluator) => (
                                                             <option key={evaluator._id} value={evaluator._id}>
-                                                                {evaluator.name} - {evaluator.department || 'No Department'}
+                                                                {evaluator.name} - {evaluator.department ? evaluator.department : ''}
                                                             </option>
                                                         ))}
                                                     </select>

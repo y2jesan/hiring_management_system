@@ -414,7 +414,7 @@ const Interviews = () => {
             candidate.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             candidate.application_id?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchesStatus = !statusFilter || interview.result === statusFilter;
+        const matchesStatus = !statusFilter || interview.status === statusFilter;
 
         const matchesJob = !jobFilter || candidate.job_id?.job_id === jobFilter;
 
@@ -491,19 +491,22 @@ const Interviews = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Interview Result
+                                        Interview Status
                                     </label>
                                     <select
                                         value={statusFilter}
                                         onChange={(e) => setStatusFilter(e.target.value)}
                                         className="input"
                                     >
-                                        <option value="">All Results</option>
+                                        <option value="">All Statuses</option>
                                         <option value="Pending">Pending</option>
-                                        <option value="Completed">Completed</option>
+                                        <option value="Rescheduled">Rescheduled</option>
+                                        <option value="Taken">Taken</option>
                                         <option value="Passed">Passed</option>
                                         <option value="Failed">Failed</option>
                                         <option value="No Show">No Show</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                        <option value="Completed">Completed</option>
                                     </select>
                                 </div>
 
@@ -589,7 +592,7 @@ const Interviews = () => {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Pending</dt>
                                     <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                        {interviews.filter(i => i.result === 'Pending').length}
+                                        {interviews.filter(i => i.status === 'Pending').length}
                                     </dd>
                                 </dl>
                             </div>
@@ -609,7 +612,7 @@ const Interviews = () => {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Completed</dt>
                                     <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                        {interviews.filter(i => i.result === 'Completed').length}
+                                        {interviews.filter(i => i.status === 'Completed').length}
                                     </dd>
                                 </dl>
                             </div>
@@ -629,7 +632,7 @@ const Interviews = () => {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Passed</dt>
                                     <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                        {interviews.filter(i => i.result === 'Passed').length}
+                                        {interviews.filter(i => i.status === 'Passed').length}
                                     </dd>
                                 </dl>
                             </div>
@@ -649,7 +652,7 @@ const Interviews = () => {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Failed</dt>
                                     <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                        {interviews.filter(i => i.result === 'Failed').length}
+                                        {interviews.filter(i => i.status === 'Failed').length}
                                     </dd>
                                 </dl>
                             </div>
@@ -676,7 +679,7 @@ const Interviews = () => {
                                             </p>
                                         </div>
                                     </div>
-                                    {getResultBadge(interview.result)}
+                                    {getResultBadge(interview.status || interview.result)}
                                 </div>
 
                                 <div className="space-y-2 mb-4">

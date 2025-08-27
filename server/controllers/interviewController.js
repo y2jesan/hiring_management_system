@@ -37,6 +37,7 @@ const scheduleInterview = async (req, res) => {
       meeting_link: location === 'Online' ? meeting_link : null,
       notes,
       scheduled_by: req.user._id,
+      status: 'Pending',
     };
 
     const interview = await Interview.create(interviewData);
@@ -90,7 +91,7 @@ const getInterviews = async (req, res) => {
 
     // Status filter
     if (status) {
-      query.result = status;
+      query.status = status;
     }
 
     // Interviewer filter

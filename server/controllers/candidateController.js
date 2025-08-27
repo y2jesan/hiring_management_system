@@ -97,7 +97,7 @@ const getCandidates = async (req, res) => {
     // Search filter
     if (search) {
       const sanitizedSearch = sanitizeSearchQuery(search);
-      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }, { core_experience: { $regex: sanitizedSearch, $options: 'i' } }];
+      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }];
     }
 
     // Status filter
@@ -124,7 +124,7 @@ const getCandidates = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [candidates, total] = await Promise.all([Candidate.find(query).populate('job_id', 'title designation job_id experience_in_year').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit), Candidate.countDocuments(query)]);
+    const [candidates, total] = await Promise.all([Candidate.find(query).populate('job_id', 'title designation job_id experience_in_year').populate('core_experience', 'name').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit), Candidate.countDocuments(query)]);
 
     // Add full file URLs
     const candidatesWithUrls = candidates.map((candidate) => ({
@@ -149,7 +149,7 @@ const getCandidates = async (req, res) => {
 // Get candidate by ID
 const getCandidateById = async (req, res) => {
   try {
-    const candidate = await Candidate.findById(req.params.id).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('reference', 'name email').populate('evaluation.evaluated_by', 'name email').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id').populate('final_selection.selected_by', 'name email');
+    const candidate = await Candidate.findById(req.params.id).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('core_experience', 'name').populate('reference', 'name email').populate('evaluation.evaluated_by', 'name email').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id').populate('final_selection.selected_by', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Candidate not found'));
@@ -175,7 +175,7 @@ const getCandidateById = async (req, res) => {
 // Get candidate by application ID (for candidate portal)
 const getCandidateByApplicationId = async (req, res) => {
   try {
-    const candidate = await Candidate.findOne({ application_id: req.params.application_id }).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback completed_at job_id').populate('interviews.interviewer', 'name email');
+    const candidate = await Candidate.findOne({ application_id: req.params.application_id }).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('core_experience', 'name').populate('interviews', 'scheduled_date interviewer location meeting_link result feedback completed_at job_id').populate('interviews.interviewer', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Application not found'));
@@ -479,7 +479,7 @@ const updateCandidate = async (req, res) => {
     if (notice_period_in_months !== undefined) updateData.notice_period_in_months = parseInt(notice_period_in_months);
     if (core_experience !== undefined) updateData.core_experience = Array.isArray(core_experience) ? core_experience : [];
 
-    const updatedCandidate = await Candidate.findByIdAndUpdate(id, updateData, { new: true }).populate('reference', 'name email').populate('job_id', 'title job_id');
+    const updatedCandidate = await Candidate.findByIdAndUpdate(id, updateData, { new: true }).populate('reference', 'name email').populate('job_id', 'title job_id').populate('core_experience', 'name');
 
     res.json(
       createSuccessResponse(
@@ -509,7 +509,7 @@ const exportCandidates = async (req, res) => {
     // Search filter
     if (search) {
       const sanitizedSearch = sanitizeSearchQuery(search);
-      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }, { core_experience: { $regex: sanitizedSearch, $options: 'i' } }];
+      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { application_id: { $regex: sanitizedSearch, $options: 'i' } }];
     }
 
     // Status filter

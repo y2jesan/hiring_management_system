@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { Link, useSearchParams } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
+import { experienceService } from '../../services/experienceService';
 import { jobService } from '../../services/jobService';
 import { userService } from '../../services/userService';
 
@@ -17,14 +18,17 @@ const Candidates = () => {
   const [searchParams] = useSearchParams();
   const [candidates, setCandidates] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [jobFilter, setJobFilter] = useState('');
   const [applyDateFilter, setApplyDateFilter] = useState('');
   const [submitDateFilter, setSubmitDateFilter] = useState('');
-  const [experienceFilter, setExperienceFilter] = useState('');
+
   const [salaryFilter, setSalaryFilter] = useState('');
+  const [experienceFilterIds, setExperienceFilterIds] = useState([]);
+  const [yearsOfExperienceFilter, setYearsOfExperienceFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
   // Edit modal states
@@ -67,14 +71,16 @@ const Candidates = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [candidatesResponse, jobsResponse, usersResponse] = await Promise.all([
+      const [candidatesResponse, jobsResponse, usersResponse, experiencesResponse] = await Promise.all([
         candidateService.getAllCandidates(),
         jobService.getAllJobs({ is_active: true }),
-        userService.getAllUsers({ is_active: true })
+        userService.getAllUsers({ is_active: true }),
+        experienceService.getAllExperiences({ active: true })
       ]);
       setCandidates(candidatesResponse.data?.candidates || candidatesResponse.data || []);
       setJobs(jobsResponse.data?.jobs || jobsResponse.data || []);
       setUsers(usersResponse.data?.users || usersResponse.data || []);
+      setExperiences(experiencesResponse.data?.experiences || experiencesResponse.experiences || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response?.status === 401) {
@@ -94,7 +100,7 @@ const Candidates = () => {
       if (statusFilter) params.status = statusFilter;
       if (applyDateFilter) params.apply_date = applyDateFilter;
       if (submitDateFilter) params.submit_date = submitDateFilter;
-      if (experienceFilter) params.min_experience = experienceFilter;
+      if (yearsOfExperienceFilter) params.min_experience = yearsOfExperienceFilter;
       if (salaryFilter) params.min_salary = salaryFilter;
 
       const blob = await candidateService.exportCandidates(params);
@@ -125,7 +131,7 @@ const Candidates = () => {
       years_of_experience: candidate.years_of_experience || '',
       expected_salary: candidate.expected_salary || '',
       notice_period_in_months: candidate.notice_period_in_months || '',
-      core_experience: candidate.core_experience || []
+      core_experience: candidate.core_experience ? candidate.core_experience.map(exp => exp._id || exp) : []
     });
     setShowEditModal(true);
   };
@@ -191,7 +197,7 @@ const Candidates = () => {
       candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.application_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (candidate.core_experience && candidate.core_experience.some(exp =>
-        exp.toLowerCase().includes(searchTerm.toLowerCase())
+        exp.name && exp.name.toLowerCase().includes(searchTerm.toLowerCase())
       ));
 
     const matchesStatus = !statusFilter || candidate.status === statusFilter;
@@ -205,13 +211,18 @@ const Candidates = () => {
       (candidate.task_submission?.submitted_at &&
         new Date(candidate.task_submission.submitted_at).toDateString() === new Date(submitDateFilter).toDateString());
 
-    const matchesExperience = !experienceFilter ||
-      (candidate.years_of_experience && candidate.years_of_experience >= parseFloat(experienceFilter));
+    const matchesExperience = !experienceFilterIds.length ||
+      (candidate.core_experience && candidate.core_experience.some(exp =>
+        experienceFilterIds.includes(exp._id)
+      ));
+
+    const matchesYearsOfExperience = !yearsOfExperienceFilter ||
+      (candidate.years_of_experience && candidate.years_of_experience >= parseFloat(yearsOfExperienceFilter));
 
     const matchesSalary = !salaryFilter ||
       (candidate.expected_salary && candidate.expected_salary >= parseFloat(salaryFilter));
 
-    return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate && matchesExperience && matchesSalary;
+    return matchesSearch && matchesStatus && matchesJob && matchesApplyDate && matchesSubmitDate && matchesExperience && matchesYearsOfExperience && matchesSalary;
   });
 
   if (loading) {
@@ -270,9 +281,9 @@ const Candidates = () => {
               >
                 <FunnelIcon className="h-5 w-5 mr-2" />
                 Filters
-                {(statusFilter || jobFilter || applyDateFilter || submitDateFilter || experienceFilter || salaryFilter) && (
+                {(statusFilter || jobFilter || applyDateFilter || submitDateFilter || experienceFilterIds.length > 0 || yearsOfExperienceFilter || salaryFilter) && (
                   <span className="ml-2 bg-primary-100 text-primary-700 text-xs font-medium px-2 py-1 rounded-full">
-                    {[statusFilter, jobFilter, applyDateFilter, submitDateFilter, experienceFilter, salaryFilter].filter(Boolean).length}
+                    {[statusFilter, jobFilter, applyDateFilter, submitDateFilter, experienceFilterIds.length > 0 ? 'exp' : '', yearsOfExperienceFilter, salaryFilter].filter(Boolean).length}
                   </span>
                 )}
               </button>
@@ -349,14 +360,39 @@ const Candidates = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Min Experience (Years)
+                    Core Experience
+                  </label>
+                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-2">
+                    {experiences.map((experience) => (
+                      <label key={experience._id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                        <input
+                          type="checkbox"
+                          checked={experienceFilterIds.includes(experience._id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setExperienceFilterIds([...experienceFilterIds, experience._id]);
+                            } else {
+                              setExperienceFilterIds(experienceFilterIds.filter(id => id !== experience._id));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{experience.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Min Years of Experience
                   </label>
                   <input
                     type="number"
                     step="0.1"
                     min="0"
-                    value={experienceFilter}
-                    onChange={(e) => setExperienceFilter(e.target.value)}
+                    value={yearsOfExperienceFilter}
+                    onChange={(e) => setYearsOfExperienceFilter(e.target.value)}
                     className="input"
                     placeholder="e.g., 2"
                   />
@@ -528,7 +564,10 @@ const Candidates = () => {
                     Status
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Experience
+                    Years of Experience
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Core Experience
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Expected Salary
@@ -593,6 +632,24 @@ const Candidates = () => {
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {candidate.years_of_experience ? `${candidate.years_of_experience} years` : 'N/A'}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {candidate.core_experience && candidate.core_experience.length > 0 ? (
+                        <div className="space-y-1">
+                          {candidate.core_experience.slice(0, 2).map((exp, index) => (
+                            <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                              {exp.name}
+                            </span>
+                          ))}
+                          {candidate.core_experience.length > 2 && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              +{candidate.core_experience.length - 2} more
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500">None</span>
+                      )}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {candidate.expected_salary ? `BDT ${candidate.expected_salary.toLocaleString()}` : 'N/A'}
@@ -843,44 +900,30 @@ const Candidates = () => {
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Core Experience
                           </label>
-                          <div className="space-y-2">
-                            {editFormData.core_experience.map((exp, index) => (
-                              <div key={index} className="flex gap-2">
+                          <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-2">
+                            {experiences.map((experience) => (
+                              <label key={experience._id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
                                 <input
-                                  type="text"
-                                  value={exp}
+                                  type="checkbox"
+                                  checked={editFormData.core_experience.includes(experience._id)}
                                   onChange={(e) => {
-                                    const newExp = [...editFormData.core_experience];
-                                    newExp[index] = e.target.value;
-                                    setEditFormData({ ...editFormData, core_experience: newExp });
+                                    if (e.target.checked) {
+                                      setEditFormData({
+                                        ...editFormData,
+                                        core_experience: [...editFormData.core_experience, experience._id]
+                                      });
+                                    } else {
+                                      setEditFormData({
+                                        ...editFormData,
+                                        core_experience: editFormData.core_experience.filter(id => id !== experience._id)
+                                      });
+                                    }
                                   }}
-                                  className="flex-1 input"
-                                  placeholder="e.g., React.js, Node.js"
+                                  className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                                 />
-                                {editFormData.core_experience.length > 1 && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newExp = editFormData.core_experience.filter((_, i) => i !== index);
-                                      setEditFormData({ ...editFormData, core_experience: newExp });
-                                    }}
-                                    className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 rounded-md hover:bg-red-50"
-                                  >
-                                    Remove
-                                  </button>
-                                )}
-                              </div>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{experience.name}</span>
+                              </label>
                             ))}
-                            <button
-                              type="button"
-                              onClick={() => setEditFormData({
-                                ...editFormData,
-                                core_experience: [...editFormData.core_experience, '']
-                              })}
-                              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                            >
-                              + Add Another Experience
-                            </button>
                           </div>
                         </div>
                       </div>

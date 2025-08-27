@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import qtecLogo from '../../assets/qtec_icon.svg';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
+import { experienceService } from '../../services/experienceService';
 import { jobService } from '../../services/jobService';
 
 const JobApplication = () => {
@@ -24,7 +25,8 @@ const JobApplication = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [selectedCV, setSelectedCV] = useState(null);
-    const [coreExperience, setCoreExperience] = useState(['']);
+    const [experiences, setExperiences] = useState([]);
+    const [selectedExperiences, setSelectedExperiences] = useState([]);
 
     const {
         register,
@@ -34,6 +36,7 @@ const JobApplication = () => {
 
     useEffect(() => {
         fetchJob();
+        fetchExperiences();
     }, [jobId]);
 
     const fetchJob = async () => {
@@ -47,6 +50,17 @@ const JobApplication = () => {
             toast.error('Job not found or no longer available');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchExperiences = async () => {
+        try {
+            const response = await experienceService.getActiveExperiences();
+            const experiencesArray = response.data?.experiences || response.experiences || [];
+            setExperiences(Array.isArray(experiencesArray) ? experiencesArray : []);
+        } catch (error) {
+            console.error('Error fetching experiences:', error);
+            // Don't show error toast as experiences are optional
         }
     };
 
@@ -92,8 +106,7 @@ const JobApplication = () => {
         }
 
         // Validate core experience
-        const validCoreExperience = coreExperience.filter(exp => exp.trim() !== '');
-        if (validCoreExperience.length === 0) {
+        if (selectedExperiences.length === 0) {
             toast.error('At least one core experience is required');
             return;
         }
@@ -110,8 +123,8 @@ const JobApplication = () => {
             formData.append('years_of_experience', data.years_of_experience);
             formData.append('expected_salary', data.expected_salary);
             formData.append('notice_period_in_months', data.notice_period_in_months);
-            validCoreExperience.forEach(exp => {
-                formData.append('core_experience', exp);
+            selectedExperiences.forEach(expId => {
+                formData.append('core_experience', expId);
             });
 
             const resp = await candidateService.createCandidate(job.job_id, formData);
@@ -424,45 +437,36 @@ const JobApplication = () => {
                                 <AcademicCapIcon className="h-4 w-4 inline mr-1" />
                                 Core Experience *
                             </label>
-                            <div className="space-y-2">
-                                {coreExperience.map((exp, index) => (
-                                    <div key={index} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={exp}
-                                            onChange={(e) => {
-                                                const newExp = [...coreExperience];
-                                                newExp[index] = e.target.value;
-                                                setCoreExperience(newExp);
-                                            }}
-                                            className="flex-1 input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500"
-                                            placeholder="e.g., React.js, Node.js, MongoDB"
-                                            required={index === 0}
-                                        />
-                                        {coreExperience.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const newExp = coreExperience.filter((_, i) => i !== index);
-                                                    setCoreExperience(newExp);
+                            <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md p-3">
+                                {experiences.length > 0 ? (
+                                    experiences.map((experience) => (
+                                        <label key={experience._id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedExperiences.includes(experience._id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedExperiences([...selectedExperiences, experience._id]);
+                                                    } else {
+                                                        setSelectedExperiences(selectedExperiences.filter(id => id !== experience._id));
+                                                    }
                                                 }}
-                                                className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 rounded-md hover:bg-red-50"
-                                            >
-                                                Remove
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => setCoreExperience([...coreExperience, ''])}
-                                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                                >
-                                    + Add Another Experience
-                                </button>
+                                                className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
+                                            />
+                                            <span className="text-sm text-gray-700 !text-gray-700">{experience.name}</span>
+                                        </label>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-500 !text-gray-500">No experiences available</p>
+                                )}
                             </div>
+                            {selectedExperiences.length > 0 && (
+                                <p className="mt-2 text-sm text-gray-600 !text-gray-600">
+                                    Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}
+                                </p>
+                            )}
                             <p className="mt-1 text-sm text-gray-500 !text-gray-500">
-                                Add your key technical skills and areas of expertise
+                                Select your key technical skills and areas of expertise
                             </p>
                         </div>
 

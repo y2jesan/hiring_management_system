@@ -57,7 +57,8 @@ const candidateSchema = new mongoose.Schema(
       default: 1,
     },
     core_experience: {
-      type: [String],
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Experience',
       default: [],
     },
     task_submission: {

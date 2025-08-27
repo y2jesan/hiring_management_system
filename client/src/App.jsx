@@ -12,6 +12,7 @@ import CandidateDetails from './pages/admin/CandidateDetails';
 import Candidates from './pages/admin/Candidates';
 import Dashboard from './pages/admin/Dashboard';
 import Evaluation from './pages/admin/Evaluation';
+import Experiences from './pages/admin/Experiences';
 import FinalSelection from './pages/admin/FinalSelection';
 import Interviews from './pages/admin/Interviews';
 import JobDetails from './pages/admin/JobDetails';
@@ -83,6 +84,7 @@ function App() {
                 <Route path="scheduleInterview" element={<ScheduleInterview />} />
                 <Route path="interviews" element={<Interviews />} />
                 <Route path="evaluation" element={<Evaluation />} />
+                <Route path="experiences" element={<Experiences />} />
                 <Route path="final-selection" element={<FinalSelection />} />
                 <Route path="users" element={<Users />} />
                 <Route path="user-info" element={<UserInfo />} />

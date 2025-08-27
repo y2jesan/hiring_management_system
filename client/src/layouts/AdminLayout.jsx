@@ -53,6 +53,7 @@ const AdminLayout = () => {
 
   const manageSubItems = [
     { name: 'Users', href: '/admin/users', icon: UserCircleIcon },
+    { name: 'Experiences', href: '/admin/experiences', icon: BriefcaseIcon },
   ];
 
   const isActive = (href) => location.pathname === href;

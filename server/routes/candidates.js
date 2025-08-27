@@ -18,7 +18,7 @@ const validateApplication = [
   body('expected_salary').isFloat({ min: 0 }).withMessage('Expected salary must be a positive number'),
   body('notice_period_in_months').isInt({ min: 0 }).withMessage('Notice period must be a positive integer'),
   body('core_experience').isArray({ min: 1 }).withMessage('At least one core experience is required'),
-  body('core_experience.*').isLength({ min: 1 }).withMessage('Core experience items cannot be empty'),
+  body('core_experience.*').isMongoId().withMessage('Invalid experience ID'),
 ];
 
 const validateTaskSubmission = [body('links').isArray({ min: 1, max: 10 }).withMessage('At least one link is required, maximum 10 links allowed'), body('links.*.url').isURL().withMessage('Each link must be a valid URL'), body('links.*.type').optional().isIn(['github', 'live', 'other']).withMessage('Link type must be github, live, or other')];
@@ -50,8 +50,8 @@ const validateCandidateUpdate = [
       }
       if (Array.isArray(value) && value.length > 0) {
         for (let i = 0; i < value.length; i++) {
-          if (!value[i] || value[i].trim().length === 0) {
-            throw new Error('Core experience items cannot be empty');
+          if (!value[i] || typeof value[i] !== 'string') {
+            throw new Error('Core experience items must be valid experience IDs');
           }
         }
       }

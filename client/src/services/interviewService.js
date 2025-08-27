@@ -37,6 +37,12 @@ export const interviewService = {
     return response.data;
   },
 
+  // Schedule next interview
+  scheduleNextInterview: async (interviewData) => {
+    const response = await api.post('/interviews/schedule-next', interviewData);
+    return response.data;
+  },
+
   // Update interview result
   updateInterviewResult: async (id, resultData) => {
     const response = await api.put(`/interviews/${id}/result`, resultData);
@@ -55,6 +61,12 @@ export const interviewService = {
       candidate_id: candidateId,
       ...completeData
     });
+    return response.data;
+  },
+
+  // Reschedule interview
+  rescheduleInterview: async (interviewId, rescheduleData) => {
+    const response = await api.put(`/interviews/${interviewId}/reschedule`, rescheduleData);
     return response.data;
   },
 };

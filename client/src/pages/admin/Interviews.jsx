@@ -39,11 +39,28 @@ const Interviews = () => {
 
     // Complete Interview Modal states
     const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [showNextInterviewModal, setShowNextInterviewModal] = useState(false);
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
     const [selectedInterview, setSelectedInterview] = useState(null);
     const [completeFormData, setCompleteFormData] = useState({
         candidateStatus: 'Interview Completed',
         interviewResult: 'Pending',
         feedback: '',
+        notes: ''
+    });
+    const [nextInterviewData, setNextInterviewData] = useState({
+        candidate_id: '',
+        job_id: '',
+        scheduled_date: '',
+        scheduled_time: '',
+        interviewer: '',
+        location: 'In-Person',
+        meeting_link: '',
+        notes: ''
+    });
+    const [rescheduleData, setRescheduleData] = useState({
+        scheduled_date: '',
+        scheduled_time: '',
         notes: ''
     });
     const [submitting, setSubmitting] = useState(false);
@@ -161,9 +178,9 @@ const Interviews = () => {
         setShowCompleteModal(true);
     };
 
-    const handleSubmitCompleteInterview = async (e) => {
+        const handleSubmitCompleteInterview = async (e) => {
         e.preventDefault();
-
+        
         if (!selectedInterview) {
             toast.error('No interview selected');
             return;
@@ -171,7 +188,7 @@ const Interviews = () => {
 
         try {
             setSubmitting(true);
-
+            
             const completeData = {
                 candidateStatus: completeFormData.candidateStatus,
                 interviewResult: completeFormData.interviewResult,
@@ -202,9 +219,123 @@ const Interviews = () => {
         }
     };
 
+    const handleScheduleNextInterview = (interview) => {
+        setSelectedInterview(interview);
+        setNextInterviewData({
+            candidate_id: interview.candidate_id._id,
+            job_id: interview.job_id._id,
+            scheduled_date: '',
+            scheduled_time: '',
+            interviewer: '',
+            location: 'In-Person',
+            meeting_link: '',
+            notes: ''
+        });
+        setShowNextInterviewModal(true);
+    };
+
+    const handleSubmitNextInterview = async (e) => {
+        e.preventDefault();
+        
+        if (!selectedInterview) {
+            toast.error('No interview selected');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            
+            // Combine date and time into a single datetime string
+            const scheduledDateTime = `${nextInterviewData.scheduled_date}T${nextInterviewData.scheduled_time}`;
+            
+            const nextInterviewPayload = {
+                ...nextInterviewData,
+                scheduled_date: scheduledDateTime
+            };
+            
+            await interviewService.scheduleNextInterview(nextInterviewPayload);
+            toast.success('Next interview scheduled successfully');
+            setShowNextInterviewModal(false);
+            setSelectedInterview(null);
+            setNextInterviewData({
+                candidate_id: '',
+                job_id: '',
+                scheduled_date: '',
+                scheduled_time: '',
+                interviewer: '',
+                location: 'In-Person',
+                meeting_link: '',
+                notes: ''
+            });
+            fetchData();
+        } catch (error) {
+            console.error('Error scheduling next interview:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Failed to schedule next interview');
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleRescheduleInterview = (interview) => {
+        setSelectedInterview(interview);
+        const interviewDate = interview.scheduled_date ? new Date(interview.scheduled_date) : new Date();
+        setRescheduleData({
+            scheduled_date: interviewDate.toISOString().split('T')[0],
+            scheduled_time: interviewDate.toTimeString().split(' ')[0].substring(0, 5),
+            notes: ''
+        });
+        setShowRescheduleModal(true);
+    };
+
+    const handleSubmitReschedule = async (e) => {
+        e.preventDefault();
+        
+        if (!selectedInterview) {
+            toast.error('No interview selected');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            
+            // Combine date and time into a single datetime string
+            const scheduledDateTime = `${rescheduleData.scheduled_date}T${rescheduleData.scheduled_time}`;
+            
+            const reschedulePayload = {
+                scheduled_date: scheduledDateTime,
+                notes: rescheduleData.notes
+            };
+            
+            await interviewService.rescheduleInterview(selectedInterview._id, reschedulePayload);
+            toast.success('Interview rescheduled successfully');
+            setShowRescheduleModal(false);
+            setSelectedInterview(null);
+            setRescheduleData({
+                scheduled_date: '',
+                scheduled_time: '',
+                notes: ''
+            });
+            fetchData();
+        } catch (error) {
+            console.error('Error rescheduling interview:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Failed to reschedule interview');
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const getResultBadge = (result) => {
         const colors = {
             'Pending': 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200',
+            'Taken': 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
             'Passed': 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
             'Failed': 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200',
             'No Show': 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
@@ -534,17 +665,43 @@ const Interviews = () => {
                                     </div>
                                 )}
 
-                                {/* Complete Interview Button */}
-                                {interview.result === 'Pending' && (
-                                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                        <button
-                                            onClick={() => handleCompleteInterview(interview)}
-                                            className="w-full btn btn-success text-sm"
-                                        >
-                                            Complete Interview
-                                        </button>
-                                    </div>
-                                )}
+                                {/* Action Buttons */}
+                                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                    {interview.result === 'Pending' && (
+                                        <div className="space-y-2">
+                                            <button
+                                                onClick={() => handleCompleteInterview(interview)}
+                                                className="w-full btn btn-success text-sm"
+                                            >
+                                                Complete Interview
+                                            </button>
+                                            {interview.candidate_id?.status === 'Interview Scheduled' && (
+                                                <button
+                                                    onClick={() => handleRescheduleInterview(interview)}
+                                                    className="w-full btn btn-secondary text-sm"
+                                                >
+                                                    Reschedule
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                    {interview.candidate_id?.status === 'Interview Completed' && interview.result === 'Taken' && (
+                                        <div className="space-y-2">
+                                            <button
+                                                onClick={() => handleCompleteInterview(interview)}
+                                                className="w-full btn btn-success text-sm"
+                                            >
+                                                Complete Interview
+                                            </button>
+                                            <button
+                                                onClick={() => handleScheduleNextInterview(interview)}
+                                                className="w-full btn btn-primary text-sm"
+                                            >
+                                                Schedule Next Interview
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -915,6 +1072,7 @@ const Interviews = () => {
                                                         required
                                                     >
                                                         <option value="Pending">Pending</option>
+                                                        <option value="Taken">Taken (Under Evaluation)</option>
                                                         <option value="Passed">Passed</option>
                                                         <option value="Failed">Failed</option>
                                                         <option value="No Show">No Show</option>
@@ -989,6 +1147,239 @@ const Interviews = () => {
                                         className="btn btn-primary sm:w-auto disabled:opacity-50"
                                     >
                                         {submitting ? 'Completing...' : 'Complete Interview'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Schedule Next Interview Modal */}
+            {showNextInterviewModal && selectedInterview && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-4xl sm:max-w-lg">
+                            <form onSubmit={handleSubmitNextInterview}>
+                                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <div className="sm:flex sm:items-start">
+                                        <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                                                Schedule Next Interview - {selectedInterview.candidate_id?.name}
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Select Evaluator
+                                                    </label>
+                                                    <select
+                                                        value={nextInterviewData.interviewer}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, interviewer: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="">Choose an evaluator...</option>
+                                                        {evaluators.map((evaluator) => (
+                                                            <option key={evaluator._id} value={evaluator._id}>
+                                                                {evaluator.name} - {evaluator.department || 'No Department'}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Interview Date
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        value={nextInterviewData.scheduled_date}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, scheduled_date: e.target.value })}
+                                                        min={new Date().toISOString().split('T')[0]}
+                                                        className="mt-1 input"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Interview Time
+                                                    </label>
+                                                    <input
+                                                        type="time"
+                                                        value={nextInterviewData.scheduled_time}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, scheduled_time: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Interview Location
+                                                    </label>
+                                                    <select
+                                                        value={nextInterviewData.location}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, location: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="In-Person">In-Person</option>
+                                                        <option value="Online">Online</option>
+                                                    </select>
+                                                </div>
+
+                                                {nextInterviewData.location === 'Online' && (
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            Meeting Link
+                                                        </label>
+                                                        <input
+                                                            type="url"
+                                                            value={nextInterviewData.meeting_link}
+                                                            onChange={(e) => setNextInterviewData({ ...nextInterviewData, meeting_link: e.target.value })}
+                                                            placeholder="https://meet.google.com/xxx-xxxx-xxx"
+                                                            className="mt-1 input"
+                                                            required={nextInterviewData.location === 'Online'}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Notes
+                                                    </label>
+                                                    <textarea
+                                                        value={nextInterviewData.notes}
+                                                        onChange={(e) => setNextInterviewData({ ...nextInterviewData, notes: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Additional notes for the interview..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowNextInterviewModal(false);
+                                            setSelectedInterview(null);
+                                            setNextInterviewData({
+                                                candidate_id: '',
+                                                job_id: '',
+                                                scheduled_date: '',
+                                                scheduled_time: '',
+                                                interviewer: '',
+                                                location: 'In-Person',
+                                                meeting_link: '',
+                                                notes: ''
+                                            });
+                                        }}
+                                        className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="btn btn-primary sm:w-auto disabled:opacity-50"
+                                    >
+                                        {submitting ? 'Scheduling...' : 'Schedule Next Interview'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reschedule Interview Modal */}
+            {showRescheduleModal && selectedInterview && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-4xl sm:max-w-lg">
+                            <form onSubmit={handleSubmitReschedule}>
+                                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <div className="sm:flex sm:items-start">
+                                        <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                                                Reschedule Interview - {selectedInterview.candidate_id?.name}
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        New Interview Date
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        value={rescheduleData.scheduled_date}
+                                                        onChange={(e) => setRescheduleData({ ...rescheduleData, scheduled_date: e.target.value })}
+                                                        min={new Date().toISOString().split('T')[0]}
+                                                        className="mt-1 input"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        New Interview Time
+                                                    </label>
+                                                    <input
+                                                        type="time"
+                                                        value={rescheduleData.scheduled_time}
+                                                        onChange={(e) => setRescheduleData({ ...rescheduleData, scheduled_time: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Notes
+                                                    </label>
+                                                    <textarea
+                                                        value={rescheduleData.notes}
+                                                        onChange={(e) => setRescheduleData({ ...rescheduleData, notes: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Reason for rescheduling..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowRescheduleModal(false);
+                                            setSelectedInterview(null);
+                                            setRescheduleData({
+                                                scheduled_date: '',
+                                                scheduled_time: '',
+                                                notes: ''
+                                            });
+                                        }}
+                                        className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="btn btn-primary sm:w-auto disabled:opacity-50"
+                                    >
+                                        {submitting ? 'Rescheduling...' : 'Reschedule Interview'}
                                     </button>
                                 </div>
                             </form>

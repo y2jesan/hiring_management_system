@@ -148,7 +148,7 @@ const updateInterviewResult = async (req, res) => {
     const { result, feedback, score } = req.body;
     const { id } = req.params;
 
-    const validResults = ['Pending', 'Passed', 'Failed', 'No Show'];
+    const validResults = ['Pending', 'Taken', 'Passed', 'Failed', 'No Show'];
     if (!validResults.includes(result)) {
       return res.status(400).json(createErrorResponse('Invalid interview result'));
     }
@@ -219,7 +219,7 @@ const rescheduleInterview = async (req, res) => {
     });
 
     // Send reschedule notification email
-    await sendInterviewScheduledNotification(updatedInterview.candidate_id.email, updatedInterview.candidate_id.name, updatedInterview.candidate_id.application_id, scheduled_date, updatedInterview.interviewer.name);
+    // await sendInterviewScheduledNotification(updatedInterview.candidate_id.email, updatedInterview.candidate_id.name, updatedInterview.candidate_id.application_id, scheduled_date, updatedInterview.interviewer.name);
 
     res.json(
       createSuccessResponse(
@@ -316,6 +316,75 @@ const getUpcomingInterviews = async (req, res) => {
   }
 };
 
+// Schedule next interview (after completing current one)
+const scheduleNextInterview = async (req, res) => {
+  try {
+    const { candidate_id, job_id, scheduled_date, interviewer, location, meeting_link, notes } = req.body;
+
+    // Validate candidate exists and is interview completed
+    const candidate = await Candidate.findById(candidate_id);
+    if (!candidate) {
+      return res.status(404).json(createErrorResponse('Candidate not found'));
+    }
+
+    if (candidate.status !== 'Interview Completed') {
+      return res.status(400).json(createErrorResponse('Candidate is not in interview completed status'));
+    }
+
+    // Validate interviewer exists
+    const interviewerUser = await User.findById(interviewer);
+    if (!interviewerUser) {
+      return res.status(404).json(createErrorResponse('Interviewer not found'));
+    }
+
+    // Mark the latest interview as passed
+    const latestInterview = await Interview.findOne({ candidate_id }).sort({ scheduled_date: -1 });
+    if (latestInterview) {
+      await Interview.findByIdAndUpdate(latestInterview._id, {
+        result: 'Passed',
+        completed_at: latestInterview.completed_at || new Date(),
+      });
+    }
+
+    const interviewData = {
+      candidate_id,
+      job_id,
+      scheduled_date: new Date(scheduled_date),
+      interviewer,
+      location: location || 'In-Person',
+      meeting_link: location === 'Online' ? meeting_link : null,
+      notes,
+      scheduled_by: req.user._id,
+    };
+
+    const interview = await Interview.create(interviewData);
+
+    // Update candidate status back to scheduled
+    await Candidate.findByIdAndUpdate(candidate_id, {
+      $push: { interviews: interview._id },
+      status: 'Interview Scheduled',
+    });
+
+    const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes scheduled_by');
+
+    res.status(201).json(
+      createSuccessResponse(
+        {
+          interview: populatedInterview,
+        },
+        'Next interview scheduled successfully'
+      )
+    );
+  } catch (error) {
+    console.error('Schedule next interview error:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json(createErrorResponse(errors.join(', ')));
+    }
+    res.status(500).json(createErrorResponse('Failed to schedule next interview'));
+  }
+};
+
 // Complete interview
 const completeInterview = async (req, res) => {
   try {
@@ -334,7 +403,7 @@ const completeInterview = async (req, res) => {
     }
 
     // Validate interview result
-    const validInterviewResults = ['Pending', 'Passed', 'Failed', 'No Show'];
+    const validInterviewResults = ['Pending', 'Taken', 'Passed', 'Failed', 'No Show'];
     if (!validInterviewResults.includes(interviewResult)) {
       return res.status(400).json(createErrorResponse('Invalid interview result'));
     }
@@ -400,6 +469,7 @@ const completeInterview = async (req, res) => {
 
 module.exports = {
   scheduleInterview,
+  scheduleNextInterview,
   getInterviews,
   getInterviewById,
   updateInterviewResult,

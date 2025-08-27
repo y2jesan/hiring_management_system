@@ -53,7 +53,7 @@ const interviewSchema = new mongoose.Schema(
     },
     result: {
       type: String,
-      enum: ['Pending', 'Passed', 'Failed', 'No Show'],
+      enum: ['Pending', 'Taken', 'Passed', 'Failed', 'No Show'],
       default: 'Pending',
     },
     feedback: {

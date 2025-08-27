@@ -469,9 +469,10 @@ const CandidatePortal = () => {
                           interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
                           interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
                           interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
+                          interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
                           'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800'
                         }`}>
-                          {interview.result}
+                          {interview.result === 'Taken' ? 'Evaluating' : interview.result}
                         </span>
                       )}
                     </div>
@@ -517,12 +518,13 @@ const CandidatePortal = () => {
                       {interview.result ? (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           interview.result === 'Pending' ? 'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800' :
+                          interview.result === 'Taken' ? 'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800' :
                           interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
                           interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
                           interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
                           'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800'
                         }`}>
-                          {interview.result}
+                          {interview.result === 'Taken' ? 'Evaluating' : interview.result}
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800">

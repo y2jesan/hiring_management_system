@@ -90,13 +90,19 @@ const CandidateDetails = () => {
                   <p className="font-medium text-gray-900 dark:text-white">{candidate.evaluation?.score ?? 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">Interview</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{candidate.interview?.scheduled_date ? new Date(candidate.interview.scheduled_date).toLocaleString() : 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Evaluated By</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{candidate.evaluation?.evaluated_by?.name || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">Interview Result</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{candidate.interview?.result || 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Evaluated At</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{candidate.evaluation?.evaluated_at ? new Date(candidate.evaluation.evaluated_at).toLocaleString() : 'N/A'}</p>
                 </div>
+                {candidate.evaluation?.comments && (
+                  <div className="sm:col-span-2">
+                    <p className="text-gray-500 dark:text-gray-400">Evaluation Comments</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{candidate.evaluation.comments}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -167,6 +173,237 @@ const CandidateDetails = () => {
               )}
             </div>
           </div>
+
+          {/* Interview Information Section */}
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Interview Information</h2>
+              
+              {/* Candidate's Interview Data */}
+              <div className="mb-6">
+                <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Candidate Interview Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Scheduled Date</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.interview?.scheduled_date ? new Date(candidate.interview.scheduled_date).toLocaleString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Interviewer</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.interview?.interviewer?.name || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Location</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.interview?.location || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Result</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.interview?.result || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Completed At</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.interview?.completed_at ? new Date(candidate.interview.completed_at).toLocaleString() : 'N/A'}
+                    </p>
+                  </div>
+                  {candidate.interview?.meeting_link && (
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Meeting Link</p>
+                      <a 
+                        href={candidate.interview.meeting_link} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Join Meeting
+                      </a>
+                    </div>
+                  )}
+                </div>
+                
+                {candidate.interview?.feedback && (
+                  <div className="mt-4">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">Interview Feedback:</p>
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                      <p className="text-gray-900 dark:text-white text-sm">{candidate.interview.feedback}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* All Interview Records */}
+              {candidate.interviews && candidate.interviews.length > 0 ? (
+                <div>
+                  <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">All Interview Records</h3>
+                  <div className="space-y-4">
+                    {candidate.interviews.map((interview, index) => (
+                      <div key={interview._id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                            Interview #{index + 1}
+                          </h4>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            interview.result === 'Pending' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                            interview.result === 'Passed' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                            interview.result === 'Failed' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                            interview.result === 'No Show' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' :
+                            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                          }`}>
+                            {interview.result}
+                          </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Scheduled Date</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {new Date(interview.scheduled_date).toLocaleString()}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Interviewer</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {interview.interviewer?.name || 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Location</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {interview.location}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Scheduled By</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {interview.scheduled_by?.name || 'N/A'}
+                            </p>
+                          </div>
+                          {interview.completed_at && (
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Completed At</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {new Date(interview.completed_at).toLocaleString()}
+                              </p>
+                            </div>
+                          )}
+                          {interview.completed_by && (
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Completed By</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {interview.completed_by.name}
+                              </p>
+                            </div>
+                          )}
+                          {interview.meeting_link && (
+                            <div className="sm:col-span-2">
+                              <p className="text-gray-500 dark:text-gray-400">Meeting Link</p>
+                              <a 
+                                href={interview.meeting_link} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                              >
+                                {interview.meeting_link}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {interview.feedback && (
+                          <div className="mt-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">Feedback:</p>
+                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
+                              <p className="text-gray-900 dark:text-white text-sm">{interview.feedback}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {interview.notes && (
+                          <div className="mt-3">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">Admin Notes:</p>
+                            <div className="bg-blue-50 dark:bg-blue-900 rounded-lg p-2">
+                              <p className="text-gray-900 dark:text-white text-sm">{interview.notes}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 dark:text-gray-500 mb-2">
+                    <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">No interviews scheduled yet</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                    {candidate.status === 'Interview Eligible' ? 'Candidate is eligible for interview scheduling' : 
+                     candidate.status === 'Interview Scheduled' ? 'Interview scheduled but not yet conducted' :
+                     'No interview records found'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Final Selection Section */}
+          {(candidate.status === 'Selected' || candidate.status === 'Rejected' || candidate.final_selection?.selected !== undefined) && (
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+              <div className="px-4 py-5 sm:p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Final Selection</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Final Status</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{candidate.status}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Selected</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {candidate.final_selection?.selected ? 'Yes' : 'No'}
+                    </p>
+                  </div>
+                  {candidate.final_selection?.selected_by && (
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Selected By</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {candidate.final_selection.selected_by.name}
+                      </p>
+                    </div>
+                  )}
+                  {candidate.final_selection?.selected_at && (
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Selected At</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {new Date(candidate.final_selection.selected_at).toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {candidate.final_selection?.offer_letter_path && (
+                    <div className="sm:col-span-2">
+                      <p className="text-gray-500 dark:text-gray-400">Offer Letter</p>
+                      <a 
+                        href={candidate.final_selection.offer_letter_path} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Download Offer Letter
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
         <div className="space-y-6">
           <div className="bg-white dark:bg-gray-800 shadow rounded-lg">

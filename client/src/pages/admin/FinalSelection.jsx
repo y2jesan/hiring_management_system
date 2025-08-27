@@ -1,10 +1,11 @@
 import {
-    CheckCircleIcon,
-    DocumentTextIcon,
-    XCircleIcon
+  CheckCircleIcon,
+  DocumentTextIcon,
+  XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 
@@ -79,11 +80,11 @@ const FinalSelection = () => {
   };
 
   if (loading) {
-          return (
-        <div className="flex items-center justify-center h-64">
-          <Loader size="md" />
-        </div>
-      );
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader size="md" />
+      </div>
+    );
   }
 
   return (
@@ -91,9 +92,9 @@ const FinalSelection = () => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">Final Selection</h1>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
-            Make final decisions on shortlisted candidates
-          </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
+          Make final decisions on shortlisted candidates
+        </p>
       </div>
 
       {/* Candidates Grid */}
@@ -103,13 +104,13 @@ const FinalSelection = () => {
             <div key={candidate._id} className="card">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                                  <div className="flex items-center">
-                  <DocumentTextIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{candidate.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{candidate.job_id?.title || candidate.job?.title || 'N/A'}</p>
+                  <div className="flex items-center">
+                    <DocumentTextIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 mr-3" />
+                    <div>
+                      <Link to={`/admin/candidates/${candidate._id}`} className="text-lg font-semibold text-gray-900 dark:text-white">{candidate.name}</Link>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{candidate.job_id?.title || candidate.job?.title || 'N/A'}</p>
+                    </div>
                   </div>
-                </div>
                   {getStatusBadge(candidate.status)}
                 </div>
 
@@ -198,8 +199,8 @@ const FinalSelection = () => {
                               type="button"
                               onClick={() => setDecision('selected')}
                               className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${decision === 'selected'
-                                  ? 'border-green-500 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200'
-                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                                ? 'border-green-500 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                                 }`}
                             >
                               <CheckCircleIcon className="h-5 w-5 mr-2" />
@@ -209,8 +210,8 @@ const FinalSelection = () => {
                               type="button"
                               onClick={() => setDecision('rejected')}
                               className={`flex-1 p-3 rounded-lg border-2 flex items-center justify-center ${decision === 'rejected'
-                                  ? 'border-red-500 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200'
-                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                                ? 'border-red-500 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                                 }`}
                             >
                               <XCircleIcon className="h-5 w-5 mr-2" />

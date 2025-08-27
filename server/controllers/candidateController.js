@@ -145,15 +145,28 @@ const getCandidates = async (req, res) => {
 // Get candidate by ID
 const getCandidateById = async (req, res) => {
   try {
-    const candidate = await Candidate.findById(req.params.id).populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active').populate('evaluation.evaluated_by', 'name email').populate('interview.interviewer', 'name email').populate('final_selection.selected_by', 'name email');
+    const candidate = await Candidate.findById(req.params.id)
+      .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
+      .populate('evaluation.evaluated_by', 'name email')
+      .populate('interview.interviewer', 'name email')
+      .populate('final_selection.selected_by', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Candidate not found'));
     }
 
+    // Get all interviews for this candidate
+    const Interview = require('../models/Interview');
+    const interviews = await Interview.find({ candidate_id: candidate._id })
+      .populate('interviewer', 'name email')
+      .populate('scheduled_by', 'name email')
+      .populate('completed_by', 'name email')
+      .sort({ scheduled_date: -1 });
+
     const candidateWithUrls = {
       ...candidate.toObject(),
       cv_file_path: candidate.cv_file_path ? generateFileUrl(candidate.cv_file_path) : null,
+      interviews: interviews, // Add all interviews to the response
     };
 
     res.json(createSuccessResponse({ candidate: candidateWithUrls }));

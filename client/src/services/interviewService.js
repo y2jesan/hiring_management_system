@@ -50,8 +50,11 @@ export const interviewService = {
   },
 
   // Complete interview
-  completeInterview: async (interviewId, candidateId) => {
-    const response = await api.put(`/interviews/${interviewId}/complete`, { candidate_id: candidateId });
+  completeInterview: async (interviewId, candidateId, completeData) => {
+    const response = await api.put(`/interviews/${interviewId}/complete`, {
+      candidate_id: candidateId,
+      ...completeData
+    });
     return response.data;
   },
 };

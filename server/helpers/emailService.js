@@ -124,6 +124,33 @@ const emailTemplates = {
       </div>
     `,
   }),
+
+  shortlisted: (candidateName, applicationId, feedback) => ({
+    subject: 'Congratulations! You Have Been Shortlisted',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #059669;">🎉 Congratulations!</h2>
+        <p>Dear ${candidateName},</p>
+        <p>We are pleased to inform you that you have been shortlisted for the next round!</p>
+        
+        <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #166534; margin-top: 0;">Application Details:</h3>
+          <p><strong>Application ID:</strong> ${applicationId}</p>
+          <p><strong>Status:</strong> Shortlisted</p>
+        </div>
+        
+        ${feedback ? `
+        <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #92400e; margin-top: 0;">Interview Feedback:</h3>
+          <p style="color: #92400e;">${feedback}</p>
+        </div>
+        ` : ''}
+        
+        <p>You will be contacted soon for the next steps in the hiring process.</p>
+        <p>Best regards,<br>Hiring Team</p>
+      </div>
+    `,
+  }),
 };
 
 // Send email function
@@ -169,6 +196,10 @@ const sendRejectionNotification = async (candidateEmail, candidateName, applicat
   return await sendEmail(candidateEmail, 'rejected', [candidateName, applicationId]);
 };
 
+const sendShortlistedNotification = async (candidateEmail, candidateName, applicationId, feedback) => {
+  return await sendEmail(candidateEmail, 'shortlisted', [candidateName, applicationId, feedback]);
+};
+
 module.exports = {
   sendEmail,
   sendApplicationConfirmation,
@@ -176,4 +207,5 @@ module.exports = {
   sendInterviewScheduledNotification,
   sendSelectionNotification,
   sendRejectionNotification,
+  sendShortlistedNotification,
 };

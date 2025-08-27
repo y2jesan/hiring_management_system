@@ -70,6 +70,37 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    completed_at: {
+      type: Date,
+      default: null,
+    },
+    completed_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    cancelled_at: {
+      type: Date,
+      default: null,
+    },
+    cancelled_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    cancellation_reason: {
+      type: String,
+      default: null,
+    },
+    rescheduled_at: {
+      type: Date,
+      default: null,
+    },
+    rescheduled_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
     rescheduled_from: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Interview',

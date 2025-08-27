@@ -2,7 +2,7 @@ const Interview = require('../models/Interview');
 const Candidate = require('../models/Candidate');
 const User = require('../models/User');
 const { createSuccessResponse, createErrorResponse, generatePagination, sanitizeSearchQuery } = require('../helpers/utils');
-const { sendInterviewScheduledNotification } = require('../helpers/emailService');
+const { sendInterviewScheduledNotification, sendEmail } = require('../helpers/emailService');
 
 // Schedule interview
 const scheduleInterview = async (req, res) => {
@@ -324,7 +324,24 @@ const getUpcomingInterviews = async (req, res) => {
 const completeInterview = async (req, res) => {
   try {
     const { id } = req.params;
-    const { candidate_id } = req.body;
+    const { candidate_id, candidateStatus, interviewResult, feedback, notes } = req.body;
+
+    // Validate required fields
+    if (!candidateStatus || !interviewResult) {
+      return res.status(400).json(createErrorResponse('Candidate status and interview result are required'));
+    }
+
+    // Validate candidate status
+    const validCandidateStatuses = ['Interview Completed', 'Shortlisted'];
+    if (!validCandidateStatuses.includes(candidateStatus)) {
+      return res.status(400).json(createErrorResponse('Invalid candidate status'));
+    }
+
+    // Validate interview result
+    const validInterviewResults = ['Pending', 'Passed', 'Failed', 'No Show'];
+    if (!validInterviewResults.includes(interviewResult)) {
+      return res.status(400).json(createErrorResponse('Invalid interview result'));
+    }
 
     const interview = await Interview.findById(id);
     if (!interview) {
@@ -335,26 +352,58 @@ const completeInterview = async (req, res) => {
       return res.status(400).json(createErrorResponse('Interview is already completed'));
     }
 
-    // Update interview result
+    // Update interview with all the data from modal
+    const interviewUpdateData = {
+      result: interviewResult,
+      feedback: feedback || null,
+      notes: notes || null,
+      completed_at: new Date(),
+      completed_by: req.user._id,
+    };
+
     const updatedInterview = await Interview.findByIdAndUpdate(
       id,
-      {
-        result: 'Completed',
-        completed_at: new Date(),
-        completed_by: req.user._id,
-      },
+      interviewUpdateData,
       { new: true }
     )
       .populate('candidate_id', 'name email application_id status')
       .populate('interviewer', 'name email')
-      .populate('scheduled_by', 'name email');
+      .populate('scheduled_by', 'name email')
+      .populate('completed_by', 'name email');
 
-    // Update candidate status
-    await Candidate.findByIdAndUpdate(candidate_id, {
-      status: 'Interview Completed',
-      'interview.result': 'Completed',
+    // Update candidate with new status and interview data
+    const candidateUpdateData = {
+      status: candidateStatus,
+      'interview.result': interviewResult,
+      'interview.feedback': feedback || null,
       'interview.completed_at': new Date(),
-    });
+    };
+
+    await Candidate.findByIdAndUpdate(candidate_id, candidateUpdateData);
+
+    // Send email notifications based on candidate status
+    const candidate = await Candidate.findById(candidate_id);
+    if (candidate) {
+      try {
+        if (candidateStatus === 'Shortlisted') {
+          // Send shortlisted notification
+          await sendEmail(candidate.email, 'shortlisted', [
+            candidate.name, 
+            candidate.application_id, 
+            feedback || 'No specific feedback provided'
+          ]);
+        } else if (interviewResult === 'Failed' || interviewResult === 'No Show') {
+          // Send rejection notification
+          await sendEmail(candidate.email, 'rejected', [
+            candidate.name, 
+            candidate.application_id
+          ]);
+        }
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     res.json(
       createSuccessResponse(
@@ -366,6 +415,10 @@ const completeInterview = async (req, res) => {
     );
   } catch (error) {
     console.error('Complete interview error:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json(createErrorResponse(errors.join(', ')));
+    }
     res.status(500).json(createErrorResponse('Failed to complete interview'));
   }
 };

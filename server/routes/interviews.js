@@ -13,7 +13,13 @@ const validateReschedule = [body('scheduled_date').isISO8601().withMessage('Vali
 
 const validateCancel = [body('reason').optional().isLength({ min: 1 }).withMessage('Reason must not be empty')];
 
-const validateComplete = [body('candidate_id').isMongoId().withMessage('Valid candidate ID is required')];
+const validateComplete = [
+  body('candidate_id').isMongoId().withMessage('Valid candidate ID is required'),
+  body('candidateStatus').isIn(['Interview Completed', 'Shortlisted']).withMessage('Invalid candidate status'),
+  body('interviewResult').isIn(['Pending', 'Passed', 'Failed', 'No Show']).withMessage('Invalid interview result'),
+  body('feedback').optional().isLength({ min: 1 }).withMessage('Feedback must not be empty'),
+  body('notes').optional().isLength({ min: 1 }).withMessage('Notes must not be empty')
+];
 
 // Protected routes (HR and above)
 router.use(authenticateToken, hrAndAbove);

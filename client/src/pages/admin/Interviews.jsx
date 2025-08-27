@@ -37,6 +37,17 @@ const Interviews = () => {
     const [locationFilter, setLocationFilter] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
+    // Complete Interview Modal states
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [selectedInterview, setSelectedInterview] = useState(null);
+    const [completeFormData, setCompleteFormData] = useState({
+        candidateStatus: 'Interview Completed',
+        interviewResult: 'Pending',
+        feedback: '',
+        notes: ''
+    });
+    const [submitting, setSubmitting] = useState(false);
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -139,14 +150,45 @@ const Interviews = () => {
         }
     };
 
-    const handleCompleteInterview = async (interviewId, candidateId) => {
-        if (!confirm('Are you sure you want to mark this interview as completed? This will update the candidate status to "Interview Completed".')) {
+    const handleCompleteInterview = (interview) => {
+        setSelectedInterview(interview);
+        setCompleteFormData({
+            candidateStatus: 'Interview Completed',
+            interviewResult: interview.result || 'Pending',
+            feedback: interview.feedback || '',
+            notes: interview.notes || ''
+        });
+        setShowCompleteModal(true);
+    };
+
+    const handleSubmitCompleteInterview = async (e) => {
+        e.preventDefault();
+
+        if (!selectedInterview) {
+            toast.error('No interview selected');
             return;
         }
 
         try {
-            await interviewService.completeInterview(interviewId, candidateId);
+            setSubmitting(true);
+
+            const completeData = {
+                candidateStatus: completeFormData.candidateStatus,
+                interviewResult: completeFormData.interviewResult,
+                feedback: completeFormData.feedback,
+                notes: completeFormData.notes
+            };
+
+            await interviewService.completeInterview(selectedInterview._id, selectedInterview.candidate_id._id, completeData);
             toast.success('Interview completed successfully');
+            setShowCompleteModal(false);
+            setSelectedInterview(null);
+            setCompleteFormData({
+                candidateStatus: 'Interview Completed',
+                interviewResult: 'Pending',
+                feedback: '',
+                notes: ''
+            });
             fetchData();
         } catch (error) {
             console.error('Error completing interview:', error);
@@ -155,6 +197,8 @@ const Interviews = () => {
             } else {
                 toast.error('Failed to complete interview');
             }
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -196,11 +240,11 @@ const Interviews = () => {
     });
 
     if (loading) {
-                  return (
-              <div className="flex items-center justify-center h-64">
-                  <Loader size="md" />
-              </div>
-          );
+        return (
+            <div className="flex items-center justify-center h-64">
+                <Loader size="md" />
+            </div>
+        );
     }
 
     return (
@@ -494,7 +538,7 @@ const Interviews = () => {
                                 {interview.result === 'Pending' && (
                                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                                         <button
-                                            onClick={() => handleCompleteInterview(interview._id, interview.candidate_id._id)}
+                                            onClick={() => handleCompleteInterview(interview)}
                                             className="w-full btn btn-success text-sm"
                                         >
                                             Complete Interview
@@ -660,7 +704,7 @@ const Interviews = () => {
                 </div>
             </div>
 
-            
+
 
             {/* Schedule Interview Modal */}
             {showModal && (
@@ -819,6 +863,132 @@ const Interviews = () => {
                                         className="btn btn-secondary sm:mt-0 sm:w-auto"
                                     >
                                         Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Complete Interview Modal */}
+            {showCompleteModal && selectedInterview && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-4xl sm:max-w-lg">
+                            <form onSubmit={handleSubmitCompleteInterview}>
+                                <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <div className="sm:flex sm:items-start">
+                                        <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                                                Complete Interview - {selectedInterview.candidate_id?.name}
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Candidate Status *
+                                                    </label>
+                                                    <select
+                                                        value={completeFormData.candidateStatus}
+                                                        onChange={(e) => setCompleteFormData({ ...completeFormData, candidateStatus: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="Interview Completed">Interview Completed</option>
+                                                        <option value="Shortlisted">Shortlisted</option>
+                                                    </select>
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Update candidate's application status
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Interview Result *
+                                                    </label>
+                                                    <select
+                                                        value={completeFormData.interviewResult}
+                                                        onChange={(e) => setCompleteFormData({ ...completeFormData, interviewResult: e.target.value })}
+                                                        className="mt-1 input"
+                                                        required
+                                                    >
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Passed">Passed</option>
+                                                        <option value="Failed">Failed</option>
+                                                        <option value="No Show">No Show</option>
+                                                    </select>
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Interview result status
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Feedback (Visible to Candidate)
+                                                    </label>
+                                                    <textarea
+                                                        value={completeFormData.feedback}
+                                                        onChange={(e) => setCompleteFormData({ ...completeFormData, feedback: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Provide feedback that will be visible to the candidate..."
+                                                    />
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        This feedback will be shown to the candidate in their portal
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Admin Notes (Internal)
+                                                    </label>
+                                                    <textarea
+                                                        value={completeFormData.notes}
+                                                        onChange={(e) => setCompleteFormData({ ...completeFormData, notes: e.target.value })}
+                                                        rows={3}
+                                                        className="mt-1 input"
+                                                        placeholder="Internal notes for admin reference..."
+                                                    />
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        These notes are only visible to admin users
+                                                    </p>
+                                                </div>
+
+                                                <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                                                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                                                        <span className="font-medium">Note:</span> Interview results will only be visible to the candidate if their status is set to "Shortlisted" or "Rejected".
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowCompleteModal(false);
+                                            setSelectedInterview(null);
+                                            setCompleteFormData({
+                                                candidateStatus: 'Interview Completed',
+                                                interviewResult: 'Pending',
+                                                feedback: '',
+                                                notes: ''
+                                            });
+                                        }}
+                                        className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="btn btn-primary sm:w-auto disabled:opacity-50"
+                                    >
+                                        {submitting ? 'Completing...' : 'Complete Interview'}
                                     </button>
                                 </div>
                             </form>

@@ -106,6 +106,10 @@ const candidateSchema = new mongoose.Schema(
         type: String,
         default: null,
       },
+      completed_at: {
+        type: Date,
+        default: null,
+      },
     },
     final_selection: {
       selected: {

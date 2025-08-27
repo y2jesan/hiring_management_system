@@ -1,20 +1,21 @@
 import {
-  CheckCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardDocumentCheckIcon,
-  ClockIcon,
-  DocumentIcon,
-  LinkIcon,
-  PlusIcon,
-  TrashIcon,
-  UserIcon,
-  XCircleIcon
+    CheckCircleIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+    ClipboardDocumentCheckIcon,
+    ClockIcon,
+    DocumentIcon,
+    LinkIcon,
+    PlusIcon,
+    TrashIcon,
+    UserIcon,
+    XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import qtecLogo from '../../assets/qtec_icon.svg';
 import { candidateService } from '../../services/candidateService';
 
 const CandidatePortal = () => {
@@ -202,10 +203,13 @@ const CandidatePortal = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center mb-4">
-            <UserIcon className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-center mb-4">
+            <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-4" />
+            <div className="h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
+              <UserIcon className="h-8 w-8 text-white" />
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Candidate Portal</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">QTEC Candidate Portal</h1>
           <p className="text-lg text-gray-600">Track your application progress</p>
         </div>
 

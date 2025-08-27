@@ -1,26 +1,26 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { useState, useEffect } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import qtecLogo from './assets/qtec_icon.svg';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
-import CandidateLayout from './layouts/CandidateLayout';
 
 // Admin Pages
-import Login from './pages/admin/Login';
-import Dashboard from './pages/admin/Dashboard';
-import Jobs from './pages/admin/Jobs';
+import CandidateDetails from './pages/admin/CandidateDetails';
 import Candidates from './pages/admin/Candidates';
-import Interviews from './pages/admin/Interviews';
+import Dashboard from './pages/admin/Dashboard';
 import Evaluation from './pages/admin/Evaluation';
 import FinalSelection from './pages/admin/FinalSelection';
-import Users from './pages/admin/Users';
-import CandidateDetails from './pages/admin/CandidateDetails';
+import Interviews from './pages/admin/Interviews';
 import JobDetails from './pages/admin/JobDetails';
+import Jobs from './pages/admin/Jobs';
+import Login from './pages/admin/Login';
+import Users from './pages/admin/Users';
 
 // Candidate Pages
-import JobApplication from './pages/candidate/JobApplication';
 import CandidatePortal from './pages/candidate/CandidatePortal';
+import JobApplication from './pages/candidate/JobApplication';
 
 // Context
 import { AuthProvider } from './hooks/useAuth.jsx';
@@ -37,8 +37,11 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Hiring Management System...</p>
+          <div className="flex items-center justify-center mb-4">
+            <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-3" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+          <p className="mt-4 text-gray-600">Loading QTEC Hiring Management System...</p>
         </div>
       </div>
     );

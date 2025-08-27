@@ -143,10 +143,10 @@ const Candidates = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage candidate applications and track their progress
-          </p>
+          <h1 className="text-2xl font-bold text-primary-800">Candidates</h1>
+                      <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+              Manage candidate applications and track their progress
+            </p>
         </div>
         <button
           onClick={handleExport}
@@ -181,7 +181,7 @@ const Candidates = () => {
                 <FunnelIcon className="h-5 w-5 mr-2" />
                 Filters
                 {(statusFilter || jobFilter || applyDateFilter || submitDateFilter) && (
-                  <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2 py-1 rounded-full">
+                  <span className="ml-2 bg-primary-100 text-primary-700 text-xs font-medium px-2 py-1 rounded-full">
                     {[statusFilter, jobFilter, applyDateFilter, submitDateFilter].filter(Boolean).length}
                   </span>
                 )}

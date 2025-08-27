@@ -47,8 +47,8 @@ const CandidateDetails = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Candidate Details</h1>
-        <p className="mt-1 text-sm text-gray-500">Full profile and application details</p>
+        <h1 className="text-2xl font-bold text-primary-800">Candidate Details</h1>
+                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">Full profile and application details</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

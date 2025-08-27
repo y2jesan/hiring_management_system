@@ -9,8 +9,7 @@ const Loader = ({ size = 'md', className = '' }) => {
   };
 
   return (
-    <div className={`animate-spin rounded-full border-b-2 ${sizeClasses[size]} ${className}`} 
-         style={{ borderColor: '#bdeb90' }}>
+    <div className={`animate-spin rounded-full border-b-2 border-primary-400 ${sizeClasses[size]} ${className}`}>
     </div>
   );
 };

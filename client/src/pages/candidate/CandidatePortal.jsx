@@ -209,7 +209,7 @@ const CandidatePortal = () => {
               <UserIcon className="h-8 w-8 text-white" />
             </div> */}
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">QTEC Candidate Portal</h1>
+                          <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Candidate Portal</h1>
           <p className="text-lg text-gray-600">Track your application progress</p>
         </div>
 

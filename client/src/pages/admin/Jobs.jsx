@@ -3,9 +3,9 @@ import {
     BriefcaseIcon,
     DocumentTextIcon,
     PencilIcon,
-    PlusIcon,
     UsersIcon
 } from '@heroicons/react/24/outline';
+import { FolderPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -134,8 +134,8 @@ const Jobs = () => {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Jobs</h1>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h1 className="text-2xl font-bold text-primary-800">Jobs</h1>
+                    <p className="mt-1 text-sm text-gray-500 hidden lg:block">
                         Manage job postings and applications
                     </p>
                 </div>
@@ -155,10 +155,10 @@ const Jobs = () => {
                             reset();
                             setShowModal(true);
                         }}
-                        className="btn btn-primary flex items-center h-10 flex-shrink-0"
+                        className="btn btn-primary flex items-center h-12 w-12 lg:h-10 lg:w-auto lg:px-4 flex-shrink-0 justify-center lg:justify-start"
                     >
-                        <PlusIcon className="h-5 w-5 mr-2" />
-                        Create Job
+                        <FolderPlus className="h-6 w-6 lg:h-5 lg:w-5 lg:mr-2" />
+                        <span className="hidden lg:inline">Create Job</span>
                     </button>
                 </div>
             </div>
@@ -257,7 +257,7 @@ const Jobs = () => {
                                 <div className="bg-white px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
                                     <div className="sm:flex sm:items-start">
                                         <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                                            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                            <h3 className="text-lg leading-6 font-medium text-primary-800 mb-4">
                                                 {editingJob ? 'Edit Job' : 'Create New Job'}
                                             </h3>
                                             {!editingJob && (
@@ -374,7 +374,7 @@ const Jobs = () => {
                                     </div>
                                 </div>
 
-                                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <div className="bg-primary-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                     <button
                                         type="submit"
                                         className="btn btn-primary sm:ml-3 sm:w-auto"

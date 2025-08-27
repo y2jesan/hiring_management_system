@@ -132,8 +132,8 @@ const Dashboard = () => {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="mt-1 text-sm text-gray-500">
+                <h1 className="text-2xl font-bold text-primary-800">Dashboard</h1>
+                <p className="mt-1 text-sm text-gray-500 hidden lg:block">
                     Overview of your hiring management system
                 </p>
             </div>
@@ -176,7 +176,7 @@ const Dashboard = () => {
                         Quick Actions
                     </h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <Link to={'/admin/jobs?create=true'} className="relative group text-center bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-lg border border-gray-200 hover:border-gray-300">
+                        <Link to={'/admin/jobs?create=true'} className="relative group text-center bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-400 rounded-lg border border-gray-200 hover:border-primary-200">
                             <div>
                                 <span className="rounded-lg inline-flex p-3 bg-primary-50 text-primary-700 ring-4 ring-white">
                                     <BriefcaseIcon className="h-6 w-6" />
@@ -239,12 +239,12 @@ const Dashboard = () => {
                         </h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {Object.entries(stats.candidateStatus).map(([status, count]) => (
-                                <div 
-                                    key={status} 
-                                    className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 hover:shadow-md transition-all duration-200 group border border-transparent hover:border-gray-200"
-                                    onClick={() => handleStatusCardClick(status)}
-                                    title={`View all ${status} candidates`}
-                                >
+                                        <div
+            key={status}
+            className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-primary-50 hover:shadow-md transition-all duration-200 group border border-transparent hover:border-primary-200"
+            onClick={() => handleStatusCardClick(status)}
+            title={`View all ${status} candidates`}
+        >
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-medium text-gray-900">{status}</p>

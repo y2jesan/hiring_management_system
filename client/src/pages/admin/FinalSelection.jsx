@@ -5,8 +5,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { candidateService } from '../../services/candidateService';
 import Loader from '../../components/Loader';
+import { candidateService } from '../../services/candidateService';
 
 const FinalSelection = () => {
   const [candidates, setCandidates] = useState([]);
@@ -90,10 +90,10 @@ const FinalSelection = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Final Selection</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Make final decisions on shortlisted candidates
-        </p>
+        <h1 className="text-2xl font-bold text-primary-800">Final Selection</h1>
+                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+            Make final decisions on shortlisted candidates
+          </p>
       </div>
 
       {/* Candidates Grid */}

@@ -3,9 +3,9 @@ import {
     ClockIcon,
     FunnelIcon,
     MagnifyingGlassIcon,
-    PlusIcon,
     UserIcon
 } from '@heroicons/react/24/outline';
+import { ClockPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Loader from '../../components/Loader';
@@ -207,17 +207,17 @@ const Interviews = () => {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Interviews</h1>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h1 className="text-2xl font-bold text-primary-800">Interviews</h1>
+                    <p className="mt-1 text-sm text-gray-500 hidden lg:block">
                         Schedule and manage candidate interviews
                     </p>
                 </div>
                 <button
                     onClick={() => setShowModal(true)}
-                    className="btn btn-primary flex items-center"
+                    className="btn btn-primary flex items-center h-12 w-12 lg:h-10 lg:w-auto lg:px-4 justify-center lg:justify-start"
                 >
-                    <PlusIcon className="h-5 w-5 mr-2" />
-                    Schedule Interview
+                    <ClockPlus className="h-6 w-6 lg:h-5 lg:w-5 lg:mr-2" />
+                    <span className="hidden lg:inline">Schedule Interview</span>
                 </button>
             </div>
 

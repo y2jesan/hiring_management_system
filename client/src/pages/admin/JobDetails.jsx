@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { jobService } from '../../services/jobService';
 import Loader from '../../components/Loader';
+import { jobService } from '../../services/jobService';
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -45,8 +45,8 @@ const JobDetails = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{job.title}</h1>
-        <p className="mt-1 text-sm text-gray-500">Job ID: {job.job_id}</p>
+        <h1 className="text-2xl font-bold text-primary-800">{job.title}</h1>
+                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">Job ID: {job.job_id}</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

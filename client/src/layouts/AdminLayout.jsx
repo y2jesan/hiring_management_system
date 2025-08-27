@@ -74,7 +74,7 @@ const AdminLayout = () => {
                 key={item.name}
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
-                  ? 'bg-primary-100 text-primary-900'
+                  ? 'bg-primary-100 text-primary-800'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 onClick={() => setSidebarOpen(false)}
@@ -138,7 +138,7 @@ const AdminLayout = () => {
                 key={item.name}
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
-                  ? 'bg-primary-100 text-primary-900'
+                  ? 'bg-primary-100 text-primary-800'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
               >
@@ -221,7 +221,7 @@ const AdminLayout = () => {
             {/* Theme toggle for desktop */}
             <button
               onClick={toggleTheme}
-              className="hidden lg:flex mt-3 p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              className="hidden lg:flex mt-3 mb-3 p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
               title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {isDarkMode ? (

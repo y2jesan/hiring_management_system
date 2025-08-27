@@ -116,10 +116,10 @@ const Evaluation = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Evaluation</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Review and score candidate task submissions
-        </p>
+        <h1 className="text-2xl font-bold text-primary-800">Evaluation</h1>
+                  <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+            Review and score candidate task submissions
+          </p>
       </div>
 
       {/* Filters */}

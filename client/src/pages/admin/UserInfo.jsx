@@ -98,10 +98,10 @@ const UserInfo = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Profile Information</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your account settings and profile information
-          </p>
+          <h1 className="text-2xl font-bold text-primary-800">Profile Information</h1>
+                      <p className="mt-1 text-sm text-gray-500 hidden lg:block">
+              Manage your account settings and profile information
+            </p>
         </div>
         {!isEditing && (
           <button
@@ -125,7 +125,7 @@ const UserInfo = () => {
               <h3 className="text-lg font-medium text-gray-900">{user?.name}</h3>
               <p className="text-sm text-gray-500">{user?.email}</p>
               <div className="mt-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
                   <ShieldCheckIcon className="h-4 w-4 mr-1" />
                   {getRoleDisplayName(user?.role)}
                 </span>

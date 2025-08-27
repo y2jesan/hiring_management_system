@@ -1,5 +1,4 @@
 import {
-    BriefcaseIcon,
     DocumentIcon,
     EnvelopeIcon,
     PhoneIcon,
@@ -10,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import qtecLogo from '../../assets/qtec_icon.svg';
+import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { jobService } from '../../services/jobService';
 
@@ -97,11 +97,11 @@ const JobApplication = () => {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-            </div>
-        );
+                  return (
+              <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                  <Loader size="md" />
+              </div>
+          );
     }
 
     if (!job) {
@@ -124,9 +124,9 @@ const JobApplication = () => {
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
                         <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-4" />
-                        <div className="h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
+                        {/* <div className="h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
                             <BriefcaseIcon className="h-8 w-8 text-white" />
-                        </div>
+                        </div> */}
                     </div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">QTEC Job Application</h1>
                     <p className="text-lg text-gray-600">Apply for the position below</p>

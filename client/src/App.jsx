@@ -39,9 +39,9 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-3" />
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <div className="relative flex items-center justify-center mb-4">
+            <div className="animate-spin rounded-full h-24 w-24 border-b-4" style={{ borderColor: '#bdeb90' }}></div>
+            <img src={qtecLogo} alt="QTEC Logo" className="absolute h-12 w-12" />
           </div>
           <p className="mt-4 text-gray-600">Loading QTEC Hiring Management System...</p>
         </div>

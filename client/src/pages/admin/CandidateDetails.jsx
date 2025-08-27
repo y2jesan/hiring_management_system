@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 
 const CandidateDetails = () => {
@@ -25,11 +26,11 @@ const CandidateDetails = () => {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+          return (
+        <div className="flex items-center justify-center h-64">
+          <Loader size="md" />
+        </div>
+      );
   }
 
   if (!candidate) {

@@ -166,7 +166,7 @@ const Jobs = () => {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredJobs.map((job) => (
                     <div key={job._id} className="card">
-                        <div className="p-6">
+                        <div className="p-4 sm:p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center">
                                     <BriefcaseIcon className="h-8 w-8 text-primary-600 mr-3" />

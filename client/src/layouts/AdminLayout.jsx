@@ -4,6 +4,7 @@ import {
   BriefcaseIcon,
   CalendarIcon,
   CheckCircleIcon,
+  ChevronDownIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   HomeIcon,
@@ -24,6 +25,7 @@ const AdminLayout = () => {
   const { user, logout, isAuthenticated, loading } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [manageDropdownOpen, setManageDropdownOpen] = useState(false);
   const location = useLocation();
 
   // Show loading spinner while authentication is being checked
@@ -41,13 +43,16 @@ const AdminLayout = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
-    { name: 'Users', href: '/admin/users', icon: UserCircleIcon },
     { name: 'Jobs', href: '/admin/jobs', icon: BriefcaseIcon },
     { name: 'Candidates', href: '/admin/candidates', icon: UsersIcon },
     { name: 'Evaluation', href: '/admin/evaluation', icon: ClipboardDocumentCheckIcon },
     { name: 'Schedule Interview', href: '/admin/scheduleInterview', icon: ClockIcon },
     { name: 'Interviews', href: '/admin/interviews', icon: CalendarIcon },
     { name: 'Final Selection', href: '/admin/final-selection', icon: CheckCircleIcon },
+  ];
+
+  const manageSubItems = [
+    { name: 'Users', href: '/admin/users', icon: UserCircleIcon },
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -85,6 +90,39 @@ const AdminLayout = () => {
                 {item.name}
               </Link>
             ))}
+
+            {/* Manage Dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setManageDropdownOpen(!manageDropdownOpen)}
+                className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md ${manageSubItems.some(item => isActive(item.href))
+                  ? 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                  }`}
+              >
+                <UserCircleIcon className="mr-3 h-5 w-5" />
+                Manage
+                <ChevronDownIcon className={`ml-auto h-4 w-4 transition-transform ${manageDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {manageDropdownOpen && (
+                <div className="ml-4 space-y-1">
+                  {manageSubItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
+                        ? 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                        }`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* User controls at bottom of mobile sidebar */}
@@ -135,6 +173,38 @@ const AdminLayout = () => {
                 {item.name}
               </Link>
             ))}
+
+            {/* Manage Dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setManageDropdownOpen(!manageDropdownOpen)}
+                className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md ${manageSubItems.some(item => isActive(item.href))
+                  ? 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                  }`}
+              >
+                <UserCircleIcon className="mr-3 h-5 w-5" />
+                Manage
+                <ChevronDownIcon className={`ml-auto h-4 w-4 transition-transform ${manageDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {manageDropdownOpen && (
+                <div className="ml-4 space-y-1">
+                  {manageSubItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive(item.href)
+                        ? 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                        }`}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* User controls at bottom of desktop sidebar */}

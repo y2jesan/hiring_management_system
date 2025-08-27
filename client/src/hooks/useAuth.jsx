@@ -52,8 +52,16 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (credentials, isAdmin = true) => {
+  const login = async (credentials, isAdmin = true, forceUpdate = false) => {
     try {
+      if (forceUpdate) {
+        // Force update user data without re-authentication
+        const userData = credentials.user;
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        return { data: { user: userData } };
+      }
+
       setLoading(true);
       let response;
 

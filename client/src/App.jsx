@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import qtecLogo from './assets/qtec_icon.svg';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
@@ -16,6 +17,7 @@ import Interviews from './pages/admin/Interviews';
 import JobDetails from './pages/admin/JobDetails';
 import Jobs from './pages/admin/Jobs';
 import Login from './pages/admin/Login';
+import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
 // Candidate Pages
@@ -48,19 +50,20 @@ function App() {
   }
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-            }}
-          />
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
           
           <Routes>
             {/* Public Routes */}
@@ -80,6 +83,7 @@ function App() {
               <Route path="evaluation" element={<Evaluation />} />
               <Route path="final-selection" element={<FinalSelection />} />
               <Route path="users" element={<Users />} />
+              <Route path="user-info" element={<UserInfo />} />
             </Route>
             
             {/* Default redirect */}
@@ -89,6 +93,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 

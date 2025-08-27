@@ -48,4 +48,10 @@ export const userService = {
     const response = await api.put('/users/profile', userData);
     return response.data;
   },
+
+  // Update profile (alias for updateCurrentUser)
+  updateProfile: async (userData) => {
+    const response = await api.put('/users/profile', userData);
+    return response.data;
+  },
 };

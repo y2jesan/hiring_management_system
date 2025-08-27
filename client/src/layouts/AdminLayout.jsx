@@ -1,22 +1,26 @@
 import {
-    ArrowRightOnRectangleIcon,
-    Bars3Icon,
-    BriefcaseIcon,
-    CalendarIcon,
-    CheckCircleIcon,
-    ClipboardDocumentCheckIcon,
-    HomeIcon,
-    UserCircleIcon,
-    UsersIcon,
-    XMarkIcon
+  ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  BriefcaseIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  HomeIcon,
+  MoonIcon,
+  SunIcon,
+  UserCircleIcon,
+  UsersIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import qtecLogo from '../assets/qtec_icon.svg';
+import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
 
 const AdminLayout = () => {
   const { user, logout, isAuthenticated, loading } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -79,6 +83,42 @@ const AdminLayout = () => {
               </Link>
             ))}
           </nav>
+          
+          {/* User controls at bottom of mobile sidebar */}
+          <div className="border-t border-gray-200 p-4">
+            <div className="space-y-2">
+              <Link
+                to="/admin/user-info"
+                className="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <UserCircleIcon className="mr-3 h-5 w-5" />
+                Profile
+              </Link>
+              
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md"
+                  title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {isDarkMode ? (
+                    <SunIcon className="mr-3 h-5 w-5" />
+                  ) : (
+                    <MoonIcon className="mr-3 h-5 w-5" />
+                  )}
+                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+                <button
+                  onClick={logout}
+                  className="p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+                  title="Logout"
+                >
+                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -106,6 +146,29 @@ const AdminLayout = () => {
               </Link>
             ))}
           </nav>
+          
+          {/* User controls at bottom of desktop sidebar */}
+          <div className="border-t border-gray-200 p-4">
+            <div className="flex flex-row justify-between">
+              <Link
+                to="/admin/user-info"
+                className="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md"
+              >
+                <UserCircleIcon className="mr-3 h-5 w-5" />
+                Profile
+              </Link>
+              
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={logout}
+                  className="p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+                  title="Logout"
+                >
+                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -121,9 +184,30 @@ const AdminLayout = () => {
             <Bars3Icon className="h-6 w-6" />
           </button>
 
+          {/* Centered logo for mobile/tablet */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 lg:hidden">
+            <div className="flex items-center">
+              <img src={qtecLogo} alt="QTEC Logo" className="h-8 w-8 mr-2" />
+            </div>
+          </div>
+
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1" />
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
+            
+            {/* Theme toggle for mobile */}
+            <button
+              onClick={toggleTheme}
+              className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </button>
+            
+            <Link to={'/admin/user-info'} className="hidden lg:flex items-center gap-x-4 lg:gap-x-6">
               <div className="flex items-center gap-x-2">
                 <UserCircleIcon className="h-8 w-8 text-gray-400" />
                 <div className="hidden lg:block">
@@ -131,14 +215,20 @@ const AdminLayout = () => {
                   <p className="text-xs text-gray-500">{user?.role}</p>
                 </div>
               </div>
-              <button
-                onClick={logout}
-                className="p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
-                title="Logout"
-              >
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
-              </button>
-            </div>
+            </Link>
+            
+            {/* Theme toggle for desktop */}
+            <button
+              onClick={toggleTheme}
+              className="hidden lg:flex mt-3 p-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </button>
           </div>
         </div>
 

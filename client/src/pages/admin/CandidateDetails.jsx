@@ -179,62 +179,55 @@ const CandidateDetails = () => {
             <div className="px-4 py-5 sm:p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Interview Information</h2>
               
-              {/* Candidate's Interview Data */}
+              {/* Using interviews array; show summary from latest if available */}
               <div className="mb-6">
-                <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Candidate Interview Details</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Scheduled Date</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {candidate.interview?.scheduled_date ? new Date(candidate.interview.scheduled_date).toLocaleString() : 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Interviewer</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {candidate.interview?.interviewer?.name || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Location</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {candidate.interview?.location || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Result</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {candidate.interview?.result || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400">Completed At</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {candidate.interview?.completed_at ? new Date(candidate.interview.completed_at).toLocaleString() : 'N/A'}
-                    </p>
-                  </div>
-                  {candidate.interview?.meeting_link && (
-                    <div>
-                      <p className="text-gray-500 dark:text-gray-400">Meeting Link</p>
-                      <a 
-                        href={candidate.interview.meeting_link} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                      >
-                        Join Meeting
-                      </a>
-                    </div>
-                  )}
-                </div>
-                
-                {candidate.interview?.feedback && (
-                  <div className="mt-4">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">Interview Feedback:</p>
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                      <p className="text-gray-900 dark:text-white text-sm">{candidate.interview.feedback}</p>
-                    </div>
-                  </div>
+                <h3 className="text-md font-medium text-gray-900 dark:text-white mb-3">Latest Interview Summary</h3>
+                {Array.isArray(candidate.interviews) && candidate.interviews.length > 0 ? (
+                  (() => {
+                    const latest = [...candidate.interviews].sort((a,b)=> new Date(b.scheduled_date)-new Date(a.scheduled_date))[0];
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Scheduled Date</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{new Date(latest.scheduled_date).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Interviewer</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{latest.interviewer?.name || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Location</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{latest.location || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Result</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{latest.result || 'N/A'}</p>
+                        </div>
+                        {latest.completed_at && (
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Completed At</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{new Date(latest.completed_at).toLocaleString()}</p>
+                          </div>
+                        )}
+                        {latest.meeting_link && (
+                          <div>
+                            <p className="text-gray-500 dark:text-gray-400">Meeting Link</p>
+                            <a href={latest.meeting_link} target="_blank" rel="noreferrer" className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">Join Meeting</a>
+                          </div>
+                        )}
+                        {latest.feedback && (
+                          <div className="sm:col-span-2">
+                            <p className="text-gray-500 dark:text-gray-400">Feedback</p>
+                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                              <p className="text-gray-900 dark:text-white text-sm">{latest.feedback}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No interview scheduled</p>
                 )}
               </div>
 

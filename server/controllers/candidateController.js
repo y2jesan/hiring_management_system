@@ -148,7 +148,7 @@ const getCandidateById = async (req, res) => {
     const candidate = await Candidate.findById(req.params.id)
       .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
       .populate('evaluation.evaluated_by', 'name email')
-      .populate('interview.interviewer', 'name email')
+      .populate('interviews', 'scheduled_date interviewer location meeting_link result feedback notes completed_at completed_by scheduled_by job_id')
       .populate('final_selection.selected_by', 'name email');
 
     if (!candidate) {
@@ -166,7 +166,7 @@ const getCandidateById = async (req, res) => {
     const candidateWithUrls = {
       ...candidate.toObject(),
       cv_file_path: candidate.cv_file_path ? generateFileUrl(candidate.cv_file_path) : null,
-      interviews: interviews, // Add all interviews to the response
+      interviews: interviews, // Explicit include for convenience
     };
 
     res.json(createSuccessResponse({ candidate: candidateWithUrls }));
@@ -181,7 +181,8 @@ const getCandidateByApplicationId = async (req, res) => {
   try {
     const candidate = await Candidate.findOne({ application_id: req.params.application_id })
       .populate('job_id', 'title designation job_id task_link salary_range designation experience_in_year job_description is_active')
-      .populate('interview.interviewer', 'name email');
+      .populate('interviews', 'scheduled_date interviewer location meeting_link result feedback completed_at job_id')
+      .populate('interviews.interviewer', 'name email');
 
     if (!candidate) {
       return res.status(404).json(createErrorResponse('Application not found'));
@@ -389,10 +390,21 @@ const finalSelection = async (req, res) => {
     const updatedCandidate = await Candidate.findByIdAndUpdate(id, updateData, { new: true }).populate('final_selection.selected_by', 'name email');
 
     // Send notification email
-    if (selected) {
-      await sendSelectionNotification(candidate.email, candidate.name, candidate.application_id);
-    } else {
-      await sendRejectionNotification(candidate.email, candidate.name, candidate.application_id);
+    // Emails disabled per request
+    // if (selected) {
+    //   await sendSelectionNotification(candidate.email, candidate.name, candidate.application_id);
+    // } else {
+    //   await sendRejectionNotification(candidate.email, candidate.name, candidate.application_id);
+    // }
+
+    // Update latest interview result based on selection decision
+    const Interview = require('../models/Interview');
+    const latestInterview = await Interview.findOne({ candidate_id: id }).sort({ scheduled_date: -1 });
+    if (latestInterview) {
+      await Interview.findByIdAndUpdate(latestInterview._id, {
+        result: selected ? 'Passed' : 'Failed',
+        completed_at: latestInterview.completed_at || new Date(),
+      });
     }
 
     res.json(

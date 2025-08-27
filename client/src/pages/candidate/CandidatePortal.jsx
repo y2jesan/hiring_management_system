@@ -448,56 +448,145 @@ const CandidatePortal = () => {
           </div>
         )}
 
-        {/* Interview Information */}
-        {candidate.interview && candidate.interview.scheduled_date && (
+        {/* Interview Information - supports multiple interviews */}
+        {Array.isArray(candidate.interviews) && candidate.interviews.length > 0 && (
           <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-6">
               <ClockIcon className="h-6 w-6 text-primary-600 !text-primary-600 mr-2" />
               <h3 className="text-lg font-semibold text-gray-900 !text-gray-900">Interview Details</h3>
+              <span className="ml-2 text-sm text-gray-500 !text-gray-500">({candidate.interviews.length} interview{candidate.interviews.length > 1 ? 's' : ''})</span>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm font-medium text-gray-500 !text-gray-500">Scheduled Date:</span>
-                <p className="text-gray-900 !text-gray-900">
-                  {new Date(candidate.interview.scheduled_date).toLocaleDateString()} at{' '}
-                  {new Date(candidate.interview.scheduled_date).toLocaleTimeString()}
-                </p>
-              </div>
-              {candidate.interview.location && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Type:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.interview.location}</p>
-                </div>
-              )}
-              {candidate.interview.location === 'Online' && candidate.interview.meeting_link && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Meeting Link:</span>
-                  <div className="mt-1">
-                    <a
-                      href={candidate.interview.meeting_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-primary-600 !text-primary-600 hover:text-primary-700 !hover:text-primary-700 font-medium"
-                    >
-                      <LinkIcon className="h-4 w-4 mr-1" />
-                      Join Meeting
-                    </a>
+            <div className="space-y-6">
+              {candidate.interviews.map((interview, idx) => (
+                <div key={interview._id} className="bg-gray-50 !bg-gray-50 rounded-lg p-6 border border-gray-200 !border-gray-200">
+                  {/* Interview Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center">
+                      <h4 className="text-lg font-semibold text-gray-900 !text-gray-900">Interview #{idx + 1}</h4>
+                      {interview.result && ['Selected', 'Rejected', 'Shortlisted'].includes(candidate.status) && (
+                        <span className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
+                          interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
+                          interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
+                          'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800'
+                        }`}>
+                          {interview.result}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500 !text-gray-500">
+                      {new Date(interview.scheduled_date).toLocaleDateString()}
+                    </div>
                   </div>
+
+                  {/* Interview Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <span className="text-sm font-medium text-gray-500 !text-gray-500">Scheduled Date & Time</span>
+                      <p className="text-gray-900 !text-gray-900 font-medium">
+                        {new Date(interview.scheduled_date).toLocaleDateString()} at {new Date(interview.scheduled_date).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Type</span>
+                      <p className="text-gray-900 !text-gray-900 font-medium">{interview.location}</p>
+                    </div>
+
+                    {/* {interview.interviewer && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500 !text-gray-500">Interviewer</span>
+                        <p className="text-gray-900 !text-gray-900 font-medium">{interview.interviewer.name}</p>
+                      </div>
+                    )} */}
+
+                    {interview.completed_at && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500 !text-gray-500">Completed At</span>
+                        <p className="text-gray-900 !text-gray-900 font-medium">
+                          {new Date(interview.completed_at).toLocaleDateString()} at {new Date(interview.completed_at).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Interview Status Section */}
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Status</span>
+                    <div className="mt-1">
+                      {interview.result ? (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          interview.result === 'Pending' ? 'bg-yellow-100 !bg-yellow-100 text-yellow-800 !text-yellow-800' :
+                          interview.result === 'Passed' ? 'bg-green-100 !bg-green-100 text-green-800 !text-green-800' :
+                          interview.result === 'Failed' ? 'bg-red-100 !bg-red-100 text-red-800 !text-red-800' :
+                          interview.result === 'No Show' ? 'bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800' :
+                          'bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800'
+                        }`}>
+                          {interview.result}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 !bg-gray-100 text-gray-800 !text-gray-800">
+                          Scheduled
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  </div>
+
+                  {/* Meeting Link Section */}
+                  {interview.location === 'Online' && interview.meeting_link && (
+                    <div className="mb-4 p-3 bg-blue-50 !bg-blue-50 rounded-lg border border-blue-200 !border-blue-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-medium text-blue-800 !text-blue-800">Meeting Link</span>
+                          <p className="text-xs text-blue-600 !text-blue-600 mt-1">Click to join the online interview</p>
+                        </div>
+                        <a 
+                          href={interview.meeting_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-3 py-1 bg-blue-600 !bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 !hover:bg-blue-700 transition-colors"
+                        >
+                          <LinkIcon className="h-4 w-4 mr-1" />
+                          Join Meeting
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  
+
+                  {/* Feedback Section - Only show to candidates when final decision made */}
+                  {['Selected', 'Rejected', 'Shortlisted'].includes(candidate.status) && interview.feedback && (
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-gray-500 !text-gray-500">Interview Feedback</span>
+                      <div className="mt-2 p-3 bg-yellow-50 !bg-yellow-50 rounded-lg border border-yellow-200 !border-yellow-200">
+                        <p className="text-gray-900 !text-gray-900 text-sm leading-relaxed">{interview.feedback}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Interview not completed message */}
+                  {!interview.result && new Date(interview.scheduled_date) > new Date() && (
+                    <div className="mt-4 p-3 bg-blue-50 !bg-blue-50 rounded-lg border border-blue-200 !border-blue-200">
+                      <p className="text-blue-800 !text-blue-800 text-sm">
+                        <strong>Upcoming Interview:</strong> Please be prepared and join on time. 
+                        {interview.location === 'Online' && ' You will receive meeting details closer to the interview time.'}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Interview completed but no result yet */}
+                  {!interview.result && new Date(interview.scheduled_date) < new Date() && (
+                    <div className="mt-4 p-3 bg-yellow-50 !bg-yellow-50 rounded-lg border border-yellow-200 !border-yellow-200">
+                      <p className="text-yellow-800 !text-yellow-800 text-sm">
+                        <strong>Interview Completed:</strong> Your interview has been completed and is under review. 
+                        You will be notified of the results soon.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-              {candidate.interview.result && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Result:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.interview.result}</p>
-                </div>
-              )}
-              {candidate.interview.feedback && (
-                <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Feedback:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.interview.feedback}</p>
-                </div>
-              )}
+              ))}
             </div>
           </div>
         )}

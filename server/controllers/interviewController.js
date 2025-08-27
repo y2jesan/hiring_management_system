@@ -2,7 +2,7 @@ const Interview = require('../models/Interview');
 const Candidate = require('../models/Candidate');
 const User = require('../models/User');
 const { createSuccessResponse, createErrorResponse, generatePagination, sanitizeSearchQuery } = require('../helpers/utils');
-const { sendInterviewScheduledNotification, sendEmail } = require('../helpers/emailService');
+// const { sendInterviewScheduledNotification, sendEmail } = require('../helpers/emailService');
 
 // Schedule interview
 const scheduleInterview = async (req, res) => {
@@ -26,10 +26,7 @@ const scheduleInterview = async (req, res) => {
     }
 
     // Check if interview already exists for this candidate
-    const existingInterview = await Interview.findOne({ candidate_id });
-    if (existingInterview) {
-      return res.status(400).json(createErrorResponse('Interview already scheduled for this candidate'));
-    }
+    // Allow multiple interviews; no single-interview restriction
 
     const interviewData = {
       candidate_id,
@@ -45,15 +42,13 @@ const scheduleInterview = async (req, res) => {
     const interview = await Interview.create(interviewData);
 
     // Update candidate status
+    // Push interview id into candidate.interviews array and set status
     await Candidate.findByIdAndUpdate(candidate_id, {
+      $push: { interviews: interview._id },
       status: 'Interview Scheduled',
-      'interview.scheduled_date': new Date(scheduled_date),
-      'interview.interviewer': interviewer,
-      'interview.location': location || 'In-Person',
-      'interview.meeting_link': location === 'Online' ? meeting_link : null,
     });
 
-    // TODO Send interview notification email
+    // Email disabled per request
     // await sendInterviewScheduledNotification(candidate.email, candidate.name, candidate.application_id, scheduled_date, interviewerUser.name);
 
     const populatedInterview = await Interview.findById(interview._id).populate('candidate_id', 'name email application_id').populate('interviewer', 'name email').populate('scheduled_by', 'name email').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes scheduled_by');
@@ -105,7 +100,17 @@ const getInterviews = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status ').populate('interviewer', 'name email').populate('job_id', 'title designation salary_range experience_in_year').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
+    const [interviews, total] = await Promise.all([
+      Interview.find(query)
+        .populate('candidate_id', 'name email application_id status')
+        .populate('interviewer', 'name email')
+        .populate('job_id', 'title designation salary_range experience_in_year')
+        .select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes completed_at completed_by scheduled_by')
+        .sort({ scheduled_date: -1 })
+        .skip(skip)
+        .limit(limit),
+      Interview.countDocuments(query),
+    ]);
 
     const pagination = generatePagination(page, limit, total);
 
@@ -166,18 +171,9 @@ const updateInterviewResult = async (req, res) => {
 
     const updatedInterview = await Interview.findByIdAndUpdate(id, updateData, { new: true }).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').populate('scheduled_by', 'name email');
 
-    // Update candidate status based on result
-    let candidateStatus = 'Interview Completed';
-    if (result === 'Passed') {
-      candidateStatus = 'Shortlisted';
-    } else if (result === 'Failed' || result === 'No Show') {
-      candidateStatus = 'Rejected';
-    }
-
+    // Keep candidate status generic based on lifecycle only
     await Candidate.findByIdAndUpdate(interview.candidate_id, {
-      status: candidateStatus,
-      'interview.result': result,
-      'interview.feedback': feedback,
+      status: 'Interview Completed',
     });
 
     res.json(
@@ -382,28 +378,7 @@ const completeInterview = async (req, res) => {
     await Candidate.findByIdAndUpdate(candidate_id, candidateUpdateData);
 
     // Send email notifications based on candidate status
-    const candidate = await Candidate.findById(candidate_id);
-    if (candidate) {
-      try {
-        if (candidateStatus === 'Shortlisted') {
-          // Send shortlisted notification
-          await sendEmail(candidate.email, 'shortlisted', [
-            candidate.name, 
-            candidate.application_id, 
-            feedback || 'No specific feedback provided'
-          ]);
-        } else if (interviewResult === 'Failed' || interviewResult === 'No Show') {
-          // Send rejection notification
-          await sendEmail(candidate.email, 'rejected', [
-            candidate.name, 
-            candidate.application_id
-          ]);
-        }
-      } catch (emailError) {
-        console.error('Email notification failed:', emailError);
-        // Don't fail the request if email fails
-      }
-    }
+    // Email disabled per request
 
     res.json(
       createSuccessResponse(

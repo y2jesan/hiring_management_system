@@ -52,6 +52,14 @@ const candidateSchema = new mongoose.Schema(
         default: null,
       },
     },
+    // Array of interview document references for multiple interview support
+    interviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Interview',
+        default: undefined,
+      },
+    ],
     status: {
       type: String,
       enum: ['Applied', 'Task Pending', 'Task Submitted', 'Under Review', 'Interview Eligible', 'Interview Scheduled', 'Interview Completed', 'Shortlisted', 'Selected', 'Rejected'],

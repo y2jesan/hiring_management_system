@@ -197,17 +197,17 @@ const Interviews = () => {
         setSelectedInterview(interview);
         setCompleteFormData({
             candidateStatus: 'Interview Completed',
-            interviewResult: interview.result || 'Taken',
-            interviewStatus: interview.result || 'Taken',
+            interviewResult: 'Taken', // Always default to 'Taken' for new completions
+            interviewStatus: 'Completed',
             feedback: interview.feedback || '',
             notes: interview.notes || ''
         });
         setShowCompleteModal(true);
     };
 
-        const handleSubmitCompleteInterview = async (e) => {
+    const handleSubmitCompleteInterview = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedInterview) {
             toast.error('No interview selected');
             return;
@@ -215,7 +215,7 @@ const Interviews = () => {
 
         try {
             setSubmitting(true);
-            
+
             const completeData = {
                 candidateStatus: completeFormData.candidateStatus,
                 interviewResult: completeFormData.interviewResult,
@@ -231,7 +231,7 @@ const Interviews = () => {
             setCompleteFormData({
                 candidateStatus: 'Interview Completed',
                 interviewResult: 'Taken',
-                interviewStatus: 'Taken',
+                interviewStatus: 'Completed',
                 feedback: '',
                 notes: ''
             });
@@ -266,7 +266,7 @@ const Interviews = () => {
 
     const handleSubmitNextInterview = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedInterview) {
             toast.error('No interview selected');
             return;
@@ -274,15 +274,15 @@ const Interviews = () => {
 
         try {
             setSubmitting(true);
-            
+
             // Combine date and time into a single datetime string
             const scheduledDateTime = `${nextInterviewData.scheduled_date}T${nextInterviewData.scheduled_time}`;
-            
+
             const nextInterviewPayload = {
                 ...nextInterviewData,
                 scheduled_date: scheduledDateTime
             };
-            
+
             await interviewService.scheduleNextInterview(nextInterviewPayload);
             toast.success('Next interview scheduled successfully');
             setShowNextInterviewModal(false);
@@ -323,7 +323,7 @@ const Interviews = () => {
 
     const handleSubmitReschedule = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedInterview) {
             toast.error('No interview selected');
             return;
@@ -331,15 +331,15 @@ const Interviews = () => {
 
         try {
             setSubmitting(true);
-            
+
             // Combine date and time into a single datetime string
             const scheduledDateTime = `${rescheduleData.scheduled_date}T${rescheduleData.scheduled_time}`;
-            
+
             const reschedulePayload = {
                 scheduled_date: scheduledDateTime,
                 notes: rescheduleData.notes
             };
-            
+
             await interviewService.rescheduleInterview(selectedInterview._id, reschedulePayload);
             toast.success('Interview rescheduled successfully');
             setShowRescheduleModal(false);
@@ -374,7 +374,7 @@ const Interviews = () => {
 
     const handleSubmitCancel = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedInterview) {
             toast.error('No interview selected');
             return;
@@ -382,7 +382,7 @@ const Interviews = () => {
 
         try {
             setSubmitting(true);
-            
+
             await interviewService.cancelInterview(selectedInterview._id, cancelData);
             toast.success('Interview cancelled successfully');
             setShowCancelModal(false);
@@ -794,7 +794,7 @@ const Interviews = () => {
                                                     </button>
                                                 </div>
                                             )}
-                                            
+
                                             {/* Other conditions */}
                                             {interview.result === 'Pending' && interview.candidate_id?.status !== 'Interview Scheduled' && (
                                                 <div className="space-y-2">
@@ -1459,7 +1459,6 @@ const Interviews = () => {
                                                         <option value="Passed">Passed</option>
                                                         <option value="Failed">Failed</option>
                                                         <option value="No Show">No Show</option>
-                                                        <option value="Cancelled">Cancelled</option>
                                                     </select>
                                                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         Interview result status
@@ -1534,7 +1533,8 @@ const Interviews = () => {
                                             setSelectedInterview(null);
                                             setCompleteFormData({
                                                 candidateStatus: 'Interview Completed',
-                                                interviewResult: 'Pending',
+                                                interviewResult: 'Taken',
+                                                interviewStatus: 'Completed',
                                                 feedback: '',
                                                 notes: ''
                                             });

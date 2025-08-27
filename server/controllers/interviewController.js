@@ -101,17 +101,7 @@ const getInterviews = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [interviews, total] = await Promise.all([
-      Interview.find(query)
-        .populate('candidate_id', 'name email application_id status')
-        .populate('interviewer', 'name email')
-        .populate('job_id', 'title designation salary_range experience_in_year')
-        .select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes completed_at completed_by scheduled_by')
-        .sort({ scheduled_date: -1 })
-        .skip(skip)
-        .limit(limit),
-      Interview.countDocuments(query),
-    ]);
+    const [interviews, total] = await Promise.all([Interview.find(query).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').populate('job_id', 'title designation salary_range experience_in_year').select('candidate_id interviewer job_id scheduled_date location meeting_link result feedback notes completed_at completed_by scheduled_by').sort({ scheduled_date: -1 }).skip(skip).limit(limit), Interview.countDocuments(query)]);
 
     const pagination = generatePagination(page, limit, total);
 
@@ -399,13 +389,13 @@ const completeInterview = async (req, res) => {
     }
 
     // Validate interview result
-    const validInterviewResults = ['Taken', 'Passed', 'Failed', 'No Show', 'Cancelled'];
+    const validInterviewResults = ['Taken', 'Passed', 'Failed', 'No Show'];
     if (!validInterviewResults.includes(interviewResult)) {
       return res.status(400).json(createErrorResponse('Invalid interview result'));
     }
 
     // Validate interview status
-    const validInterviewStatuses = ['Pending', 'Rescheduled', 'Taken', 'Passed', 'Failed', 'No Show', 'Cancelled', 'Completed'];
+    const validInterviewStatuses = ['Scheduled', 'Completed', 'Cancelled', 'Rescheduled'];
     if (!validInterviewStatuses.includes(interviewStatus)) {
       return res.status(400).json(createErrorResponse('Invalid interview status'));
     }
@@ -429,15 +419,7 @@ const completeInterview = async (req, res) => {
       completed_by: req.user._id,
     };
 
-    const updatedInterview = await Interview.findByIdAndUpdate(
-      id,
-      interviewUpdateData,
-      { new: true }
-    )
-      .populate('candidate_id', 'name email application_id status')
-      .populate('interviewer', 'name email')
-      .populate('scheduled_by', 'name email')
-      .populate('completed_by', 'name email');
+    const updatedInterview = await Interview.findByIdAndUpdate(id, interviewUpdateData, { new: true }).populate('candidate_id', 'name email application_id status').populate('interviewer', 'name email').populate('scheduled_by', 'name email').populate('completed_by', 'name email');
 
     // Update candidate with new status and interview data
     const candidateUpdateData = {

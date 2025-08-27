@@ -515,14 +515,11 @@ const Candidates = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     No.
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Candidate
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Application ID
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Job
@@ -553,7 +550,7 @@ const Candidates = () => {
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredCandidates.map((candidate, i) => (
                   <tr key={candidate._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap text-center">
                       {i + 1}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
@@ -565,7 +562,7 @@ const Candidates = () => {
                             </span>
                           </div>
                         </div> */}
-                        <div className="ml-4">
+                        <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             <Link to={`/admin/candidates/${candidate._id}`} className="hover:underline">{candidate.name}</Link>
                           </div>
@@ -575,11 +572,9 @@ const Candidates = () => {
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {candidate.phone}
                           </div>
+                          <Link to={`/application/${candidate.application_id}`} className="hover:underline">{candidate.application_id}</Link>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      <Link to={`/application/${candidate.application_id}`} className="hover:underline">{candidate.application_id}</Link>
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       <div>

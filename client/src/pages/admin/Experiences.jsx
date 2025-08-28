@@ -169,7 +169,7 @@ const Experiences = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
                 {/* Left Side - Experiences List */}
                 <div className="lg:col-span-2">
                     <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
@@ -218,7 +218,7 @@ const Experiences = () => {
                                     filteredExperiences.map((experience) => (
                                         <div
                                             key={experience._id}
-                                            className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            className="flex items-center justify-between px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
                                         >
                                             <div className="flex items-center space-x-3">
                                                 <div className="flex-shrink-0">
@@ -234,7 +234,7 @@ const Experiences = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center space-x-2">
+                                            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => handleToggleStatus(experience._id)}
                                                     className={`p-2 rounded-lg transition-colors ${experience.active
@@ -289,26 +289,36 @@ const Experiences = () => {
                 </div>
 
                 {/* Right Side - Create/Edit Form */}
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-2">
                     <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
                         <div className="px-4 py-5 sm:p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {editingExperience ? 'Edit Experience' : 'Create Experience'}
-                                </h3>
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center">
+                                    <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg mr-3">
+                                        <PlusIcon className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                            {editingExperience ? 'Edit Experience' : 'Create Experience'}
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {editingExperience ? 'Update experience details' : 'Add a new experience category'}
+                                        </p>
+                                    </div>
+                                </div>
                                 {editingExperience && (
                                     <button
                                         onClick={resetForm}
-                                        className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                        className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                 )}
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            <form onSubmit={handleSubmit} className="space-y-5">
                                 <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Experience Name *
                                     </label>
                                     <input
@@ -316,35 +326,45 @@ const Experiences = () => {
                                         id="name"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="mt-1 input"
+                                        className="input w-full"
                                         placeholder="e.g., 0-1 years, 1-3 years, 3-5 years"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="flex items-center">
+                                    <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={formData.active}
                                             onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
                                             className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
                                         />
-                                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+                                        <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
+                                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">(Visible to candidates)</span>
                                     </label>
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={submitting || !formData.name.trim()}
-                                    className="w-full btn btn-primary disabled:opacity-50 flex justify-center"
+                                    className="w-full btn btn-primary disabled:opacity-50 flex items-center justify-center h-10"
                                 >
                                     {submitting ? (
-                                        'Saving...'
+                                        <div className="flex items-center">
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Saving...
+                                        </div>
                                     ) : editingExperience ? (
-                                        <><PencilIcon className="h-4 w-4 mr-2" />Update Experience</>
+                                        <>
+                                            <PencilIcon className="h-4 w-4 mr-2" />
+                                            Update Experience
+                                        </>
                                     ) : (
-                                        <><PlusIcon className="h-4 w-4 mr-2" />Create Experience</>
+                                        <>
+                                            <PlusIcon className="h-4 w-4 mr-2" />
+                                            Create Experience
+                                        </>
                                     )}
                                 </button>
                             </form>

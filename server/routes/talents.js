@@ -34,6 +34,7 @@ const validateTalentUpdate = [
 // Public routes
 router.post('/', uploadCV.single('cv'), handleUploadError, validateTalentCreate, talentController.createTalent);
 router.get('/public/:talent_pool_id', talentController.getTalentByTalentPoolId);
+router.put('/public/:talent_pool_id', uploadCV.single('cv'), handleUploadError, validateTalentUpdate, talentController.updateTalentByTalentPoolId);
 
 // Protected routes (HR and above)
 router.use(authenticateToken, hrAndAbove);

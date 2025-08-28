@@ -381,7 +381,8 @@
 .talent-pool-page,
 .job-application-page,
 .all-jobs-page,
-.candidate-portal-page {
+.candidate-portal-page,
+.talent-portal-page {
   color-scheme: light !important;
 }
 
@@ -389,7 +390,8 @@
 .talent-pool-page *,
 .job-application-page *,
 .all-jobs-page *,
-.candidate-portal-page * {
+.candidate-portal-page *,
+.talent-portal-page * {
   color-scheme: light !important;
 }
 
@@ -398,7 +400,8 @@
 .talent-pool-page,
 .job-application-page,
 .all-jobs-page,
-.candidate-portal-page {
+.candidate-portal-page,
+.talent-portal-page {
   background-color: #f9fafb !important;
   color: #111827 !important;
 }
@@ -407,7 +410,8 @@
 .talent-pool-page *,
 .job-application-page *,
 .all-jobs-page *,
-.candidate-portal-page * {
+.candidate-portal-page *,
+.talent-portal-page * {
   background-color: inherit !important;
   color: inherit !important;
 }
@@ -417,7 +421,8 @@
 .talent-pool-page .bg-white,
 .job-application-page .bg-white,
 .all-jobs-page .bg-white,
-.candidate-portal-page .bg-white {
+.candidate-portal-page .bg-white,
+.talent-portal-page .bg-white {
   background-color: #ffffff !important;
 }
 
@@ -425,7 +430,8 @@
 .talent-pool-page .text-gray-900,
 .job-application-page .text-gray-900,
 .all-jobs-page .text-gray-900,
-.candidate-portal-page .text-gray-900 {
+.candidate-portal-page .text-gray-900,
+.talent-portal-page .text-gray-900 {
   color: #111827 !important;
 }
 
@@ -433,7 +439,8 @@
 .talent-pool-page .text-gray-700,
 .job-application-page .text-gray-700,
 .all-jobs-page .text-gray-700,
-.candidate-portal-page .text-gray-700 {
+.candidate-portal-page .text-gray-700,
+.talent-portal-page .text-gray-700 {
   color: #374151 !important;
 }
 
@@ -441,7 +448,8 @@
 .talent-pool-page .text-gray-600,
 .job-application-page .text-gray-600,
 .all-jobs-page .text-gray-600,
-.candidate-portal-page .text-gray-600 {
+.candidate-portal-page .text-gray-600,
+.talent-portal-page .text-gray-600 {
   color: #4b5563 !important;
 }
 
@@ -449,7 +457,8 @@
 .talent-pool-page .text-gray-500,
 .job-application-page .text-gray-500,
 .all-jobs-page .text-gray-500,
-.candidate-portal-page .text-gray-500 {
+.candidate-portal-page .text-gray-500,
+.talent-portal-page .text-gray-500 {
   color: #6b7280 !important;
 }
 
@@ -457,7 +466,8 @@
 .talent-pool-page .border-gray-200,
 .job-application-page .border-gray-200,
 .all-jobs-page .border-gray-200,
-.candidate-portal-page .border-gray-200 {
+.candidate-portal-page .border-gray-200,
+.talent-portal-page .border-gray-200 {
   border-color: #e5e7eb !important;
 }
 
@@ -465,7 +475,8 @@
 .talent-pool-page .border-gray-300,
 .job-application-page .border-gray-300,
 .all-jobs-page .border-gray-300,
-.candidate-portal-page .border-gray-300 {
+.candidate-portal-page .border-gray-300,
+.talent-portal-page .border-gray-300 {
   border-color: #d1d5db !important;
 }
 
@@ -548,5 +559,87 @@
 }
 
 .talent-pool-page .react-select__multi-value__remove:hover {
+  color: #4a672a !important;
+}
+
+/* Talent Portal page specific styles - light mode only */
+.talent-portal-page input[type='text'],
+.talent-portal-page input[type='email'],
+.talent-portal-page input[type='tel'],
+.talent-portal-page input[type='number'],
+.talent-portal-page select {
+  color: #374151 !important;
+  background-color: white !important;
+}
+
+.talent-portal-page input::placeholder {
+  color: #9ca3af !important;
+}
+
+.talent-portal-page select option {
+  color: #374151 !important;
+  background-color: white !important;
+}
+
+.talent-portal-page .react-select__control {
+  border: 1px solid #d1d5db !important;
+  background-color: #ffffff !important;
+  height: 40px !important;
+  border-radius: 0.5rem !important;
+}
+
+.talent-portal-page .react-select__control--is-focused {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+}
+
+.talent-portal-page .react-select__control:hover {
+  border-color: #9ca3af !important;
+}
+
+.talent-portal-page .react-select__placeholder {
+  color: #6b7280 !important;
+}
+
+.talent-portal-page .react-select__input-container {
+  color: #374151 !important;
+}
+
+.talent-portal-page .react-select__menu {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.talent-portal-page .react-select__option {
+  color: #374151 !important;
+}
+
+.talent-portal-page .react-select__option:hover {
+  background-color: #f9fafb !important;
+}
+
+.talent-portal-page .react-select__option--is-focused {
+  background-color: #f9fafb !important;
+}
+
+.talent-portal-page .react-select__option--is-selected {
+  background-color: #eff9d8 !important;
+  color: #5a7f32 !important;
+}
+
+.talent-portal-page .react-select__multi-value {
+  background-color: #eff9d8 !important;
+  border: 1px solid #ddf2b8 !important;
+}
+
+.talent-portal-page .react-select__multi-value__label {
+  color: #5a7f32 !important;
+}
+
+.talent-portal-page .react-select__multi-value__remove {
+  color: #8bc550 !important;
+}
+
+.talent-portal-page .react-select__multi-value__remove:hover {
   color: #4a672a !important;
 }

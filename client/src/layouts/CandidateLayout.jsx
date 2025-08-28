@@ -20,18 +20,18 @@ const CandidateLayout = () => {
               >
                 All Jobs
               </Link>
-              <Link
-                to="/track-application"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Track Application
-              </Link>
 
               <Link
                 to="/talent-pool"
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Talent Pool
+              </Link>
+              <Link
+                to="/track"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Track
               </Link>
             </div>
           </div>

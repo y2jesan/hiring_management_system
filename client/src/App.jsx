@@ -21,6 +21,7 @@ import Jobs from './pages/admin/Jobs';
 import Login from './pages/admin/Login';
 import ScheduleInterview from './pages/admin/ScheduleInterview';
 import Talents from './pages/admin/Talents';
+import TalentDetails from './pages/admin/TalentDetails';
 import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
@@ -29,6 +30,7 @@ import AllJobs from './pages/candidate/AllJobs';
 import CandidatePortal from './pages/candidate/CandidatePortal';
 import JobApplication from './pages/candidate/JobApplication';
 import TalentPool from './pages/candidate/TalentPool';
+import TalentPortal from './pages/candidate/TalentPortal';
 
 // Context
 import { AuthProvider } from './hooks/useAuth.jsx';
@@ -79,7 +81,7 @@ function App() {
                 <Route path="job-application/:jobId" element={<JobApplication />} />
                 <Route path="application/:applicationId" element={<CandidatePortal />} />
                 <Route path="talent-pool" element={<TalentPool />} />
-                <Route path="talent/:talentPoolId" element={<CandidatePortal />} />
+                <Route path="talent/:talent_id" element={<TalentPortal />} />
               </Route>
 
               {/* Admin Routes */}
@@ -99,6 +101,7 @@ function App() {
                 <Route path="users" element={<Users />} />
                 <Route path="user-info" element={<UserInfo />} />
                 <Route path="talents" element={<Talents />} />
+                <Route path="talents/:id" element={<TalentDetails />} />
               </Route>
 
               {/* Default redirect */}

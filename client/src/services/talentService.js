@@ -39,6 +39,16 @@ export const talentService = {
     return response.data;
   },
 
+  // Update talent by talent pool ID (public - for candidates)
+  updateTalentByTalentPoolId: async (talentPoolId, data) => {
+    const response = await api.put(`/talents/public/${talentPoolId}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   // Delete talent (admin)
   deleteTalent: async (id) => {
     const response = await api.delete(`/talents/${id}`);

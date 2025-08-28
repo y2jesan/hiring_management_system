@@ -233,6 +233,68 @@ const updateTalent = async (req, res) => {
   }
 };
 
+// Update talent by talent pool ID (public route for candidates)
+const updateTalentByTalentPoolId = async (req, res) => {
+  try {
+    const { 
+      name, 
+      email, 
+      phone, 
+      years_of_experience, 
+      expected_salary, 
+      notice_period_in_months, 
+      current_employment_status, 
+      current_company_name, 
+      core_experience
+    } = req.body;
+
+    // Find talent by talent pool ID
+    const talent = await Talent.findOne({ 
+      talent_pool_id: req.params.talent_pool_id,
+      is_active: true 
+    });
+
+    if (!talent) {
+      return res.status(404).json(createErrorResponse('Talent not found or inactive'));
+    }
+
+    const updateData = {};
+
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (years_of_experience !== undefined) updateData.years_of_experience = years_of_experience;
+    if (expected_salary !== undefined) updateData.expected_salary = expected_salary;
+    if (notice_period_in_months !== undefined) updateData.notice_period_in_months = notice_period_in_months;
+    if (current_employment_status !== undefined) updateData.current_employment_status = current_employment_status === 'true';
+    if (current_company_name !== undefined) updateData.current_company_name = current_company_name;
+    if (core_experience !== undefined) updateData.core_experience = Array.isArray(core_experience) ? core_experience : [core_experience];
+
+    // Handle CV file upload
+    if (req.file) {
+      updateData.cv_file_path = `cvs/${req.file.filename}`;
+    }
+
+    const updatedTalent = await Talent.findByIdAndUpdate(talent._id, updateData, { new: true, runValidators: true })
+      .populate('reference', 'name email')
+      .populate('core_experience', 'name');
+
+    const talentWithUrl = {
+      ...updatedTalent.toObject(),
+      cv_file_path: updatedTalent.cv_file_path ? generateFileUrl(updatedTalent.cv_file_path) : null,
+    };
+
+    res.json(createSuccessResponse({ talent: talentWithUrl }, 'Talent profile updated successfully'));
+  } catch (error) {
+    console.error('Update talent by talent pool ID error:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json(createErrorResponse(errors.join(', ')));
+    }
+    res.status(500).json(createErrorResponse('Failed to update talent profile'));
+  }
+};
+
 // Delete talent
 const deleteTalent = async (req, res) => {
   try {
@@ -343,6 +405,7 @@ module.exports = {
   getTalentById,
   getTalentByTalentPoolId,
   updateTalent,
+  updateTalentByTalentPoolId,
   deleteTalent,
   toggleTalentStatus,
   exportTalents,

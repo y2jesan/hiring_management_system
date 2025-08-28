@@ -19,6 +19,12 @@ export const jobService = {
     return response.data;
   },
 
+  // Get active jobs (for public access)
+  getActiveJobs: async () => {
+    const response = await api.get('/jobs/public/active');
+    return response.data;
+  },
+
   // Create new job
   createJob: async (jobData) => {
     const response = await api.post('/jobs', jobData);

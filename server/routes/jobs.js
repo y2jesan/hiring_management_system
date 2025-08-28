@@ -12,6 +12,7 @@ const validateJobUpdate = [body('title').optional().isLength({ min: 3 }).withMes
 
 // Public routes
 router.get('/active', jobController.getActiveJobs);
+router.get('/public/active', jobController.getPublicActiveJobs);
 router.get('/public/:job_id', jobController.getJobByJobId);
 
 // Protected routes (HR and above)

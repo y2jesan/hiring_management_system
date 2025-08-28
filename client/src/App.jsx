@@ -23,6 +23,7 @@ import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
 // Candidate Pages
+import AllJobs from './pages/candidate/AllJobs';
 import CandidatePortal from './pages/candidate/CandidatePortal';
 import JobApplication from './pages/candidate/JobApplication';
 
@@ -69,6 +70,7 @@ function App() {
 
             <Routes>
               {/* Public Routes */}
+              <Route path="/jobs" element={<AllJobs />} />
               <Route path="/job-application/:jobId" element={<JobApplication />} />
               <Route path="/application/:applicationId" element={<CandidatePortal />} />
 

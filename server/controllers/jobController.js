@@ -237,6 +237,32 @@ const getActiveJobs = async (req, res) => {
   }
 };
 
+// Get public active jobs (for candidates - limited data)
+const getPublicActiveJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find({ is_active: true })
+      .select('title designation job_description experience_in_year salary_range job_id image createdAt')
+      .sort({ createdAt: -1 });
+
+    const jobsWithUrls = jobs.map((job) => ({
+      _id: job._id,
+      title: job.title,
+      designation: job.designation,
+      job_description: job.job_description,
+      experience_in_year: job.experience_in_year,
+      salary_range: job.salary_range,
+      job_id: job.job_id,
+      image: job.image ? generateFileUrl(job.image) : null,
+      createdAt: job.createdAt,
+    }));
+
+    res.json(createSuccessResponse({ jobs: jobsWithUrls }));
+  } catch (error) {
+    console.error('Get public active jobs error:', error);
+    res.status(500).json(createErrorResponse('Failed to fetch active jobs'));
+  }
+};
+
 module.exports = {
   createJob,
   getJobs,
@@ -246,4 +272,5 @@ module.exports = {
   deleteJob,
   toggleJobStatus,
   getActiveJobs,
+  getPublicActiveJobs,
 };

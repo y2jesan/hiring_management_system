@@ -20,8 +20,8 @@ import JobDetails from './pages/admin/JobDetails';
 import Jobs from './pages/admin/Jobs';
 import Login from './pages/admin/Login';
 import ScheduleInterview from './pages/admin/ScheduleInterview';
-import Talents from './pages/admin/Talents';
 import TalentDetails from './pages/admin/TalentDetails';
+import Talents from './pages/admin/Talents';
 import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
@@ -31,6 +31,7 @@ import CandidatePortal from './pages/candidate/CandidatePortal';
 import JobApplication from './pages/candidate/JobApplication';
 import TalentPool from './pages/candidate/TalentPool';
 import TalentPortal from './pages/candidate/TalentPortal';
+import Track from './pages/candidate/Track';
 
 // Context
 import { AuthProvider } from './hooks/useAuth.jsx';
@@ -82,6 +83,7 @@ function App() {
                 <Route path="application/:applicationId" element={<CandidatePortal />} />
                 <Route path="talent-pool" element={<TalentPool />} />
                 <Route path="talent/:talent_id" element={<TalentPortal />} />
+                <Route path="track" element={<Track />} />
               </Route>
 
               {/* Admin Routes */}

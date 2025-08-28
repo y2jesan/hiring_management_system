@@ -382,7 +382,8 @@
 .job-application-page,
 .all-jobs-page,
 .candidate-portal-page,
-.talent-portal-page {
+.talent-portal-page,
+.track-page {
   color-scheme: light !important;
 }
 
@@ -391,7 +392,8 @@
 .job-application-page *,
 .all-jobs-page *,
 .candidate-portal-page *,
-.talent-portal-page * {
+.talent-portal-page *,
+.track-page * {
   color-scheme: light !important;
 }
 
@@ -401,7 +403,8 @@
 .job-application-page,
 .all-jobs-page,
 .candidate-portal-page,
-.talent-portal-page {
+.talent-portal-page,
+.track-page {
   background-color: #f9fafb !important;
   color: #111827 !important;
 }
@@ -411,7 +414,8 @@
 .job-application-page *,
 .all-jobs-page *,
 .candidate-portal-page *,
-.talent-portal-page * {
+.talent-portal-page *,
+.track-page * {
   background-color: inherit !important;
   color: inherit !important;
 }
@@ -422,7 +426,8 @@
 .job-application-page .bg-white,
 .all-jobs-page .bg-white,
 .candidate-portal-page .bg-white,
-.talent-portal-page .bg-white {
+.talent-portal-page .bg-white,
+.track-page .bg-white {
   background-color: #ffffff !important;
 }
 
@@ -431,7 +436,8 @@
 .job-application-page .text-gray-900,
 .all-jobs-page .text-gray-900,
 .candidate-portal-page .text-gray-900,
-.talent-portal-page .text-gray-900 {
+.talent-portal-page .text-gray-900,
+.track-page .text-gray-900 {
   color: #111827 !important;
 }
 
@@ -440,7 +446,8 @@
 .job-application-page .text-gray-700,
 .all-jobs-page .text-gray-700,
 .candidate-portal-page .text-gray-700,
-.talent-portal-page .text-gray-700 {
+.talent-portal-page .text-gray-700,
+.track-page .text-gray-700 {
   color: #374151 !important;
 }
 
@@ -449,7 +456,8 @@
 .job-application-page .text-gray-600,
 .all-jobs-page .text-gray-600,
 .candidate-portal-page .text-gray-600,
-.talent-portal-page .text-gray-600 {
+.talent-portal-page .text-gray-600,
+.track-page .text-gray-600 {
   color: #4b5563 !important;
 }
 
@@ -458,7 +466,8 @@
 .job-application-page .text-gray-500,
 .all-jobs-page .text-gray-500,
 .candidate-portal-page .text-gray-500,
-.talent-portal-page .text-gray-500 {
+.talent-portal-page .text-gray-500,
+.track-page .text-gray-500 {
   color: #6b7280 !important;
 }
 
@@ -467,7 +476,8 @@
 .job-application-page .border-gray-200,
 .all-jobs-page .border-gray-200,
 .candidate-portal-page .border-gray-200,
-.talent-portal-page .border-gray-200 {
+.talent-portal-page .border-gray-200,
+.track-page .border-gray-200 {
   border-color: #e5e7eb !important;
 }
 
@@ -476,7 +486,8 @@
 .job-application-page .border-gray-300,
 .all-jobs-page .border-gray-300,
 .candidate-portal-page .border-gray-300,
-.talent-portal-page .border-gray-300 {
+.talent-portal-page .border-gray-300,
+.track-page .border-gray-300 {
   border-color: #d1d5db !important;
 }
 
@@ -642,4 +653,54 @@
 
 .talent-portal-page .react-select__multi-value__remove:hover {
   color: #4a672a !important;
+}
+
+/* Candidate pages primary button styles - force proper styling */
+.candidate-page .btn-primary,
+.talent-pool-page .btn-primary,
+.job-application-page .btn-primary,
+.all-jobs-page .btn-primary,
+.candidate-portal-page .btn-primary,
+.talent-portal-page .btn-primary,
+.track-page .btn-primary {
+  background-color: #bdeb90 !important;
+  color: #111827 !important;
+  border: 1px solid #a3d977 !important;
+}
+
+.candidate-page .btn-primary:hover,
+.talent-pool-page .btn-primary:hover,
+.job-application-page .btn-primary:hover,
+.all-jobs-page .btn-primary:hover,
+.candidate-portal-page .btn-primary:hover,
+.talent-portal-page .btn-primary:hover,
+.track-page .btn-primary:hover {
+  background-color: #a3d977 !important;
+  color: #111827 !important;
+}
+
+.candidate-page .btn-primary:focus,
+.talent-pool-page .btn-primary:focus,
+.job-application-page .btn-primary:focus,
+.all-jobs-page .btn-primary:focus,
+.candidate-portal-page .btn-primary:focus,
+.talent-portal-page .btn-primary:focus,
+.track-page .btn-primary:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(189, 235, 144, 0.5) !important;
+  border-color: #a3d977 !important;
+}
+
+.candidate-page .btn-primary:disabled,
+.talent-pool-page .btn-primary:disabled,
+.job-application-page .btn-primary:disabled,
+.all-jobs-page .btn-primary:disabled,
+.candidate-portal-page .btn-primary:disabled,
+.talent-portal-page .btn-primary:disabled,
+.track-page .btn-primary:disabled {
+  background-color: #d4f0b8 !important;
+  color: #6b7280 !important;
+  border-color: #bdeb90 !important;
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
 }

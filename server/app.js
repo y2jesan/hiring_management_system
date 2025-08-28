@@ -30,6 +30,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/candidates', require('./routes/candidates'));
+app.use('/api/talents', require('./routes/talents'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/interviews', require('./routes/interviews'));
 app.use('/api/users', require('./routes/users'));

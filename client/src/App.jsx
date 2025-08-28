@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
+import CandidateLayout from './layouts/CandidateLayout';
 
 // Admin Pages
 import CandidateDetails from './pages/admin/CandidateDetails';
@@ -19,6 +20,7 @@ import JobDetails from './pages/admin/JobDetails';
 import Jobs from './pages/admin/Jobs';
 import Login from './pages/admin/Login';
 import ScheduleInterview from './pages/admin/ScheduleInterview';
+import Talents from './pages/admin/Talents';
 import UserInfo from './pages/admin/UserInfo';
 import Users from './pages/admin/Users';
 
@@ -26,6 +28,7 @@ import Users from './pages/admin/Users';
 import AllJobs from './pages/candidate/AllJobs';
 import CandidatePortal from './pages/candidate/CandidatePortal';
 import JobApplication from './pages/candidate/JobApplication';
+import TalentPool from './pages/candidate/TalentPool';
 
 // Context
 import { AuthProvider } from './hooks/useAuth.jsx';
@@ -70,9 +73,14 @@ function App() {
 
             <Routes>
               {/* Public Routes */}
-              <Route path="/jobs" element={<AllJobs />} />
-              <Route path="/job-application/:jobId" element={<JobApplication />} />
-              <Route path="/application/:applicationId" element={<CandidatePortal />} />
+              <Route path="/" element={<CandidateLayout />}>
+                <Route index element={<Navigate to="/jobs" replace />} />
+                <Route path="jobs" element={<AllJobs />} />
+                <Route path="job-application/:jobId" element={<JobApplication />} />
+                <Route path="application/:applicationId" element={<CandidatePortal />} />
+                <Route path="talent-pool" element={<TalentPool />} />
+                <Route path="talent/:talentPoolId" element={<CandidatePortal />} />
+              </Route>
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<Login />} />
@@ -90,11 +98,11 @@ function App() {
                 <Route path="final-selection" element={<FinalSelection />} />
                 <Route path="users" element={<Users />} />
                 <Route path="user-info" element={<UserInfo />} />
+                <Route path="talents" element={<Talents />} />
               </Route>
 
               {/* Default redirect */}
-              <Route path="/" element={<Navigate to="/admin/login" replace />} />
-              <Route path="*" element={<Navigate to="/admin/login" replace />} />
+              <Route path="*" element={<Navigate to="/jobs" replace />} />
             </Routes>
           </div>
         </Router>

@@ -5,7 +5,7 @@ import {
     UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import qtecLogo from '../../assets/qtec_icon.svg';
 import Loader from '../../components/Loader';
 import { jobService } from '../../services/jobService';
@@ -45,14 +45,14 @@ const AllJobs = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center mb-4">
                         <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-4" />
                         {/* <div className="h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
-              <UserIcon className="h-8 w-8 text-white" />
-            </div> */}
+                            <UserIcon className="h-8 w-8 text-white" />
+                        </div> */}
                     </div>
                     <h1 className="text-4xl font-bold text-primary-800 !text-primary-800 mb-4">
                         Join Our Team
@@ -79,9 +79,6 @@ const AllJobs = () => {
                                             <p className="text-sm text-gray-500 !text-gray-500">{job.designation}</p>
                                         </div>
                                     </div>
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 !bg-green-100 text-green-800 !text-green-800">
-                                        Active
-                                    </span>
                                 </div>
 
                                 <div className="space-y-3 mb-6">
@@ -141,21 +138,20 @@ const AllJobs = () => {
                 {/* Call to Action */}
                 {jobs.length > 0 && (
                     <div className="mt-12 text-center">
-                        <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 !text-gray-900 mb-4">
-                                Ready to Join Us?
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                Not Ready to Join Us Now?
                             </h2>
-                            <p className="text-gray-600 !text-gray-600 mb-6 max-w-2xl mx-auto">
-                                We're excited to see your application! Choose a position that matches your skills and experience,
-                                and take the first step towards an amazing career with us.
+                            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                                Even if there’s no open role that matches you right now, you can share your details with us. We’ll keep your profile in our Talent Pool and reach out when an opportunity that fits your skills comes up.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <button
-                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                <Link
+                                    to="/talent-pool"
                                     className="btn btn-primary"
                                 >
-                                    View All Positions
-                                </button>
+                                    Join Our Talent Pool
+                                </Link>
                                 <a
                                     href="mailto:careers@qtec.com"
                                     className="btn btn-secondary"

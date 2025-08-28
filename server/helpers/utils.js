@@ -10,6 +10,16 @@ const generateJobId = () => {
   return result;
 };
 
+// Generate unique 8-character alphanumeric talent pool ID
+const generateTalentPoolId = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 // Generate unique application ID
 const generateApplicationId = () => {
   return `APP-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -153,6 +163,7 @@ const createErrorResponse = (message, statusCode = 400) => {
 
 module.exports = {
   generateJobId,
+  generateTalentPoolId,
   generateApplicationId,
   generateTaskId,
   formatDate,

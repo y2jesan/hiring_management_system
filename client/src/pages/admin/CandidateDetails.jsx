@@ -71,7 +71,7 @@ const CandidateDetails = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 dark:text-gray-400">Application ID</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{candidate.application_id}</p>
+                  <Link to={`/applications/${candidate.application_id}`} target='_blank' className="font-medium text-gray-900 dark:text-white hover:underline">{candidate.application_id}</Link>
                 </div>
                 {candidate.reference && (
                   <div>

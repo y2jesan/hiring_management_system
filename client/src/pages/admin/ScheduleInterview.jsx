@@ -5,6 +5,7 @@ import {
 import { ClockPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { jobService } from '../../services/jobService';
@@ -272,9 +273,6 @@ const ScheduleInterview = () => {
                                         Candidate
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Application ID
-                                    </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Job
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -299,9 +297,9 @@ const ScheduleInterview = () => {
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className="ml-4">
+                                                <div>
                                                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {candidate.name}
+                                                        <Link to={`/admin/candidates/${candidate._id}`} className="hover:underline">{candidate.name}</Link>
                                                     </div>
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {candidate.email}
@@ -309,11 +307,9 @@ const ScheduleInterview = () => {
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {candidate.phone}
                                                     </div>
+                                                    <Link to={`/application/${candidate.application_id}`} target='_blank' className="hover:underline">{candidate.application_id}</Link>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {candidate.application_id}
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             <div>

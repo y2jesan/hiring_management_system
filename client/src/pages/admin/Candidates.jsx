@@ -345,16 +345,16 @@ const Candidates = () => {
                   <Select
                     isMulti
                     value={experiences.filter(exp => experienceFilterIds.includes(exp._id)).map(exp => ({
-                        value: exp._id,
-                        label: exp.name
+                      value: exp._id,
+                      label: exp.name
                     }))}
                     onChange={(selectedOptions) => {
-                        const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                        setExperienceFilterIds(selectedIds);
+                      const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                      setExperienceFilterIds(selectedIds);
                     }}
                     options={experiences.map(exp => ({
-                        value: exp._id,
-                        label: exp.name
+                      value: exp._id,
+                      label: exp.name
                     }))}
                     components={animatedComponents}
                     placeholder="Filter by experiences..."
@@ -602,13 +602,6 @@ const Candidates = () => {
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
-                        {/* <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-                            <span className="text-sm font-medium text-primary-700 dark:text-primary-200">
-                              {candidate.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                        </div> */}
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             <Link to={`/admin/candidates/${candidate._id}`} className="hover:underline">{candidate.name}</Link>
@@ -619,7 +612,7 @@ const Candidates = () => {
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {candidate.phone}
                           </div>
-                          <Link to={`/application/${candidate.application_id}`} className="hover:underline">{candidate.application_id}</Link>
+                          <Link to={`/application/${candidate.application_id}`} target='_blank' className="hover:underline">{candidate.application_id}</Link>
                         </div>
                       </div>
                     </td>
@@ -911,16 +904,16 @@ const Candidates = () => {
                           <Select
                             isMulti
                             value={experiences.filter(exp => editFormData.core_experience.includes(exp._id)).map(exp => ({
-                                value: exp._id,
-                                label: exp.name
+                              value: exp._id,
+                              label: exp.name
                             }))}
                             onChange={(selectedOptions) => {
-                                const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                                setEditFormData({ ...editFormData, core_experience: selectedIds });
+                              const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                              setEditFormData({ ...editFormData, core_experience: selectedIds });
                             }}
                             options={experiences.map(exp => ({
-                                value: exp._id,
-                                label: exp.name
+                              value: exp._id,
+                              label: exp.name
                             }))}
                             components={animatedComponents}
                             placeholder="Select core experiences..."

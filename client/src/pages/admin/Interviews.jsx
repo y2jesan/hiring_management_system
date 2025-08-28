@@ -886,9 +886,6 @@ const Interviews = () => {
                                         Candidate
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Application ID
-                                    </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Job
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -916,7 +913,7 @@ const Interviews = () => {
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className="ml-4">
+                                                <div>
                                                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                                                         <Link to={`/admin/candidates/${interview.candidate_id._id}`} className="hover:underline">
                                                             {interview.candidate_id?.name || 'Unknown Candidate'}
@@ -925,11 +922,9 @@ const Interviews = () => {
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {interview.candidate_id?.email || 'N/A'}
                                                     </div>
+                                                    <Link to={`/application/${interview.candidate_id?.application_id}`} target='_blank' className="hover:underline">{interview.candidate_id?.application_id}</Link>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {interview.candidate_id?.application_id || 'N/A'}
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             <div>

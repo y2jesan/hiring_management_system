@@ -50,6 +50,7 @@ const JobDetails = () => {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Info</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
           <div>
             <span className="font-medium">Designation:</span> {job.designation}

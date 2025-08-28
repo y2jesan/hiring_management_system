@@ -26,11 +26,11 @@ const JobDetails = () => {
   }, [jobId]);
 
   if (loading) {
-          return (
-        <div className="flex items-center justify-center h-64">
-          <Loader size="md" />
-        </div>
-      );
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader size="md" />
+      </div>
+    );
   }
 
   if (!job) {
@@ -46,7 +46,7 @@ const JobDetails = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-primary-800 dark:text-primary-200">{job.title}</h1>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">Job ID: {job.job_id}</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden lg:block">Job ID: {job.job_id}</p>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
@@ -64,6 +64,25 @@ const JobDetails = () => {
             <span className="font-medium">Status:</span> {job.is_active ? 'Active' : 'Closed'}
           </div>
         </div>
+        {job.evaluators && job.evaluators.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Evaluators</h3>
+            <div className="flex flex-wrap gap-2">
+              {job.evaluators.map((evaluator, index) => (
+                <span
+                  key={evaluator._id || index}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200"
+                >
+                  <strong>{evaluator.name}</strong>
+                  {evaluator.role && (
+                    <span className="ml-1 text-xs opacity-75">({evaluator.role})</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {job.job_description && (
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Job Description</h3>

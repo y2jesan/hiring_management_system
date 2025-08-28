@@ -54,4 +54,10 @@ export const userService = {
     const response = await api.put('/users/profile', userData);
     return response.data;
   },
+
+  // Get evaluators for job assignment
+  getEvaluators: async () => {
+    const response = await api.get('/users/evaluators');
+    return response.data;
+  },
 };

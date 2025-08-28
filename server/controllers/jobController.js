@@ -4,7 +4,7 @@ const { generateJobId, createSuccessResponse, createErrorResponse, generatePagin
 // Create new job
 const createJob = async (req, res) => {
   try {
-    const { title, salary_range, designation, job_description, experience_in_year, task_link } = req.body;
+    const { title, salary_range, designation, job_description, experience_in_year, task_link, evaluators } = req.body;
 
     // Generate unique job ID
     let jobId;
@@ -32,6 +32,7 @@ const createJob = async (req, res) => {
       task_link,
       job_id: jobId,
       image: imagePath,
+      evaluators: evaluators || [],
       created_by: req.user._id,
     };
 
@@ -71,7 +72,7 @@ const getJobs = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [jobs, total] = await Promise.all([Job.find(query).populate('created_by', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit), Job.countDocuments(query)]);
+    const [jobs, total] = await Promise.all([Job.find(query).populate('created_by', 'name email').populate('evaluators', 'name email role').sort({ createdAt: -1 }).skip(skip).limit(limit), Job.countDocuments(query)]);
 
     // Add full image URLs
     const jobsWithUrls = jobs.map((job) => ({
@@ -96,7 +97,7 @@ const getJobs = async (req, res) => {
 // Get job by ID
 const getJobById = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id).populate('created_by', 'name email');
+    const job = await Job.findById(req.params.id).populate('created_by', 'name email').populate('evaluators', 'name email role');
 
     if (!job) {
       return res.status(404).json(createErrorResponse('Job not found'));
@@ -120,7 +121,7 @@ const getJobByJobId = async (req, res) => {
     const job = await Job.findOne({
       job_id: req.params.job_id,
       is_active: true,
-    }).populate('created_by', 'name email');
+    }).populate('created_by', 'name email').populate('evaluators', 'name email role');
 
     if (!job) {
       return res.status(404).json(createErrorResponse('Job not found or inactive'));
@@ -141,7 +142,7 @@ const getJobByJobId = async (req, res) => {
 // Update job
 const updateJob = async (req, res) => {
   try {
-    const { title, salary_range, designation, job_description, experience_in_year, task_link, is_active } = req.body;
+    const { title, salary_range, designation, job_description, experience_in_year, task_link, is_active, evaluators } = req.body;
 
     const updateData = {};
 
@@ -152,13 +153,14 @@ const updateJob = async (req, res) => {
     if (experience_in_year !== undefined) updateData.experience_in_year = experience_in_year;
     if (task_link !== undefined) updateData.task_link = task_link;
     if (is_active !== undefined) updateData.is_active = is_active;
+    if (evaluators !== undefined) updateData.evaluators = evaluators;
 
     // Handle image upload
     if (req.file) {
       updateData.image = `images/${req.file.filename}`;
     }
 
-    const job = await Job.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true }).populate('created_by', 'name email');
+    const job = await Job.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true }).populate('created_by', 'name email').populate('evaluators', 'name email role');
 
     if (!job) {
       return res.status(404).json(createErrorResponse('Job not found'));
@@ -208,9 +210,14 @@ const toggleJobStatus = async (req, res) => {
     job.is_active = !job.is_active;
     await job.save();
 
+    // Populate the job with evaluators and created_by before sending response
+    const populatedJob = await Job.findById(job._id)
+      .populate('created_by', 'name email')
+      .populate('evaluators', 'name email role');
+
     res.json(
       createSuccessResponse({
-        job,
+        job: populatedJob,
         message: `Job ${job.is_active ? 'activated' : 'deactivated'} successfully`,
       })
     );
@@ -223,7 +230,7 @@ const toggleJobStatus = async (req, res) => {
 // Get active jobs (for public access)
 const getActiveJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ is_active: true }).populate('created_by', 'name email').sort({ createdAt: -1 });
+    const jobs = await Job.find({ is_active: true }).populate('created_by', 'name email').populate('evaluators', 'name email role').sort({ createdAt: -1 });
 
     const jobsWithUrls = jobs.map((job) => ({
       ...job.toObject(),

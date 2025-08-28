@@ -46,6 +46,11 @@ const jobSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    evaluators: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'User',
+      default: [],
+    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -60,5 +65,6 @@ const jobSchema = new mongoose.Schema(
 // Index for faster queries
 jobSchema.index({ job_id: 1 });
 jobSchema.index({ is_active: 1 });
+jobSchema.index({ evaluators: 1 });
 
 module.exports = mongoose.model('Job', jobSchema);

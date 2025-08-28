@@ -292,6 +292,23 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+// Get evaluators for job assignment
+const getEvaluators = async (req, res) => {
+  try {
+    const evaluators = await User.find({
+      role: { $in: ['Evaluator', 'HR', 'MD', 'Super Admin'] },
+      is_active: true
+    })
+    .select('_id name email role department')
+    .sort({ name: 1 });
+
+    res.json(createSuccessResponse({ evaluators }));
+  } catch (error) {
+    console.error('Get evaluators error:', error);
+    res.status(500).json(createErrorResponse('Failed to fetch evaluators'));
+  }
+};
+
 // Update current user profile
 const updateCurrentUser = async (req, res) => {
   try {
@@ -339,6 +356,7 @@ module.exports = {
   updateUser,
   deleteUser,
   toggleUserStatus,
+  getEvaluators,
   getCurrentUser,
   updateCurrentUser,
 };

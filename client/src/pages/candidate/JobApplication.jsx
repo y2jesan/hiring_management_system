@@ -168,7 +168,7 @@ const JobApplication = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <Loader size="md" />
             </div>
         );
@@ -176,11 +176,11 @@ const JobApplication = () => {
 
     if (!job) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-500">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 !text-gray-900 mb-4">Job Not Found</h1>
-                    <p className="text-gray-600 !text-gray-600">The job you're looking for is no longer available.</p>
-                    <p className="text-sm text-gray-500 !text-gray-500 mt-2">Job ID: {jobId}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
+                    <p className="text-gray-600">The job you're looking for is no longer available.</p>
+                    <p className="text-sm text-gray-500 mt-2">Job ID: {jobId}</p>
                 </div>
             </div>
         );
@@ -188,7 +188,7 @@ const JobApplication = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 job-application-page">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 job-application-page">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -198,8 +198,8 @@ const JobApplication = () => {
                             <BriefcaseIcon className="h-8 w-8 text-white" />
                         </div> */}
                     </div>
-                    <h1 className="text-3xl font-bold text-primary-800 !text-primary-800 mb-2">QTEC Job Application</h1>
-                    <p className="text-lg text-gray-600 !text-gray-600">Apply for the position below</p>
+                    <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Job Application</h1>
+                    <p className="text-lg text-gray-600">Apply for the position below</p>
                 </div>
 
                 {/* Job Details */}
@@ -340,31 +340,31 @@ const JobApplication = () => {
                                 })}
                             />
                             {errors.phone && (
-                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.phone.message}</p>
+                                <p className="mt-1 text-sm text-danger-600">{errors.phone.message}</p>
                             )}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <BriefcaseIcon className="h-4 w-4 inline mr-1" />
                                 Years of Experience *
                             </label>
                             <input
                                 type="number"
                                 step="0.1"
-                                min="0"
+                                min={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? 0 : parseFloat(job.experience_in_year)}
                                 className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.years_of_experience ? '!border-danger-500' : ''}`}
-                                placeholder="e.g., 2.5"
+                                placeholder={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? "e.g. 1.5 years" : `Must Be At Least ${parseFloat(job.experience_in_year)} Years or More.`}
                                 {...register('years_of_experience', {
                                     required: 'Years of experience is required',
                                     min: {
-                                        value: 0,
+                                        value: parseFloat(job.experience_in_year),
                                         message: 'Years of experience must be a positive number'
                                     }
                                 })}
                             />
                             {errors.years_of_experience && (
-                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.years_of_experience.message}</p>
+                                <p className="mt-1 text-sm text-danger-600">{errors.years_of_experience.message}</p>
                             )}
                         </div>
 
@@ -419,25 +419,25 @@ const JobApplication = () => {
                                 <AcademicCapIcon className="h-4 w-4 inline mr-1" />
                                 Core Experience *
                             </label>
-                             <Select
-                                 isMulti
-                                 onChange={(selectedOptions) => {
-                                     const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                                     setSelectedExperiences(selectedIds);
-                                 }}
-                                 options={experiences.map(exp => ({
-                                     value: exp._id,
-                                     label: exp.name
-                                 }))}
-                                 components={animatedComponents}
-                                 placeholder="Select your core experiences..."
-                                 className="w-full"
-                                 classNamePrefix="react-select"
-                                 isClearable
-                                 isSearchable
-                                 closeMenuOnSelect={false}
-                                 noOptionsMessage={() => "No experiences available"}
-                             />
+                            <Select
+                                isMulti
+                                onChange={(selectedOptions) => {
+                                    const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                    setSelectedExperiences(selectedIds);
+                                }}
+                                options={experiences.map(exp => ({
+                                    value: exp._id,
+                                    label: exp.name
+                                }))}
+                                components={animatedComponents}
+                                placeholder="Select your core experiences..."
+                                className="w-full"
+                                classNamePrefix="react-select"
+                                isClearable
+                                isSearchable
+                                closeMenuOnSelect={false}
+                                noOptionsMessage={() => "No experiences available"}
+                            />
                             {selectedExperiences.length > 0 && (
                                 <p className="mt-2 text-sm text-gray-600">
                                     Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}

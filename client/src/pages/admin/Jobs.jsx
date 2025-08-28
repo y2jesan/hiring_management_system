@@ -9,8 +9,13 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import Loader from '../../components/Loader';
 import { jobService } from '../../services/jobService';
+import { userService } from '../../services/userService';
+
+const animatedComponents = makeAnimated();
 
 const Jobs = () => {
     const navigate = useNavigate();
@@ -20,6 +25,8 @@ const Jobs = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingJob, setEditingJob] = useState(null);
     const [statusFilter, setStatusFilter] = useState('active');
+    const [evaluators, setEvaluators] = useState([]);
+    const [selectedEvaluators, setSelectedEvaluators] = useState([]);
 
     const {
         register,
@@ -30,13 +37,13 @@ const Jobs = () => {
 
     useEffect(() => {
         fetchJobs();
-        
+        fetchEvaluators();
+
         // Check if create parameter is present in URL
         const createParam = searchParams.get('create');
         if (createParam === 'true') {
+            handleCloseModal();
             setShowModal(true);
-            setEditingJob(null);
-            reset();
             // Clear the create parameter from URL to prevent reopening on refresh
             navigate('/admin/jobs', { replace: true });
         }
@@ -65,19 +72,33 @@ const Jobs = () => {
         }
     };
 
+    const fetchEvaluators = async () => {
+        try {
+            const response = await userService.getEvaluators();
+            const evaluatorsData = response.data?.evaluators || response.evaluators || [];
+            setEvaluators(evaluatorsData);
+        } catch (error) {
+            console.error('Error fetching evaluators:', error);
+            toast.error('Failed to fetch evaluators');
+        }
+    };
+
     const onSubmit = async (data) => {
         try {
+            const jobData = {
+                ...data,
+                evaluators: selectedEvaluators.map(evaluator => evaluator.value)
+            };
+
             if (editingJob) {
-                await jobService.updateJob(editingJob._id, data);
+                await jobService.updateJob(editingJob._id, jobData);
                 toast.success('Job updated successfully');
             } else {
-                await jobService.createJob(data);
+                await jobService.createJob(jobData);
                 toast.success('Job created successfully');
             }
 
-            setShowModal(false);
-            setEditingJob(null);
-            reset();
+            handleCloseModal();
             fetchJobs();
         } catch (error) {
             console.error('Error saving job:', error);
@@ -87,14 +108,34 @@ const Jobs = () => {
 
     const handleEdit = (job) => {
         setEditingJob(job);
+
+        // Set selected evaluators for editing
+        if (job.evaluators && job.evaluators.length > 0) {
+            const evaluatorOptions = job.evaluators.map(evaluator => ({
+                value: evaluator._id,
+                label: `${evaluator.name} (${evaluator.role})`
+            }));
+            setSelectedEvaluators(evaluatorOptions);
+        } else {
+            setSelectedEvaluators([]);
+        }
+
+        // Reset form with job data
         reset(job);
         setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setEditingJob(null);
+        setSelectedEvaluators([]);
+        reset();
     };
 
     const handleToggleStatus = async (jobId, currentStatus) => {
         const newStatus = !currentStatus;
         const action = newStatus ? 'activate' : 'deactivate';
-        
+
         if (window.confirm(`Are you sure you want to ${action} this job? ${!newStatus ? 'Applications will no longer be accepted for this job.' : ''}`)) {
             try {
                 await jobService.toggleJobStatus(jobId);
@@ -156,8 +197,7 @@ const Jobs = () => {
                     </select>
                     <button
                         onClick={() => {
-                            setEditingJob(null);
-                            reset();
+                            handleCloseModal();
                             setShowModal(true);
                         }}
                         className="btn btn-primary flex items-center h-12 w-12 lg:h-10 lg:w-auto lg:px-4 flex-shrink-0 justify-center lg:justify-start"
@@ -386,6 +426,60 @@ const Jobs = () => {
                                                         {...register('task_link')}
                                                     />
                                                 </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Evaluators
+                                                    </label>
+                                                    <Select
+                                                        isMulti
+                                                        components={animatedComponents}
+                                                        options={evaluators.map(evaluator => ({
+                                                            value: evaluator._id,
+                                                            label: `${evaluator.name} (${evaluator.role})`
+                                                        }))}
+                                                        value={selectedEvaluators}
+                                                        onChange={setSelectedEvaluators}
+                                                        placeholder="Select evaluators..."
+                                                        className="mt-1"
+                                                        classNamePrefix="select"
+                                                        styles={{
+                                                            control: (provided) => ({
+                                                                ...provided,
+                                                                backgroundColor: 'transparent',
+                                                                borderColor: '#d1d5db',
+                                                                '&:hover': {
+                                                                    borderColor: '#9ca3af'
+                                                                }
+                                                            }),
+                                                            menu: (provided) => ({
+                                                                ...provided,
+                                                                backgroundColor: document.documentElement.classList.contains('dark') ? '#374151' : '#ffffff',
+                                                                border: '1px solid #d1d5db'
+                                                            }),
+                                                            option: (provided, state) => ({
+                                                                ...provided,
+                                                                backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? (document.documentElement.classList.contains('dark') ? '#4b5563' : '#f3f4f6') : 'transparent',
+                                                                color: state.isSelected ? '#ffffff' : (document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151')
+                                                            }),
+                                                            multiValue: (provided) => ({
+                                                                ...provided,
+                                                                backgroundColor: document.documentElement.classList.contains('dark') ? '#4b5563' : '#e5e7eb'
+                                                            }),
+                                                            multiValueLabel: (provided) => ({
+                                                                ...provided,
+                                                                color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+                                                            }),
+                                                            input: (provided) => ({
+                                                                ...provided,
+                                                                color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+                                                            })
+                                                        }}
+                                                    />
+                                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Select evaluators who will be responsible for evaluating candidates for this job
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -394,11 +488,7 @@ const Jobs = () => {
                                 <div className="bg-primary-50 dark:bg-primary-900 px-4 py-3 sm:px-6 flex justify-end">
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setShowModal(false);
-                                            setEditingJob(null);
-                                            reset();
-                                        }}
+                                        onClick={handleCloseModal}
                                         className="btn btn-secondary sm:mt-0 sm:w-auto mr-3"
                                     >
                                         Cancel

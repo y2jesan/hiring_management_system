@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { auth, authorize } = require('../middlewares/auth');
-const { getUsers, getUserById, createUser, updateUser, deleteUser, toggleUserStatus, getCurrentUser, updateCurrentUser } = require('../controllers/userController');
+const { getUsers, getUserById, createUser, updateUser, deleteUser, toggleUserStatus, getEvaluators, getCurrentUser, updateCurrentUser } = require('../controllers/userController');
 
 // Apply authentication middleware to all routes
 router.use(auth);
@@ -14,6 +14,9 @@ router.put('/profile', updateCurrentUser);
 
 // Get all users (requires HR, MD, or Super Admin role)
 router.get('/', authorize(['HR', 'MD', 'Super Admin']), getUsers);
+
+// Get evaluators for job assignment (requires HR, MD, or Super Admin role)
+router.get('/evaluators', authorize(['HR', 'MD', 'Super Admin']), getEvaluators);
 
 // Get user by ID (requires HR, MD, or Super Admin role)
 router.get('/:id', authorize(['HR', 'MD', 'Super Admin']), getUserById);

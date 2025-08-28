@@ -188,7 +188,7 @@ const JobApplication = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 job-application-page">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 job-application-page candidate-page" style={{ colorScheme: 'light' }}>
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -344,74 +344,76 @@ const JobApplication = () => {
                             )}
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <BriefcaseIcon className="h-4 w-4 inline mr-1" />
-                                Years of Experience *
-                            </label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                min={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? 0 : parseFloat(job.experience_in_year)}
-                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.years_of_experience ? '!border-danger-500' : ''}`}
-                                placeholder={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? "e.g. 1.5 years" : `Must Be At Least ${parseFloat(job.experience_in_year)} Years or More.`}
-                                {...register('years_of_experience', {
-                                    required: 'Years of experience is required',
-                                    min: {
-                                        value: parseFloat(job.experience_in_year),
-                                        message: 'Years of experience must be a positive number'
-                                    }
-                                })}
-                            />
-                            {errors.years_of_experience && (
-                                <p className="mt-1 text-sm text-danger-600">{errors.years_of_experience.message}</p>
-                            )}
-                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <BriefcaseIcon className="h-4 w-4 inline mr-1" />
+                                    Years of Experience *
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    min={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? 0 : parseFloat(job.experience_in_year)}
+                                    className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.years_of_experience ? '!border-danger-500' : ''}`}
+                                    placeholder={isNaN(parseInt(job.experience_in_year)) || parseInt(job.experience_in_year) == 0 ? "e.g. 1.5 years" : `At Least ${parseFloat(job.experience_in_year)} Years or More.`}
+                                    {...register('years_of_experience', {
+                                        required: 'Years of experience is required',
+                                        min: {
+                                            value: parseFloat(job.experience_in_year),
+                                            message: 'Years of experience must be a positive number'
+                                        }
+                                    })}
+                                />
+                                {errors.years_of_experience && (
+                                    <p className="mt-1 text-sm text-danger-600">{errors.years_of_experience.message}</p>
+                                )}
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
-                                <CurrencyDollarIcon className="h-4 w-4 inline mr-1" />
-                                Expected Salary (BDT) *
-                            </label>
-                            <input
-                                type="number"
-                                min="0"
-                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.expected_salary ? '!border-danger-500' : ''}`}
-                                placeholder="e.g., 50000"
-                                {...register('expected_salary', {
-                                    required: 'Expected salary is required',
-                                    min: {
-                                        value: 0,
-                                        message: 'Expected salary must be a positive number'
-                                    }
-                                })}
-                            />
-                            {errors.expected_salary && (
-                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.expected_salary.message}</p>
-                            )}
-                        </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                    <CurrencyDollarIcon className="h-4 w-4 inline mr-1" />
+                                    Expected Salary (BDT) *
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.expected_salary ? '!border-danger-500' : ''}`}
+                                    placeholder="e.g., 50000"
+                                    {...register('expected_salary', {
+                                        required: 'Expected salary is required',
+                                        min: {
+                                            value: 0,
+                                            message: 'Expected salary must be a positive number'
+                                        }
+                                    })}
+                                />
+                                {errors.expected_salary && (
+                                    <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.expected_salary.message}</p>
+                                )}
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
-                                <ClockIcon className="h-4 w-4 inline mr-1" />
-                                Notice Period (Months) *
-                            </label>
-                            <input
-                                type="number"
-                                min="0"
-                                className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.notice_period_in_months ? '!border-danger-500' : ''}`}
-                                placeholder="e.g., 1"
-                                {...register('notice_period_in_months', {
-                                    required: 'Notice period is required',
-                                    min: {
-                                        value: 0,
-                                        message: 'Notice period must be a positive number'
-                                    }
-                                })}
-                            />
-                            {errors.notice_period_in_months && (
-                                <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.notice_period_in_months.message}</p>
-                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                    <ClockIcon className="h-4 w-4 inline mr-1" />
+                                    Notice Period (Months) *
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className={`input !bg-white !text-gray-900 !border-gray-300 !placeholder-gray-500 ${errors.notice_period_in_months ? '!border-danger-500' : ''}`}
+                                    placeholder="e.g., 1"
+                                    {...register('notice_period_in_months', {
+                                        required: 'Notice period is required',
+                                        min: {
+                                            value: 0,
+                                            message: 'Notice period must be a positive number'
+                                        }
+                                    })}
+                                />
+                                {errors.notice_period_in_months && (
+                                    <p className="mt-1 text-sm text-danger-600 !text-danger-600">{errors.notice_period_in_months.message}</p>
+                                )}
+                            </div>
                         </div>
 
                         <div>
@@ -470,9 +472,9 @@ const JobApplication = () => {
                             </p>
                         </div>
 
-                        <div className="bg-blue-50 !bg-blue-50 border border-blue-200 !border-blue-200 rounded-lg p-4">
-                            <h4 className="text-sm font-medium text-blue-900 !text-blue-900 mb-2">What happens next?</h4>
-                            <ul className="text-sm text-blue-800 !text-blue-800 space-y-1">
+                        <div className="bg-primary-50 !bg-primary-50 border border-primary-500 !border-primary-500 rounded-lg p-4">
+                            <h4 className="text-sm font-medium text-primary-700 !text-primary-700 mb-2">What happens next?</h4>
+                            <ul className="text-sm text-primary-600 !text-primary-600 space-y-1">
                                 <li>• You'll receive a confirmation email with your Application ID</li>
                                 <li>• We'll review your application and send you a task assignment</li>
                                 <li>• Complete the task and submit it through your candidate portal</li>
@@ -484,7 +486,7 @@ const JobApplication = () => {
                             <button
                                 type="submit"
                                 disabled={submitting || !job.is_active}
-                                className="btn btn-primary px-8 py-3 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="btn btn-primary px-8 py-3 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-primary-500 disabled:border"
                             >
                                 {submitting ? (
                                     <div className="flex items-center">

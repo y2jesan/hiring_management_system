@@ -181,7 +181,7 @@ const CandidatePortal = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50 candidate-page">
         <Loader size="md" />
       </div>
     );
@@ -189,7 +189,7 @@ const CandidatePortal = () => {
 
   if (!candidate) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50 candidate-page">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 !text-gray-900 mb-4">Application Not Found</h1>
           <p className="text-gray-600 !text-gray-600">The application you're looking for could not be found.</p>
@@ -199,7 +199,7 @@ const CandidatePortal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 candidate-portal-page candidate-page" style={{ colorScheme: 'light' }}>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

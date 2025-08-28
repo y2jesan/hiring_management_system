@@ -22,100 +22,7 @@ import { talentService } from '../../services/talentService';
 
 const animatedComponents = makeAnimated();
 
-// Custom styles for react-select to ensure light mode
-const selectStyles = {
-    control: (provided, state) => ({
-        ...provided,
-        backgroundColor: 'white !important',
-        borderColor: state.isFocused ? '#3b82f6' : '#d1d5db !important',
-        borderWidth: '1px',
-        borderRadius: '0.375rem',
-        boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none !important',
-        minHeight: '42px',
-        '&:hover': {
-            borderColor: '#3b82f6 !important'
-        }
-    }),
-    menu: (provided) => ({
-        ...provided,
-        backgroundColor: 'white !important',
-        border: '1px solid #d1d5db',
-        borderRadius: '0.375rem',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        zIndex: 9999
-    }),
-    menuList: (provided) => ({
-        ...provided,
-        backgroundColor: 'white !important',
-        padding: '4px'
-    }),
-    option: (provided, state) => ({
-        ...provided,
-        backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f3f4f6' : 'white !important',
-        color: state.isSelected ? 'white' : '#374151',
-        cursor: 'pointer',
-        '&:hover': {
-            backgroundColor: state.isSelected ? '#3b82f6' : '#f3f4f6'
-        }
-    }),
-    multiValue: (provided) => ({
-        ...provided,
-        backgroundColor: '#dbeafe !important',
-        borderRadius: '0.25rem',
-        margin: '2px'
-    }),
-    multiValueLabel: (provided) => ({
-        ...provided,
-        color: '#1e40af !important',
-        fontWeight: '500'
-    }),
-    multiValueRemove: (provided) => ({
-        ...provided,
-        color: '#1e40af !important',
-        '&:hover': {
-            backgroundColor: '#bfdbfe !important',
-            color: '#1e3a8a !important'
-        }
-    }),
-    placeholder: (provided) => ({
-        ...provided,
-        color: '#9ca3af !important'
-    }),
-    singleValue: (provided) => ({
-        ...provided,
-        color: '#374151 !important'
-    }),
-    input: (provided) => ({
-        ...provided,
-        color: '#374151 !important'
-    }),
-    valueContainer: (provided) => ({
-        ...provided,
-        backgroundColor: 'white !important'
-    }),
-    indicatorsContainer: (provided) => ({
-        ...provided,
-        backgroundColor: 'white !important'
-    }),
-    indicatorSeparator: (provided) => ({
-        ...provided,
-        backgroundColor: '#d1d5db !important'
-    }),
-    dropdownIndicator: (provided) => ({
-        ...provided,
-        color: '#6b7280 !important',
-        '&:hover': {
-            color: '#374151 !important'
-        }
-    }),
-    clearIndicator: (provided) => ({
-        ...provided,
-        color: '#6b7280 !important',
-        '&:hover': {
-            color: '#374151 !important'
-        }
-    })
-};
+
 
 const TalentPool = () => {
     const navigate = useNavigate();
@@ -249,184 +156,111 @@ const TalentPool = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 candidate-page">
                 <Loader size="md" />
             </div>
         );
     }
 
     return (
-        <>
-            <style>
-                {`
-                    .talent-pool-page input[type="text"],
-                    .talent-pool-page input[type="email"],
-                    .talent-pool-page input[type="tel"],
-                    .talent-pool-page input[type="number"],
-                    .talent-pool-page select {
-                        color: #374151 !important;
-                        background-color: white !important;
-                    }
-                    .talent-pool-page input::placeholder {
-                        color: #9ca3af !important;
-                    }
-                    .talent-pool-page select option {
-                        color: #374151 !important;
-                        background-color: white !important;
-                    }
-                    .talent-pool-page .react-select__control {
-                        background-color: white !important;
-                        border-color: #d1d5db !important;
-                        box-shadow: none !important;
-                    }
-                    .talent-pool-page .react-select__control:hover {
-                        border-color: #3b82f6 !important;
-                    }
-                    .talent-pool-page .react-select__control--is-focused {
-                        border-color: #3b82f6 !important;
-                        box-shadow: 0 0 0 1px #3b82f6 !important;
-                    }
-                    .talent-pool-page .react-select__menu {
-                        background-color: white !important;
-                        border: 1px solid #d1d5db !important;
-                    }
-                    .talent-pool-page .react-select__option {
-                        background-color: white !important;
-                        color: #374151 !important;
-                    }
-                    .talent-pool-page .react-select__option--is-focused {
-                        background-color: #f3f4f6 !important;
-                    }
-                    .talent-pool-page .react-select__option--is-selected {
-                        background-color: #3b82f6 !important;
-                        color: white !important;
-                    }
-                    .talent-pool-page .react-select__multi-value {
-                        background-color: #dbeafe !important;
-                    }
-                    .talent-pool-page .react-select__multi-value__label {
-                        color: #1e40af !important;
-                    }
-                    .talent-pool-page .react-select__multi-value__remove {
-                        color: #1e40af !important;
-                    }
-                    .talent-pool-page .react-select__placeholder {
-                        color: #9ca3af !important;
-                    }
-                    .talent-pool-page .react-select__single-value {
-                        color: #374151 !important;
-                    }
-                    .talent-pool-page .react-select__input {
-                        color: #374151 !important;
-                    }
-                    .talent-pool-page .react-select__indicator-separator {
-                        background-color: #d1d5db !important;
-                    }
-                    .talent-pool-page .react-select__dropdown-indicator {
-                        color: #6b7280 !important;
-                    }
-                    .talent-pool-page .react-select__clear-indicator {
-                        color: #6b7280 !important;
-                    }
-                `}
-            </style>
-            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 talent-pool-page" style={{ colorScheme: 'light' }}>
-                <div className="max-w-3xl mx-auto">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="flex items-center justify-center mb-4">
-                            <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-4" />
-                        </div>
-                        <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Talent Pool</h1>
-                        <p className="text-xl font-semibold text-gray-700 mb-4">
-                            "Not hiring today? You could still be the perfect fit tomorrow."
-                        </p>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            At Qtec Solution, we're always on the lookout for passionate and skilled individuals.
-                            Even if there's no open role that matches you right now, you can share your details with us.
-                            We'll keep your profile in our Talent Pool and reach out when an opportunity that fits your skills comes up.
-                        </p>
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 talent-pool-page candidate-page" style={{ colorScheme: 'light' }}>
+            <div className="max-w-3xl mx-auto">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div className="flex items-center justify-center mb-4">
+                        <img src={qtecLogo} alt="QTEC Logo" className="h-12 w-12 mr-4" />
                     </div>
+                    <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Talent Pool</h1>
+                    <p className="text-xl font-semibold text-gray-700 mb-4">
+                        "Not hiring today? You could still be the perfect fit tomorrow."
+                    </p>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        At Qtec Solution, we're always on the lookout for passionate and skilled individuals.
+                        Even if there's no open role that matches you right now, you can share your details with us.
+                        We'll keep your profile in our Talent Pool and reach out when an opportunity that fits your skills comes up.
+                    </p>
+                </div>
 
-                    {/* Application Form */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Talent Pool Registration</h3>
+                {/* Application Form */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Talent Pool Registration</h3>
 
-                        <form id="talent-pool-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <UserIcon className="h-4 w-4 inline mr-1" />
-                                        Full Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.name ? 'border-red-500' : ''}`}
-                                        placeholder="Enter your full name"
-                                        {...register('name', {
-                                            required: 'Full name is required',
-                                            minLength: { value: 2, message: 'Name must be at least 2 characters' }
-                                        })}
-                                    />
-                                    {errors.name && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <EnvelopeIcon className="h-4 w-4 inline mr-1" />
-                                        Email Address
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.email ? 'border-red-500' : ''}`}
-                                        placeholder="Enter your email address"
-                                        {...register('email', {
-                                            required: 'Email is required',
-                                            pattern: {
-                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                message: 'Invalid email address'
-                                            }
-                                        })}
-                                    />
-                                    {errors.email && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                                    )}
-                                </div>
+                    <form id="talent-pool-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <UserIcon className="h-4 w-4 inline mr-1" />
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    className={`input border-gray-300 placeholder-gray-500 ${errors.name ? 'border-red-500' : ''}`}
+                                    placeholder="Enter your full name"
+                                    {...register('name', {
+                                        required: 'Full name is required',
+                                        minLength: { value: 2, message: 'Name must be at least 2 characters' }
+                                    })}
+                                />
+                                {errors.name && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                                )}
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <PhoneIcon className="h-4 w-4 inline mr-1" />
-                                    Phone Number
+                                    <EnvelopeIcon className="h-4 w-4 inline mr-1" />
+                                    Email Address
                                 </label>
                                 <input
-                                    type="tel"
-                                    className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.phone ? 'border-red-500' : ''}`}
-                                    placeholder="01XXXXXXXXX (11 digits starting with 01)"
-                                    {...register('phone', {
-                                        required: 'Phone number is required',
+                                    type="email"
+                                    className={`input border-gray-300 placeholder-gray-500 ${errors.email ? 'border-red-500' : ''}`}
+                                    placeholder="Enter your email address"
+                                    {...register('email', {
+                                        required: 'Email is required',
                                         pattern: {
-                                            value: /^01\d{9}$/,
-                                            message: 'Phone number must be 11 digits starting with 01'
-                                        },
-                                        minLength: {
-                                            value: 11,
-                                            message: 'Phone number must be exactly 11 digits'
-                                        },
-                                        maxLength: {
-                                            value: 11,
-                                            message: 'Phone number must be exactly 11 digits'
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: 'Invalid email address'
                                         }
                                     })}
                                 />
-                                {errors.phone && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                                {errors.email && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
                                 )}
                             </div>
+                        </div>
 
-                            <div className='grid-cols-1'>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <PhoneIcon className="h-4 w-4 inline mr-1" />
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                className={`input border-gray-300 placeholder-gray-500 ${errors.phone ? 'border-red-500' : ''}`}
+                                placeholder="01XXXXXXXXX (11 digits starting with 01)"
+                                {...register('phone', {
+                                    required: 'Phone number is required',
+                                    pattern: {
+                                        value: /^01\d{9}$/,
+                                        message: 'Phone number must be 11 digits starting with 01'
+                                    },
+                                    minLength: {
+                                        value: 11,
+                                        message: 'Phone number must be exactly 11 digits'
+                                    },
+                                    maxLength: {
+                                        value: 11,
+                                        message: 'Phone number must be exactly 11 digits'
+                                    }
+                                })}
+                            />
+                            {errors.phone && (
+                                <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     <BriefcaseIcon className="h-4 w-4 inline mr-1" />
                                     Years of Experience *
@@ -435,7 +269,7 @@ const TalentPool = () => {
                                     type="number"
                                     step="0.1"
                                     min="0"
-                                    className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.years_of_experience ? 'border-red-500' : ''}`}
+                                    className={`input border-gray-300 placeholder-gray-500 ${errors.years_of_experience ? 'border-red-500' : ''}`}
                                     placeholder="e.g. 1.5 years"
                                     {...register('years_of_experience', {
                                         required: 'Years of experience is required',
@@ -458,7 +292,7 @@ const TalentPool = () => {
                                 <input
                                     type="number"
                                     min="0"
-                                    className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.expected_salary ? 'border-red-500' : ''}`}
+                                    className={`input border-gray-300 placeholder-gray-500 ${errors.expected_salary ? 'border-red-500' : ''}`}
                                     placeholder="e.g., 50000"
                                     {...register('expected_salary', {
                                         required: 'Expected salary is required',
@@ -481,7 +315,7 @@ const TalentPool = () => {
                                 <input
                                     type="number"
                                     min="0"
-                                    className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${errors.notice_period_in_months ? 'border-red-500' : ''}`}
+                                    className={`input border-gray-300 placeholder-gray-500 ${errors.notice_period_in_months ? 'border-red-500' : ''}`}
                                     placeholder="e.g., 1"
                                     {...register('notice_period_in_months', {
                                         required: 'Notice period is required',
@@ -495,138 +329,127 @@ const TalentPool = () => {
                                     <p className="mt-1 text-sm text-red-600">{errors.notice_period_in_months.message}</p>
                                 )}
                             </div>
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <BuildingOfficeIcon className="h-4 w-4 inline mr-1" />
-                                    Currently Employed *
-                                </label>
-                                <select
-                                    className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white ${errors.current_employment_status ? 'border-red-500' : ''}`}
-                                    {...register('current_employment_status', {
-                                        required: 'Please select your employment status'
-                                    })}
-                                >
-                                    <option value="">Select employment status</option>
-                                    <option value="true">Yes, I am currently employed</option>
-                                    <option value="false">No, I am not currently employed</option>
-                                </select>
-                                {errors.current_employment_status && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.current_employment_status.message}</p>
-                                )}
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <BuildingOfficeIcon className="h-4 w-4 inline mr-1" />
+                                Currently Employed *
+                            </label>
+                            <select
+                                className={`input border-gray-300 placeholder-gray-500 ${errors.current_employment_status ? 'border-red-500' : ''}`}
+                                {...register('current_employment_status', {
+                                    required: 'Please select your employment status'
+                                })}
+                            >
+                                <option value="">Select employment status</option>
+                                <option value="true">Yes, I am currently employed</option>
+                                <option value="false">No, I am not currently employed</option>
+                            </select>
+                            {errors.current_employment_status && (
+                                <p className="mt-1 text-sm text-red-600">{errors.current_employment_status.message}</p>
+                            )}
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <BuildingOfficeIcon className="h-4 w-4 inline mr-1" />
-                                    Current Company Name (Optional)
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Enter your current company name"
-                                    {...register('current_company_name')}
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <BuildingOfficeIcon className="h-4 w-4 inline mr-1" />
+                                Current Company Name (Optional)
+                            </label>
+                            <input
+                                type="text"
+                                className="input border-gray-300 placeholder-gray-500"
+                                placeholder="Enter your current company name"
+                                {...register('current_company_name')}
+                            />
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <AcademicCapIcon className="h-4 w-4 inline mr-1" />
-                                    Core Experience *
-                                </label>
-                                <div
-                                    className="light-mode-select-wrapper"
-                                    style={{
-                                        backgroundColor: 'white',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '0.375rem',
-                                        padding: '0'
-                                    }}
-                                >
-                                    <Select
-                                        isMulti
-                                        onChange={(selectedOptions) => {
-                                            const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                                            setSelectedExperiences(selectedIds);
-                                        }}
-                                        options={experiences.map(exp => ({
-                                            value: exp._id,
-                                            label: exp.name
-                                        }))}
-                                        components={animatedComponents}
-                                        placeholder="Select your core experiences..."
-                                        className="w-full"
-                                        classNamePrefix="react-select"
-                                        isClearable
-                                        isSearchable
-                                        closeMenuOnSelect={false}
-                                        noOptionsMessage={() => "No experiences available"}
-                                        styles={selectStyles}
-                                    />
-                                </div>
-                                {selectedExperiences.length > 0 && (
-                                    <p className="mt-2 text-sm text-gray-600">
-                                        Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}
-                                    </p>
-                                )}
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Select your key technical skills and areas of expertise
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <AcademicCapIcon className="h-4 w-4 inline mr-1" />
+                                Core Experience *
+                            </label>
+                            <Select
+                                isMulti
+                                onChange={(selectedOptions) => {
+                                    const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                    setSelectedExperiences(selectedIds);
+                                }}
+                                options={experiences.map(exp => ({
+                                    value: exp._id,
+                                    label: exp.name
+                                }))}
+                                components={animatedComponents}
+                                placeholder="Select your core experiences..."
+                                className="w-full"
+                                classNamePrefix="react-select"
+                                isClearable
+                                isSearchable
+                                closeMenuOnSelect={false}
+                                noOptionsMessage={() => "No experiences available"}
+                            />
+                            {selectedExperiences.length > 0 && (
+                                <p className="mt-2 text-sm text-gray-600">
+                                    Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}
                                 </p>
-                            </div>
+                            )}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Select your key technical skills and areas of expertise
+                            </p>
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <DocumentIcon className="h-4 w-4 inline mr-1" />
-                                    CV/Resume (PDF, DOC, DOCX)
-                                </label>
-                                <input
-                                    type="file"
-                                    accept=".pdf,.doc,.docx"
-                                    onChange={handleCVChange}
-                                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                                    required
-                                />
-                                {selectedCV && (
-                                    <p className="mt-2 text-sm text-gray-600">
-                                        Selected file: {selectedCV.name}
-                                    </p>
-                                )}
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <DocumentIcon className="h-4 w-4 inline mr-1" />
+                                CV/Resume (PDF, DOC, DOCX)
+                            </label>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={handleCVChange}
+                                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                required
+                            />
+                            {selectedCV && (
+                                <p className="mt-2 text-sm text-gray-600">
+                                    Selected file: {selectedCV.name}
                                 </p>
-                            </div>
+                            )}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX
+                            </p>
+                        </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h4 className="text-sm font-medium text-blue-900 mb-2">What happens next?</h4>
-                                <ul className="text-sm text-blue-800 space-y-1">
-                                    <li>• You'll receive a confirmation email with your Talent Pool ID</li>
-                                    <li>• We'll keep your profile in our database for future opportunities</li>
-                                    <li>• When a suitable position opens up, we'll reach out to you</li>
-                                    <li>• You can update your profile anytime through your talent portal</li>
-                                </ul>
-                            </div>
+                        <div className="bg-primary-50 border border-primary-500 rounded-lg p-4">
+                            <h4 className="text-sm font-medium text-primary-700 mb-2">What happens next?</h4>
+                            <ul className="text-sm text-primary-600 space-y-1">
+                                <li>• You'll receive a confirmation email with your Talent Pool ID</li>
+                                <li>• We'll keep your profile in our database for future opportunities</li>
+                                <li>• When a suitable position opens up, we'll reach out to you</li>
+                                <li>• You can update your profile anytime through your talent portal</li>
+                            </ul>
+                        </div>
 
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-base font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {submitting ? (
-                                        <div className="flex items-center">
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            Submitting...
-                                        </div>
-                                    ) : (
-                                        'Submit Profile'
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="btn btn-primary px-8 py-3 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-primary-500 disabled:border"
+                            >
+                                {submitting ? (
+                                    <div className="flex items-center">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-400 mr-2"></div>
+                                        Submitting...
+                                    </div>
+                                ) : (
+                                    'Submit Profile'
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

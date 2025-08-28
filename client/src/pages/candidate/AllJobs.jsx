@@ -37,14 +37,14 @@ const AllJobs = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 !bg-gray-50 candidate-page">
                 <Loader size="md" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 all-jobs-page candidate-page" style={{ colorScheme: 'light' }}>
             <div className="max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">

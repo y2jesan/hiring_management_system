@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'public')));
 
-// API Routes
+// API Routes (must come before static file serving)
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/candidates', require('./routes/candidates'));
@@ -36,14 +36,13 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/experiences', require('./routes/experiences'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
-// Serve React app in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+// Serve React app statically from client/dist
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-  });
-}
+// Serve React app for all routes (SPA fallback)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

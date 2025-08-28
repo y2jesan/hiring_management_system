@@ -12,11 +12,15 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import qtecLogo from '../../assets/qtec_icon.svg';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { experienceService } from '../../services/experienceService';
 import { jobService } from '../../services/jobService';
+
+const animatedComponents = makeAnimated();
 
 const JobApplication = () => {
     const { jobId } = useParams();
@@ -184,7 +188,7 @@ const JobApplication = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 job-application-page">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -412,6 +416,40 @@ const JobApplication = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
+                                <AcademicCapIcon className="h-4 w-4 inline mr-1" />
+                                Core Experience *
+                            </label>
+                             <Select
+                                 isMulti
+                                 onChange={(selectedOptions) => {
+                                     const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                     setSelectedExperiences(selectedIds);
+                                 }}
+                                 options={experiences.map(exp => ({
+                                     value: exp._id,
+                                     label: exp.name
+                                 }))}
+                                 components={animatedComponents}
+                                 placeholder="Select your core experiences..."
+                                 className="w-full"
+                                 classNamePrefix="react-select"
+                                 isClearable
+                                 isSearchable
+                                 closeMenuOnSelect={false}
+                                 noOptionsMessage={() => "No experiences available"}
+                             />
+                            {selectedExperiences.length > 0 && (
+                                <p className="mt-2 text-sm text-gray-600">
+                                    Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}
+                                </p>
+                            )}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Select your key technical skills and areas of expertise
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
                                 <DocumentIcon className="h-4 w-4 inline mr-1" />
                                 CV/Resume (PDF, DOC, DOCX)
                             </label>
@@ -429,44 +467,6 @@ const JobApplication = () => {
                             )}
                             <p className="mt-1 text-sm text-gray-500 !text-gray-500">
                                 Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX
-                            </p>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 !text-gray-700 mb-2">
-                                <AcademicCapIcon className="h-4 w-4 inline mr-1" />
-                                Core Experience *
-                            </label>
-                            <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md p-3">
-                                {experiences.length > 0 ? (
-                                    experiences.map((experience) => (
-                                        <label key={experience._id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedExperiences.includes(experience._id)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedExperiences([...selectedExperiences, experience._id]);
-                                                    } else {
-                                                        setSelectedExperiences(selectedExperiences.filter(id => id !== experience._id));
-                                                    }
-                                                }}
-                                                className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
-                                            />
-                                            <span className="text-sm text-gray-700 !text-gray-700">{experience.name}</span>
-                                        </label>
-                                    ))
-                                ) : (
-                                    <p className="text-sm text-gray-500 !text-gray-500">No experiences available</p>
-                                )}
-                            </div>
-                            {selectedExperiences.length > 0 && (
-                                <p className="mt-2 text-sm text-gray-600 !text-gray-600">
-                                    Selected: {selectedExperiences.length} experience{selectedExperiences.length !== 1 ? 's' : ''}
-                                </p>
-                            )}
-                            <p className="mt-1 text-sm text-gray-500 !text-gray-500">
-                                Select your key technical skills and areas of expertise
                             </p>
                         </div>
 

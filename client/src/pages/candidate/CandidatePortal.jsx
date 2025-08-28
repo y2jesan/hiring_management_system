@@ -282,9 +282,9 @@ const CandidatePortal = () => {
                   <span className="text-sm font-medium text-gray-500 !text-gray-500">Core Experience:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {candidate.core_experience && candidate.core_experience.length > 0 ? (
-                      candidate.core_experience.map((exp, index) => (
-                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 !bg-blue-100 text-blue-800 !text-blue-800">
-                          {exp}
+                      candidate.core_experience.map((exp) => (
+                        <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-500 text-primary">
+                          {exp.name}
                         </span>
                       ))
                     ) : (

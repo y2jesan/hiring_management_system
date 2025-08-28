@@ -57,7 +57,7 @@ const applyForJob = async (req, res) => {
     const taskLink = job.task_link || `${process.env.FRONTEND_URL}/task-instructions`;
     const submissionLink = `${process.env.FRONTEND_URL}/application/${applicationId}`;
 
-    await sendApplicationConfirmation(candidate.email, candidate.name, candidate.application_id, taskLink, submissionLink);
+    // await sendApplicationConfirmation(candidate.email, candidate.name, candidate.application_id, taskLink, submissionLink);
 
     res.status(201).json(
       createSuccessResponse(

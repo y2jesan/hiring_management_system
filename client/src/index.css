@@ -53,4 +53,325 @@
   .card {
     @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
   }
-}
+  
+  /* React Select Custom Styles */
+   .react-select__control {
+   @apply border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 min-h-[42px] !important;
+   border: 1px solid #d1d5db !important;
+   box-shadow: none !important;
+   min-height: 40px !important;
+   height: 40px !important;
+   border-radius: 0.5rem !important;
+ }
+  
+  .dark .react-select__control {
+    border: 1px solid #4b5563 !important;
+    background-color: #374151 !important;
+  }
+  
+   .react-select__control--is-focused {
+   @apply ring-2 ring-primary-400 ring-offset-2 border-transparent !important;
+   border-color: #3b82f6 !important;
+   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+   border-color: #3b82f6 !important;
+   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+ }
+  
+  .react-select__control:hover {
+    border-color: #9ca3af !important;
+  }
+  
+  .dark .react-select__control:hover {
+    border-color: #6b7280 !important;
+  }
+  
+   .react-select__value-container {
+   @apply py-1 px-3;
+   padding: 8px 12px !important;
+   min-height: 36px !important;
+   height: 36px !important;
+   display: flex !important;
+   align-items: center !important;
+ }
+  
+  .react-select__placeholder {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+  
+   .react-select__input-container {
+   @apply text-gray-900 dark:text-white;
+   margin: 0 !important;
+   padding: 0 !important;
+ }
+  
+   .react-select__multi-value {
+   @apply bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-700 rounded-md mr-1 mb-1;
+   margin: 2px !important;
+   background-color: #eff9d8 !important;
+   border: 1px solid #ddf2b8 !important;
+   color: #5a7f32 !important;
+ }
+ 
+ .dark .react-select__multi-value {
+   background-color: #4a672a !important;
+   border: 1px solid #6fa03d !important;
+   color: #eff9d8 !important;
+ }
+ 
+ .react-select__multi-value__label {
+   @apply text-primary-700 dark:text-primary-300;
+   color: #5a7f32 !important;
+ }
+ 
+ .dark .react-select__multi-value__label {
+   color: #eff9d8 !important;
+ }
+ 
+ .react-select__multi-value__remove {
+   @apply text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200;
+   color: #8bc550 !important;
+ }
+ 
+ .dark .react-select__multi-value__remove {
+   color: #a5d870 !important;
+ }
+ 
+ .react-select__multi-value__remove:hover {
+   color: #4a672a !important;
+ }
+ 
+ .dark .react-select__multi-value__remove:hover {
+   color: #eff9d8 !important;
+ }
+  
+  .react-select__indicator-separator {
+    @apply bg-gray-300 dark:bg-gray-600;
+  }
+  
+   .react-select__indicator {
+   @apply text-gray-400;
+   color: #9ca3af !important;
+ }
+ 
+ .dark .react-select__indicator {
+   color: #6b7280 !important;
+ }
+  
+  .react-select__menu {
+    @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg rounded-lg mt-1;
+  }
+  
+  .react-select__option {
+    @apply text-gray-700 dark:text-gray-300 py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+  
+  .react-select__option--is-focused {
+    @apply bg-gray-50 dark:bg-gray-700;
+  }
+  
+   .react-select__option--is-selected {
+   @apply bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300;
+   background-color: #eff9d8 !important;
+   color: #5a7f32 !important;
+ }
+ 
+ .dark .react-select__option--is-selected {
+   background-color: #4a672a !important;
+   color: #eff9d8 !important;
+ }
+  
+  .react-select__menu-notice {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+  
+  /* JobApplication page specific styles - light mode only */
+     .job-application-page .react-select__control {
+     border: 1px solid #d1d5db !important;
+     background-color: #ffffff !important;
+     height: 40px !important;
+     border-radius: 0.5rem !important;
+   }
+  
+  .job-application-page .react-select__control--is-focused {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+  }
+  
+  .job-application-page .react-select__control:hover {
+    border-color: #9ca3af !important;
+  }
+  
+  .job-application-page .react-select__placeholder {
+    color: #6b7280 !important;
+  }
+  
+  .job-application-page .react-select__input-container {
+    color: #374151 !important;
+  }
+  
+  .job-application-page .react-select__menu {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+  }
+  
+  .job-application-page .react-select__option {
+    color: #374151 !important;
+  }
+  
+  .job-application-page .react-select__option:hover {
+    background-color: #f9fafb !important;
+  }
+  
+  .job-application-page .react-select__option--is-focused {
+    background-color: #f9fafb !important;
+  }
+  
+     .job-application-page .react-select__option--is-selected {
+     background-color: #eff9d8 !important;
+     color: #5a7f32 !important;
+   }
+   
+   .job-application-page .react-select__multi-value {
+     background-color: #eff9d8 !important;
+     border: 1px solid #ddf2b8 !important;
+   }
+   
+   .job-application-page .react-select__multi-value__label {
+     color: #5a7f32 !important;
+   }
+   
+   .job-application-page .react-select__multi-value__remove {
+     color: #8bc550 !important;
+   }
+   
+      .job-application-page .react-select__multi-value__remove:hover {
+      color: #4a672a !important;
+    }
+ }
+
+ /* Admin pages specific styles - support both light and dark modes */
+ .admin-page .react-select__control {
+   border: 1px solid #d1d5db !important;
+   background-color: #ffffff !important;
+   height: 40px !important;
+   border-radius: 0.5rem !important;
+ }
+
+ .dark .admin-page .react-select__control {
+   border: 1px solid #4b5563 !important;
+   background-color: #374151 !important;
+   height: 40px !important;
+   border-radius: 0.5rem !important;
+ }
+
+ .admin-page .react-select__control--is-focused {
+   border-color: #3b82f6 !important;
+   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+ }
+
+ .dark .admin-page .react-select__control--is-focused {
+   border-color: #3b82f6 !important;
+   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+ }
+
+ .admin-page .react-select__control:hover {
+   border-color: #9ca3af !important;
+ }
+
+ .dark .admin-page .react-select__control:hover {
+   border-color: #6b7280 !important;
+ }
+
+ .admin-page .react-select__placeholder {
+   color: #6b7280 !important;
+ }
+
+ .dark .admin-page .react-select__placeholder {
+   color: #9ca3af !important;
+ }
+
+ .admin-page .react-select__input-container {
+   color: #374151 !important;
+ }
+
+ .dark .admin-page .react-select__input-container {
+   color: #f9fafb !important;
+ }
+
+ .admin-page .react-select__menu {
+   background-color: #ffffff !important;
+   border: 1px solid #d1d5db !important;
+ }
+
+ .dark .admin-page .react-select__menu {
+   background-color: #1f2937 !important;
+   border: 1px solid #4b5563 !important;
+ }
+
+ .admin-page .react-select__option {
+   color: #374151 !important;
+ }
+
+ .dark .admin-page .react-select__option {
+   color: #f9fafb !important;
+ }
+
+ .admin-page .react-select__option:hover {
+   background-color: #f9fafb !important;
+ }
+
+ .dark .admin-page .react-select__option:hover {
+   background-color: #374151 !important;
+ }
+
+ .admin-page .react-select__option--is-focused {
+   background-color: #f9fafb !important;
+ }
+
+ .dark .admin-page .react-select__option--is-focused {
+   background-color: #374151 !important;
+ }
+
+ .admin-page .react-select__option--is-selected {
+   background-color: #eff9d8 !important;
+   color: #5a7f32 !important;
+ }
+
+ .dark .admin-page .react-select__option--is-selected {
+   background-color: #4a672a !important;
+   color: #eff9d8 !important;
+ }
+
+ .admin-page .react-select__multi-value {
+   background-color: #eff9d8 !important;
+   border: 1px solid #ddf2b8 !important;
+ }
+
+ .dark .admin-page .react-select__multi-value {
+   background-color: #4a672a !important;
+   border: 1px solid #6fa03d !important;
+ }
+
+ .admin-page .react-select__multi-value__label {
+   color: #5a7f32 !important;
+ }
+
+ .dark .admin-page .react-select__multi-value__label {
+   color: #eff9d8 !important;
+ }
+
+ .admin-page .react-select__multi-value__remove {
+   color: #8bc550 !important;
+ }
+
+ .dark .admin-page .react-select__multi-value__remove {
+   color: #a5d870 !important;
+ }
+
+ .admin-page .react-select__multi-value__remove:hover {
+   color: #4a672a !important;
+ }
+
+ .dark .admin-page .react-select__multi-value__remove:hover {
+   color: #eff9d8 !important;
+ }

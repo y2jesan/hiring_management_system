@@ -8,11 +8,15 @@ import {
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useSearchParams } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import Loader from '../../components/Loader';
 import { candidateService } from '../../services/candidateService';
 import { experienceService } from '../../services/experienceService';
 import { jobService } from '../../services/jobService';
 import { userService } from '../../services/userService';
+
+const animatedComponents = makeAnimated();
 
 const Candidates = () => {
   const [searchParams] = useSearchParams();
@@ -234,7 +238,7 @@ const Candidates = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 admin-page">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -292,8 +296,8 @@ const Candidates = () => {
 
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
+              <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
                   </label>
@@ -316,7 +320,7 @@ const Candidates = () => {
                   </select>
                 </div>
 
-                <div>
+                <div className="col-span-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Job (Active only)
                   </label>
@@ -334,7 +338,36 @@ const Candidates = () => {
                   </select>
                 </div>
 
-                <div>
+                <div className="col-span-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Core Experience
+                  </label>
+                  <Select
+                    isMulti
+                    value={experiences.filter(exp => experienceFilterIds.includes(exp._id)).map(exp => ({
+                        value: exp._id,
+                        label: exp.name
+                    }))}
+                    onChange={(selectedOptions) => {
+                        const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                        setExperienceFilterIds(selectedIds);
+                    }}
+                    options={experiences.map(exp => ({
+                        value: exp._id,
+                        label: exp.name
+                    }))}
+                    components={animatedComponents}
+                    placeholder="Filter by experiences..."
+                    className="w-full"
+                    classNamePrefix="react-select"
+                    isClearable
+                    isSearchable
+                    closeMenuOnSelect={false}
+                    noOptionsMessage={() => "No experiences available"}
+                  />
+                </div>
+
+                <div className="col-span-3">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Apply Date
                   </label>
@@ -346,7 +379,7 @@ const Candidates = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Submit Date
                   </label>
@@ -358,32 +391,7 @@ const Candidates = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Core Experience
-                  </label>
-                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-2">
-                    {experiences.map((experience) => (
-                      <label key={experience._id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                        <input
-                          type="checkbox"
-                          checked={experienceFilterIds.includes(experience._id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setExperienceFilterIds([...experienceFilterIds, experience._id]);
-                            } else {
-                              setExperienceFilterIds(experienceFilterIds.filter(id => id !== experience._id));
-                            }
-                          }}
-                          className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{experience.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Min Years of Experience
                   </label>
@@ -398,7 +406,7 @@ const Candidates = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Min Expected Salary (BDT)
                   </label>
@@ -900,31 +908,29 @@ const Candidates = () => {
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Core Experience
                           </label>
-                          <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-2">
-                            {experiences.map((experience) => (
-                              <label key={experience._id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <input
-                                  type="checkbox"
-                                  checked={editFormData.core_experience.includes(experience._id)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setEditFormData({
-                                        ...editFormData,
-                                        core_experience: [...editFormData.core_experience, experience._id]
-                                      });
-                                    } else {
-                                      setEditFormData({
-                                        ...editFormData,
-                                        core_experience: editFormData.core_experience.filter(id => id !== experience._id)
-                                      });
-                                    }
-                                  }}
-                                  className="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
-                                />
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{experience.name}</span>
-                              </label>
-                            ))}
-                          </div>
+                          <Select
+                            isMulti
+                            value={experiences.filter(exp => editFormData.core_experience.includes(exp._id)).map(exp => ({
+                                value: exp._id,
+                                label: exp.name
+                            }))}
+                            onChange={(selectedOptions) => {
+                                const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                setEditFormData({ ...editFormData, core_experience: selectedIds });
+                            }}
+                            options={experiences.map(exp => ({
+                                value: exp._id,
+                                label: exp.name
+                            }))}
+                            components={animatedComponents}
+                            placeholder="Select core experiences..."
+                            className="w-full"
+                            classNamePrefix="react-select"
+                            isClearable
+                            isSearchable
+                            closeMenuOnSelect={false}
+                            noOptionsMessage={() => "No experiences available"}
+                          />
                         </div>
                       </div>
                     </div>
@@ -950,7 +956,11 @@ const Candidates = () => {
                         phone: '',
                         status: '',
                         reference: '',
-                        job_id: ''
+                        job_id: '',
+                        years_of_experience: '',
+                        expected_salary: '',
+                        notice_period_in_months: '',
+                        core_experience: []
                       });
                     }}
                     className="btn btn-secondary sm:mt-0 sm:w-auto"

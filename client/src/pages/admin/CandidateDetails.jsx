@@ -95,9 +95,9 @@ const CandidateDetails = () => {
                   <p className="text-gray-500 dark:text-gray-400">Core Experience</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {candidate.core_experience && candidate.core_experience.length > 0 ? (
-                      candidate.core_experience.map((exp, index) => (
-                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                          {exp}
+                      candidate.core_experience.map((exp) => (
+                        <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                          {exp.name}
                         </span>
                       ))
                     ) : (

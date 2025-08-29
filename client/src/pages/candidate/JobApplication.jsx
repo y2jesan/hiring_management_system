@@ -473,8 +473,8 @@ const JobApplication = () => {
                         </div>
 
                         <div className="bg-primary-50 !bg-primary-50 border border-primary-500 !border-primary-500 rounded-lg p-4">
-                            <h4 className="text-sm font-medium text-primary-700 !text-primary-700 mb-2">What happens next?</h4>
-                            <ul className="text-sm text-primary-600 !text-primary-600 space-y-1">
+                            <h4 className="text-sm font-medium text-gray-600 mb-2">What happens next?</h4>
+                            <ul className="text-sm text-gray-600 space-y-1">
                                 <li>• You'll receive a confirmation email with your Application ID</li>
                                 <li>• We'll review your application and send you a task assignment</li>
                                 <li>• Complete the task and submit it through your candidate portal</li>

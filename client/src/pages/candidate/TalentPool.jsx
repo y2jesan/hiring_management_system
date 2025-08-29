@@ -421,8 +421,8 @@ const TalentPool = () => {
                         </div>
 
                         <div className="bg-primary-50 border border-primary-500 rounded-lg p-4">
-                            <h4 className="text-sm font-medium text-primary-700 mb-2">What happens next?</h4>
-                            <ul className="text-sm text-primary-600 space-y-1">
+                            <h4 className="text-sm font-medium text-gray-600 mb-2">What happens next?</h4>
+                            <ul className="text-sm text-gray-600 space-y-1">
                                 <li>• You'll receive a confirmation email with your Talent Pool ID</li>
                                 <li>• We'll keep your profile in our database for future opportunities</li>
                                 <li>• When a suitable position opens up, we'll reach out to you</li>

@@ -36,7 +36,6 @@ const TalentPortal = () => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
         setValue
     } = useForm();
 
@@ -51,7 +50,7 @@ const TalentPortal = () => {
             const response = await talentService.getTalentByTalentPoolId(talent_id);
             const talentData = response.data?.talent || response.data;
             setTalent(talentData);
-            
+
             // Set form values
             if (talentData) {
                 setValue('name', talentData.name);
@@ -62,7 +61,7 @@ const TalentPortal = () => {
                 setValue('notice_period_in_months', talentData.notice_period_in_months);
                 setValue('current_employment_status', talentData.current_employment_status.toString());
                 setValue('current_company_name', talentData.current_company_name || '');
-                
+
                 // Set selected experiences
                 if (talentData.core_experience) {
                     setSelectedExperiences(talentData.core_experience.map(exp => exp._id));
@@ -532,7 +531,7 @@ const TalentPortal = () => {
                                 <div className="flex flex-wrap gap-2 mt-1">
                                     {talent.core_experience && talent.core_experience.length > 0 ? (
                                         talent.core_experience.map((exp) => (
-                                            <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium !bg-primary-500 !text-white">
                                                 {exp.name}
                                             </span>
                                         ))
@@ -544,11 +543,11 @@ const TalentPortal = () => {
                             {talent.cv_file_path && (
                                 <div className="md:col-span-2">
                                     <p className="text-gray-500">CV</p>
-                                    <a 
-                                        href={talent.cv_file_path} 
-                                        target="_blank" 
+                                    <a
+                                        href={talent.cv_file_path}
+                                        target="_blank"
                                         rel="noreferrer"
-                                        className="text-primary-600 hover:underline font-medium"
+                                        className="!text-primary-600 hover:!text-primary-700 underline font-medium"
                                     >
                                         View Current CV
                                     </a>
@@ -564,11 +563,10 @@ const TalentPortal = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                         <div>
                             <p className="text-gray-500">Profile Status</p>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                talent.is_active 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-red-100 text-red-800'
-                            }`}>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${talent.is_active
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                                }`}>
                                 {talent.is_active ? 'Active' : 'Inactive'}
                             </span>
                         </div>

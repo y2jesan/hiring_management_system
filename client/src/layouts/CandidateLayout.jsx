@@ -1,7 +1,10 @@
-import { Link, Outlet } from 'react-router-dom';
+import { BookOpenIcon, BriefcaseIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import qtecLogo from '../assets/qtec_icon.svg';
 
 const CandidateLayout = () => {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Header */}
@@ -13,25 +16,37 @@ const CandidateLayout = () => {
                 <img src={qtecLogo} alt="QTEC Logo" className="h-8 w-8 mr-3" />
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               <Link
                 to="/jobs"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${location.pathname === '/jobs'
+                  ? 'text-primary-800'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
-                All Jobs
+                <BriefcaseIcon className="h-5 w-5" />
+                <span className="hidden ml-2 sm:inline">All Jobs</span>
               </Link>
 
               <Link
                 to="/talent-pool"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${location.pathname === '/talent-pool'
+                  ? 'text-primary-800'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
-                Talent Pool
+                <BookOpenIcon className="h-5 w-5" />
+                <span className="hidden ml-2 sm:inline">Talent Pool</span>
               </Link>
               <Link
                 to="/track"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${location.pathname === '/track'
+                  ? 'text-primary-800'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
-                Track
+                <MagnifyingGlassIcon className="h-5 w-5" />
+                <span className="hidden ml-2 sm:inline">Track</span>
               </Link>
             </div>
           </div>

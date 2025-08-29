@@ -193,7 +193,7 @@
   }
 
   .job-application-page .react-select__control--is-focused {
-    border-color: #3b82f6 !important;
+    border-color: #8bc550 !important;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
   }
 
@@ -265,12 +265,12 @@
 }
 
 .admin-page .react-select__control--is-focused {
-  border-color: #3b82f6 !important;
+  border-color: #8bc550 !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
 }
 
 .dark .admin-page .react-select__control--is-focused {
-  border-color: #3b82f6 !important;
+  border-color: #8bc550 !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
 }
 
@@ -409,7 +409,7 @@
   color: #111827 !important;
 }
 
-.candidate-page *,
+/* .candidate-page *,
 .talent-pool-page *,
 .job-application-page *,
 .all-jobs-page *,
@@ -418,7 +418,7 @@
 .track-page * {
   background-color: inherit !important;
   color: inherit !important;
-}
+} */
 
 /* Override specific elements to ensure light mode */
 .candidate-page .bg-white,
@@ -518,7 +518,7 @@
 }
 
 .talent-pool-page .react-select__control--is-focused {
-  border-color: #3b82f6 !important;
+  border-color: #8bc550 !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
 }
 
@@ -600,7 +600,7 @@
 }
 
 .talent-portal-page .react-select__control--is-focused {
-  border-color: #3b82f6 !important;
+  border-color: #a5d870 !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
 }
 

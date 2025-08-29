@@ -283,7 +283,7 @@ const CandidatePortal = () => {
                   <div className="flex flex-wrap gap-2 mt-1">
                     {candidate.core_experience && candidate.core_experience.length > 0 ? (
                       candidate.core_experience.map((exp) => (
-                        <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-500 text-primary">
+                        <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium !bg-primary-500 !text-white">
                           {exp.name}
                         </span>
                       ))
@@ -348,7 +348,7 @@ const CandidatePortal = () => {
                   href={candidate.job_id.task_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-primary-600 !text-primary-600 hover:text-primary-700 !hover:text-primary-700 font-medium"
+                  className="inline-flex items-center !text-primary-600 hover:!text-primary-700 font-medium"
                 >
                   <LinkIcon className="h-4 w-4 mr-1" />
                   View Task Details
@@ -377,7 +377,7 @@ const CandidatePortal = () => {
                     href={candidate.job_id.task_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-primary-600 !text-primary-600 hover:text-primary-700 !hover:text-primary-700 font-medium"
+                    className="inline-flex items-center !text-primary-600 hover:!text-primary-700 font-medium"
                   >
                     <LinkIcon className="h-4 w-4 mr-1" />
                     View Task Details
@@ -415,7 +415,7 @@ const CandidatePortal = () => {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary-600 !text-primary-600 hover:text-primary-700 !hover:text-primary-700 break-all"
+                            className="!text-primary-600 hover:!text-primary-700 break-all"
                           >
                             {link.url}
                           </a>

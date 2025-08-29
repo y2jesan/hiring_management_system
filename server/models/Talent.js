@@ -61,6 +61,11 @@ const talentSchema = new mongoose.Schema(
       default: null,
       trim: true,
     },
+    write_about_yourself: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     core_experience: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Experience',

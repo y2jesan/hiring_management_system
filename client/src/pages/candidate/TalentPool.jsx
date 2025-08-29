@@ -115,6 +115,9 @@ const TalentPool = () => {
             if (data.current_company_name) {
                 formData.append('current_company_name', data.current_company_name);
             }
+            if (data.write_about_yourself) {
+                formData.append('write_about_yourself', data.write_about_yourself);
+            }
             selectedExperiences.forEach(expId => {
                 formData.append('core_experience', expId);
             });
@@ -362,6 +365,21 @@ const TalentPool = () => {
                                 placeholder="Enter your current company name"
                                 {...register('current_company_name')}
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <UserIcon className="h-4 w-4 inline mr-1" />
+                                Write About Yourself (Optional)
+                            </label>
+                            <textarea
+                                className="input border-gray-300 placeholder-gray-500 min-h-[100px] resize-vertical"
+                                placeholder="Tell us about yourself, your skills, experience, and what you're looking for..."
+                                {...register('write_about_yourself')}
+                            />
+                            <p className="mt-1 text-sm text-gray-500">
+                                Share your background, skills, and what you're looking for in your next role
+                            </p>
                         </div>
 
                         <div>

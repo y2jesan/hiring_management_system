@@ -110,7 +110,7 @@ const Track = () => {
                                             value="application"
                                             checked={searchType === 'application'}
                                             onChange={(e) => setSearchType(e.target.value)}
-                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 accent-primary-600"
                                         />
                                         <span className="ml-2 text-sm text-gray-700">Job Application</span>
                                     </label>
@@ -120,7 +120,7 @@ const Track = () => {
                                             value="talent"
                                             checked={searchType === 'talent'}
                                             onChange={(e) => setSearchType(e.target.value)}
-                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 accent-primary-600"
                                         />
                                         <span className="ml-2 text-sm text-gray-700">Talent Profile</span>
                                     </label>

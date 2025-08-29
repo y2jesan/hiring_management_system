@@ -4,17 +4,7 @@ const { generateTalentPoolId, createSuccessResponse, createErrorResponse, genera
 // Create new talent
 const createTalent = async (req, res) => {
   try {
-    const { 
-      name, 
-      email, 
-      phone, 
-      years_of_experience, 
-      expected_salary, 
-      notice_period_in_months, 
-      current_employment_status, 
-      current_company_name, 
-      core_experience 
-    } = req.body;
+    const { name, email, phone, years_of_experience, expected_salary, notice_period_in_months, current_employment_status, current_company_name, write_about_yourself, core_experience } = req.body;
 
     // Generate unique talent pool ID
     let talentPoolId;
@@ -42,6 +32,7 @@ const createTalent = async (req, res) => {
       notice_period_in_months,
       current_employment_status: current_employment_status === 'true',
       current_company_name: current_company_name || null,
+      write_about_yourself: write_about_yourself || '',
       core_experience: Array.isArray(core_experience) ? core_experience : [core_experience],
       cv_file_path: cvFilePath,
       talent_pool_id: talentPoolId,
@@ -74,12 +65,7 @@ const getTalents = async (req, res) => {
     // Search filter
     if (search) {
       const sanitizedSearch = sanitizeSearchQuery(search);
-      query.$or = [
-        { name: { $regex: sanitizedSearch, $options: 'i' } },
-        { email: { $regex: sanitizedSearch, $options: 'i' } },
-        { talent_pool_id: { $regex: sanitizedSearch, $options: 'i' } },
-        { current_company_name: { $regex: sanitizedSearch, $options: 'i' } }
-      ];
+      query.$or = [{ name: { $regex: sanitizedSearch, $options: 'i' } }, { email: { $regex: sanitizedSearch, $options: 'i' } }, { talent_pool_id: { $regex: sanitizedSearch, $options: 'i' } }, { current_company_name: { $regex: sanitizedSearch, $options: 'i' } }];
     }
 
     // Active status filter
@@ -94,15 +80,7 @@ const getTalents = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const [talents, total] = await Promise.all([
-      Talent.find(query)
-        .populate('reference', 'name email')
-        .populate('core_experience', 'name')
-        .sort({ submission_date: -1 })
-        .skip(skip)
-        .limit(limit),
-      Talent.countDocuments(query)
-    ]);
+    const [talents, total] = await Promise.all([Talent.find(query).populate('reference', 'name email').populate('core_experience', 'name').sort({ submission_date: -1 }).skip(skip).limit(limit), Talent.countDocuments(query)]);
 
     // Add full CV URLs
     const talentsWithUrls = talents.map((talent) => ({
@@ -127,9 +105,7 @@ const getTalents = async (req, res) => {
 // Get talent by ID
 const getTalentById = async (req, res) => {
   try {
-    const talent = await Talent.findById(req.params.id)
-      .populate('reference', 'name email')
-      .populate('core_experience', 'name');
+    const talent = await Talent.findById(req.params.id).populate('reference', 'name email').populate('core_experience', 'name');
 
     if (!talent) {
       return res.status(404).json(createErrorResponse('Talent not found'));
@@ -176,19 +152,7 @@ const getTalentByTalentPoolId = async (req, res) => {
 // Update talent
 const updateTalent = async (req, res) => {
   try {
-    const { 
-      name, 
-      email, 
-      phone, 
-      years_of_experience, 
-      expected_salary, 
-      notice_period_in_months, 
-      current_employment_status, 
-      current_company_name, 
-      core_experience, 
-      is_active, 
-      reference 
-    } = req.body;
+    const { name, email, phone, years_of_experience, expected_salary, notice_period_in_months, current_employment_status, current_company_name, write_about_yourself, core_experience, is_active, reference } = req.body;
 
     const updateData = {};
 
@@ -200,6 +164,7 @@ const updateTalent = async (req, res) => {
     if (notice_period_in_months !== undefined) updateData.notice_period_in_months = notice_period_in_months;
     if (current_employment_status !== undefined) updateData.current_employment_status = current_employment_status === 'true';
     if (current_company_name !== undefined) updateData.current_company_name = current_company_name;
+    if (write_about_yourself !== undefined) updateData.write_about_yourself = write_about_yourself;
     if (core_experience !== undefined) updateData.core_experience = Array.isArray(core_experience) ? core_experience : [core_experience];
     if (is_active !== undefined) updateData.is_active = is_active;
     if (reference !== undefined) updateData.reference = reference;
@@ -209,9 +174,7 @@ const updateTalent = async (req, res) => {
       updateData.cv_file_path = `cvs/${req.file.filename}`;
     }
 
-    const talent = await Talent.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true })
-      .populate('reference', 'name email')
-      .populate('core_experience', 'name');
+    const talent = await Talent.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true }).populate('reference', 'name email').populate('core_experience', 'name');
 
     if (!talent) {
       return res.status(404).json(createErrorResponse('Talent not found'));
@@ -236,22 +199,12 @@ const updateTalent = async (req, res) => {
 // Update talent by talent pool ID (public route for candidates)
 const updateTalentByTalentPoolId = async (req, res) => {
   try {
-    const { 
-      name, 
-      email, 
-      phone, 
-      years_of_experience, 
-      expected_salary, 
-      notice_period_in_months, 
-      current_employment_status, 
-      current_company_name, 
-      core_experience
-    } = req.body;
+    const { name, email, phone, years_of_experience, expected_salary, notice_period_in_months, current_employment_status, current_company_name, write_about_yourself, core_experience } = req.body;
 
     // Find talent by talent pool ID
-    const talent = await Talent.findOne({ 
+    const talent = await Talent.findOne({
       talent_pool_id: req.params.talent_pool_id,
-      is_active: true 
+      is_active: true,
     });
 
     if (!talent) {
@@ -268,6 +221,7 @@ const updateTalentByTalentPoolId = async (req, res) => {
     if (notice_period_in_months !== undefined) updateData.notice_period_in_months = notice_period_in_months;
     if (current_employment_status !== undefined) updateData.current_employment_status = current_employment_status === 'true';
     if (current_company_name !== undefined) updateData.current_company_name = current_company_name;
+    if (write_about_yourself !== undefined) updateData.write_about_yourself = write_about_yourself;
     if (core_experience !== undefined) updateData.core_experience = Array.isArray(core_experience) ? core_experience : [core_experience];
 
     // Handle CV file upload
@@ -275,9 +229,7 @@ const updateTalentByTalentPoolId = async (req, res) => {
       updateData.cv_file_path = `cvs/${req.file.filename}`;
     }
 
-    const updatedTalent = await Talent.findByIdAndUpdate(talent._id, updateData, { new: true, runValidators: true })
-      .populate('reference', 'name email')
-      .populate('core_experience', 'name');
+    const updatedTalent = await Talent.findByIdAndUpdate(talent._id, updateData, { new: true, runValidators: true }).populate('reference', 'name email').populate('core_experience', 'name');
 
     const talentWithUrl = {
       ...updatedTalent.toObject(),
@@ -324,9 +276,7 @@ const toggleTalentStatus = async (req, res) => {
     await talent.save();
 
     // Populate the talent before sending response
-    const populatedTalent = await Talent.findById(talent._id)
-      .populate('reference', 'name email')
-      .populate('core_experience', 'name');
+    const populatedTalent = await Talent.findById(talent._id).populate('reference', 'name email').populate('core_experience', 'name');
 
     const talentWithUrl = {
       ...populatedTalent.toObject(),
@@ -364,26 +314,23 @@ const exportTalents = async (req, res) => {
       query.expected_salary = { $gte: parseFloat(min_salary) };
     }
 
-    const talents = await Talent.find(query)
-      .populate('reference', 'name email')
-      .populate('core_experience', 'name')
-      .sort({ submission_date: -1 });
+    const talents = await Talent.find(query).populate('reference', 'name email').populate('core_experience', 'name').sort({ submission_date: -1 });
 
     // Transform data for Excel export
     const exportData = talents.map((talent, index) => ({
       'No.': index + 1,
       'Talent Pool ID': talent.talent_pool_id,
-      'Name': talent.name,
-      'Email': talent.email,
-      'Phone': talent.phone,
+      Name: talent.name,
+      Email: talent.email,
+      Phone: talent.phone,
       'Years of Experience': talent.years_of_experience,
       'Expected Salary (BDT)': talent.expected_salary,
       'Notice Period (Months)': talent.notice_period_in_months,
       'Currently Employed': talent.current_employment_status ? 'Yes' : 'No',
       'Current Company': talent.current_company_name || 'N/A',
-      'Core Experience': talent.core_experience.map(exp => exp.name).join(', '),
-      'Reference': talent.reference ? `${talent.reference.name} (${talent.reference.email})` : 'N/A',
-      'Status': talent.is_active ? 'Active' : 'Inactive',
+      'Core Experience': talent.core_experience.map((exp) => exp.name).join(', '),
+      Reference: talent.reference ? `${talent.reference.name} (${talent.reference.email})` : 'N/A',
+      Status: talent.is_active ? 'Active' : 'Inactive',
       'Submission Date': talent.submission_date.toLocaleDateString(),
     }));
 

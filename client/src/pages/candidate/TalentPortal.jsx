@@ -61,6 +61,7 @@ const TalentPortal = () => {
                 setValue('notice_period_in_months', talentData.notice_period_in_months);
                 setValue('current_employment_status', talentData.current_employment_status.toString());
                 setValue('current_company_name', talentData.current_company_name || '');
+                setValue('write_about_yourself', talentData.write_about_yourself || '');
 
                 // Set selected experiences
                 if (talentData.core_experience) {
@@ -140,6 +141,9 @@ const TalentPortal = () => {
             formData.append('current_employment_status', data.current_employment_status);
             if (data.current_company_name) {
                 formData.append('current_company_name', data.current_company_name);
+            }
+            if (data.write_about_yourself) {
+                formData.append('write_about_yourself', data.write_about_yourself);
             }
             selectedExperiences.forEach(expId => {
                 formData.append('core_experience', expId);
@@ -405,6 +409,21 @@ const TalentPortal = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <UserIcon className="h-4 w-4 inline mr-1" />
+                                    Write About Yourself (Optional)
+                                </label>
+                                <textarea
+                                    className="input border-gray-300 placeholder-gray-500 min-h-[100px] resize-vertical"
+                                    placeholder="Tell us about yourself, your skills, experience, and what you're looking for..."
+                                    {...register('write_about_yourself')}
+                                />
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Share your background, skills, and what you're looking for in your next role
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     <AcademicCapIcon className="h-4 w-4 inline mr-1" />
                                     Core Experience *
                                 </label>
@@ -524,6 +543,12 @@ const TalentPortal = () => {
                                 <div>
                                     <p className="text-gray-500">Current Company</p>
                                     <p className="font-medium text-gray-900">{talent.current_company_name}</p>
+                                </div>
+                            )}
+                            {talent.write_about_yourself && (
+                                <div className="md:col-span-2">
+                                    <p className="text-gray-500">About Yourself</p>
+                                    <p className="font-medium text-gray-900 whitespace-pre-wrap">{talent.write_about_yourself}</p>
                                 </div>
                             )}
                             <div className="md:col-span-2">

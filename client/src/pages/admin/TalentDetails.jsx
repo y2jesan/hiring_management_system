@@ -99,13 +99,18 @@ const TalentDetails = () => {
                     <p className="font-medium text-gray-900 dark:text-white">{talent.current_company_name}</p>
                   </div>
                 )}
+                {talent.write_about_yourself && talent.write_about_yourself.trim() !== "" && (
+                  <div className="sm:col-span-2">
+                    <p className="text-gray-500 dark:text-gray-400">About Yourself</p>
+                    <p className="font-medium text-gray-900 dark:text-white whitespace-pre-wrap">{talent.write_about_yourself}</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-gray-500 dark:text-gray-400">Status</p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    talent.is_active 
-                      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${talent.is_active
+                      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                       : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                  }`}>
+                    }`}>
                     {talent.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
@@ -139,10 +144,10 @@ const TalentDetails = () => {
             <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">CV</h2>
-                <a 
-                  className="text-primary-600 hover:underline dark:text-primary-400 dark:hover:text-primary-300" 
-                  href={talent.cv_file_path} 
-                  target="_blank" 
+                <a
+                  className="text-primary-600 hover:underline dark:text-primary-400 dark:hover:text-primary-300"
+                  href={talent.cv_file_path}
+                  target="_blank"
                   rel="noreferrer"
                 >
                   Download CV

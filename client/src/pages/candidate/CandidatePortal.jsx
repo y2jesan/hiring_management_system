@@ -223,63 +223,63 @@ const CandidatePortal = () => {
             {getStatusBadge(candidate.status)}
           </div>
 
-          <div className="bg-blue-50 !bg-blue-50 border border-blue-200 !border-blue-200 rounded-lg p-4 mb-6">
-            <p className="text-blue-800 !text-blue-800">{getStatusDescription(candidate.status)}</p>
+          <div className="bg-primary-50 border border-primary-500 rounded-lg p-4 mb-6">
+            <p className="text-gray-500">{getStatusDescription(candidate.status)}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 !text-gray-900 mb-4">Application Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Application Details</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Application ID:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.application_id}</p>
+                  <span className="text-sm font-medium text-gray-500">Application ID:</span>
+                  <p className="text-gray-900">{candidate.application_id}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Email:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.email}</p>
+                  <span className="text-sm font-medium text-gray-500">Email:</span>
+                  <p className="text-gray-900">{candidate.email}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Phone:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.phone}</p>
+                  <span className="text-sm font-medium text-gray-500">Phone:</span>
+                  <p className="text-gray-900">{candidate.phone}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Years of Experience:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.years_of_experience || 'N/A'}</p>
+                  <span className="text-sm font-medium text-gray-500">Years of Experience:</span>
+                  <p className="text-gray-900">{candidate.years_of_experience || 'N/A'}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Expected Salary:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.expected_salary ? `BDT ${candidate.expected_salary.toLocaleString()}` : 'N/A'}</p>
+                  <span className="text-sm font-medium text-gray-500">Expected Salary:</span>
+                  <p className="text-gray-900">{candidate.expected_salary ? `BDT ${candidate.expected_salary.toLocaleString()}` : 'N/A'}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Notice Period:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.notice_period_in_months ? `${candidate.notice_period_in_months} month(s)` : 'N/A'}</p>
+                  <span className="text-sm font-medium text-gray-500">Notice Period:</span>
+                  <p className="text-gray-900">{candidate.notice_period_in_months ? `${candidate.notice_period_in_months} month(s)` : 'N/A'}</p>
                 </div>
 
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 !text-gray-900 mb-4">Job Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Details</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Position:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.job_id?.title}</p>
+                  <span className="text-sm font-medium text-gray-500">Position:</span>
+                  <p className="text-gray-900 ">{candidate.job_id?.title}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Designation:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.job_id?.designation}</p>
+                  <span className="text-sm font-medium text-gray-500">Designation:</span>
+                  <p className="text-gray-900">{candidate.job_id?.designation}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Experience Required:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.job_id?.experience_in_year} years</p>
+                  <span className="text-sm font-medium text-gray-500">Experience Required:</span>
+                  <p className="text-gray-900 ">{candidate.job_id?.experience_in_year} years</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Salary Range:</span>
-                  <p className="text-gray-900 !text-gray-900">{candidate.job_id?.salary_range}</p>
+                  <span className="text-sm font-medium text-gray-500">Salary Range:</span>
+                  <p className="text-gray-900">{candidate.job_id?.salary_range}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Core Experience:</span>
+                  <span className="text-sm font-medium text-gray-500">Core Experience:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {candidate.core_experience && candidate.core_experience.length > 0 ? (
                       candidate.core_experience.map((exp) => (
@@ -288,13 +288,13 @@ const CandidatePortal = () => {
                         </span>
                       ))
                     ) : (
-                      <p className="text-gray-400 !text-gray-400">No core experience listed</p>
+                      <p className="text-gray-400">No core experience listed</p>
                     )}
                   </div>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500 !text-gray-500">Applied Date:</span>
-                  <p className="text-gray-900 !text-gray-900">{new Date(candidate.createdAt).toLocaleDateString()}</p>
+                  <span className="text-sm font-medium text-gray-500">Applied Date:</span>
+                  <p className="text-gray-900">{new Date(candidate.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
             </div>
@@ -302,27 +302,27 @@ const CandidatePortal = () => {
         </div>
 
         {/* Job Details Section - Collapsible */}
-        <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <button
             onClick={() => setShowJobDetails(!showJobDetails)}
             className="flex items-center justify-between w-full text-left"
           >
             <div className="flex items-center">
-              <DocumentIcon className="h-6 w-6 text-primary-600 !text-primary-600 mr-2" />
+              <DocumentIcon className="h-6 w-6 text-primary-600 mr-2" />
               <h3 className="text-lg font-semibold text-gray-900 !text-gray-900">Job Description</h3>
             </div>
             {showJobDetails ? (
-              <ChevronUpIcon className="h-5 w-5 text-gray-500 !text-gray-500" />
+              <ChevronUpIcon className="h-5 w-5 text-gray-500" />
             ) : (
-              <ChevronDownIcon className="h-5 w-5 text-gray-500 !text-gray-500" />
+              <ChevronDownIcon className="h-5 w-5 text-gray-500" />
             )}
           </button>
 
           {showJobDetails && (
-            <div className="mt-4 pt-4 border-t border-gray-200 !border-gray-200">
+            <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="prose max-w-none">
-                <h4 className="text-md font-medium text-gray-900 !text-gray-900 mb-3">Job Description</h4>
-                <div className="text-gray-700 !text-gray-700 whitespace-pre-wrap">
+                <h4 className="text-md font-medium text-gray-900 mb-3">Job Description</h4>
+                <div className="text-gray-700 whitespace-pre-wrap">
                   {candidate.job_id?.job_description || 'No job description available.'}
                 </div>
               </div>
@@ -477,16 +477,16 @@ const CandidatePortal = () => {
 
         {/* Interview Information - supports multiple interviews */}
         {Array.isArray(candidate.interviews) && candidate.interviews.length > 0 && (
-          <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
             <div className="flex items-center mb-6">
-              <ClockIcon className="h-6 w-6 text-primary-600 !text-primary-600 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-900 !text-gray-900">Interview Details</h3>
-              <span className="ml-2 text-sm text-gray-500 !text-gray-500">({candidate.interviews.length} interview{candidate.interviews.length > 1 ? 's' : ''})</span>
+              <ClockIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Interview Details</h3>
+              <span className="ml-2 text-sm text-gray-500">({candidate.interviews.length} interview{candidate.interviews.length > 1 ? 's' : ''})</span>
             </div>
 
             <div className="space-y-6">
               {candidate.interviews.map((interview, idx) => (
-                <div key={interview._id} className="bg-gray-50 !bg-gray-50 rounded-lg p-6 border border-gray-200 !border-gray-200">
+                <div key={interview._id} className="bg-gray-50rounded-lg p-6 border border-gray-200 !border-gray-200">
                   {/* Interview Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">

@@ -133,7 +133,7 @@ const Track = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    className={`input border-gray-300 placeholder-gray-500 ${errors.trackId ? 'border-red-500' : ''}`}
+                                    className={`input bg-white text-gray-600 border-gray-300 placeholder-gray-500 ${errors.trackId ? 'border-red-500' : ''}`}
                                     placeholder={searchType === 'talent' ? 'Enter your Talent Pool ID' : 'Enter your Application ID'}
                                     {...register('trackId', {
                                         required: 'ID is required',
@@ -163,9 +163,9 @@ const Track = () => {
                         </form>
 
                         {/* Help Text */}
-                        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                            <h3 className="text-sm font-medium text-blue-800 mb-2">Need help?</h3>
-                            <ul className="text-sm text-blue-700 space-y-1">
+                        <div className="bg-primary-50 border border-primary-500 rounded-lg p-4 mt-4">
+                            <h3 className="text-sm font-medium text-gray-600 mb-2">Need help?</h3>
+                            <ul className="text-sm text-gray-600 space-y-1">
                                 <li>• For Talent Pool: Use your Talent Pool ID (e.g., TP123456)</li>
                                 <li>• For Job Applications: Use your Application ID (e.g., APP123456)</li>
                                 <li>• Contact us if you've lost your ID</li>

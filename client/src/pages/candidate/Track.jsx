@@ -10,6 +10,8 @@ const Track = () => {
     const [trackingResult, setTrackingResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchType, setSearchType] = useState('application'); // 'talent' or 'application'
+    const [notFound, setNotFound] = useState(false);
+    const [searchedId, setSearchedId] = useState('');
 
     const {
         register,
@@ -27,6 +29,8 @@ const Track = () => {
         try {
             setLoading(true);
             setTrackingResult(null);
+            setNotFound(false);
+            setSearchedId(data.trackId.trim());
 
             if (searchType === 'talent') {
                 // Search for talent
@@ -42,7 +46,7 @@ const Track = () => {
                         link: `/talent/${talent.talent_pool_id}`
                     });
                 } else {
-                    toast.error('Talent profile not found');
+                    setNotFound(true);
                 }
             } else {
                 // Search for job application
@@ -58,16 +62,12 @@ const Track = () => {
                         link: `/application/${application.application_id}`
                     });
                 } else {
-                    toast.error('Job application not found');
+                    setNotFound(true);
                 }
             }
         } catch (error) {
             console.error('Error tracking:', error);
-            if (searchType === 'talent') {
-                toast.error('Talent profile not found or inactive');
-            } else {
-                toast.error('Job application not found');
-            }
+            setNotFound(true);
         } finally {
             setLoading(false);
         }
@@ -75,6 +75,8 @@ const Track = () => {
 
     const handleNewSearch = () => {
         setTrackingResult(null);
+        setNotFound(false);
+        setSearchedId('');
         reset();
     };
 
@@ -92,7 +94,7 @@ const Track = () => {
                     </p>
                 </div>
 
-                {!trackingResult ? (
+                {!trackingResult && !notFound ? (
                     /* Search Form */
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -170,6 +172,48 @@ const Track = () => {
                                 <li>• For Job Applications: Use your Application ID (e.g., APP123456)</li>
                                 <li>• Contact us if you've lost your ID</li>
                             </ul>
+                        </div>
+                    </div>
+                ) : notFound ? (
+                    /* Not Found Display */
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div className="text-center">
+                            {/* Not Found Icon */}
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+
+                            {/* Not Found Info */}
+                            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                                No {searchType === 'talent' ? 'Talent Profile' : 'Application'} Found
+                            </h2>
+
+                            <div className="mb-6">
+                                <p className="text-gray-600 mb-1">Searched ID:</p>
+                                <p className="text-sm font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                                    {searchedId}
+                                </p>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="text-gray-600 text-sm">
+                                    We couldn't find a {searchType === 'talent' ? 'talent profile' : 'job application'} with this ID.
+                                    <br />
+                                    Please check your ID and try again.
+                                </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handleNewSearch}
+                                    className="block w-full btn btn-primary px-8 py-3 text-base font-medium"
+                                >
+                                    Try Another ID
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ) : (

@@ -199,7 +199,7 @@ const CandidatePortal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 !bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 candidate-portal-page candidate-page" style={{ colorScheme: 'light' }}>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 candidate-portal-page candidate-page" style={{ colorScheme: 'light' }}>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -209,16 +209,16 @@ const CandidatePortal = () => {
               <UserIcon className="h-8 w-8 text-white" />
             </div> */}
           </div>
-          <h1 className="text-3xl font-bold text-primary-800 !text-primary-800 mb-2">QTEC Candidate Portal</h1>
-          <p className="text-lg text-gray-600 !text-gray-600">Track your application progress</p>
+          <h1 className="text-3xl font-bold text-primary-800 mb-2">QTEC Candidate Portal</h1>
+          <p className="text-lg text-gray-600">Track your application progress</p>
         </div>
 
         {/* Application Status */}
-        <div className="bg-white !bg-white rounded-lg shadow-sm border border-gray-200 !border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 !text-gray-900">{candidate.name}</h2>
-              <p className="text-gray-600 !text-gray-600">{candidate.job_id?.title}</p>
+              <h2 className="text-2xl font-bold text-gray-900">{candidate.name}</h2>
+              <p className="text-gray-600">{candidate.job_id?.title}</p>
             </div>
             {getStatusBadge(candidate.status)}
           </div>

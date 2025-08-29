@@ -531,7 +531,7 @@ const TalentPortal = () => {
                                 <div className="flex flex-wrap gap-2 mt-1">
                                     {talent.core_experience && talent.core_experience.length > 0 ? (
                                         talent.core_experience.map((exp) => (
-                                            <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium !bg-primary-500 !text-white">
+                                            <span key={exp._id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  ">
                                                 {exp.name}
                                             </span>
                                         ))
@@ -547,7 +547,7 @@ const TalentPortal = () => {
                                         href={talent.cv_file_path}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="!text-primary-600 hover:!text-primary-700 underline font-medium"
+                                        className=" hover: underline font-medium"
                                     >
                                         View Current CV
                                     </a>
@@ -584,3 +584,4 @@ const TalentPortal = () => {
 };
 
 export default TalentPortal;
+
